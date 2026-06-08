@@ -13,13 +13,9 @@ dist-ssr
 *.local
 
 # Large binary files (use a CDN or external storage instead)
-*.png
 *.jpg
 *.jpeg
 *.gif
-*.webp
-*.ico
-*.svg
 *.mp4
 *.mp3
 *.zip
