@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button';
 
 const navLinks = [
 	{ label: 'Home', href: '#home' },
+	{ label: 'About', href: '#about' },
 	{ label: 'Services', href: '#services' },
 	{ label: 'Booking', href: '#booking' },
-	{ label: 'About', href: '#about' },
 ];
 
 export default function Navbar() {
@@ -39,12 +39,7 @@ export default function Navbar() {
 					))}
 				</nav>
 
-				<Button
-					asChild
-					variant="secondary"
-					size="sm"
-					className="ml-1 bg-linear-to-r bg-teal-600/70 hover:bg-teal-600 text-white"
-				>
+				<Button asChild variant="gradient" size="sm">
 					<a href="#booking">Book Now</a>
 				</Button>
 			</header>
@@ -119,7 +114,7 @@ export default function Navbar() {
 							</a>
 						))}
 						<div className="pt-2 px-1">
-							<Button asChild variant="default" size="lg" className="w-full">
+							<Button asChild variant="gradient" size="lg" className="w-full">
 								<a href="#booking" onClick={() => setOpen(false)}>
 									Book Now
 								</a>

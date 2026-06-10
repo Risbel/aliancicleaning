@@ -12,6 +12,7 @@ This file is the primary context for Claude Code working on this project. Read i
 |-----------|-------------|
 | `.claude/docs/TECH_STACK.md` | Full tech stack (Vite, React, shadcn/ui, Tailwind, Supabase) |
 | `.claude/docs/BUSINESS_LOGIC.md` | Complete business rules, entities, routes, and flows |
+| `.claude/docs/STYLE_GUIDE.md` | Color palette, gradients, button variants, layout and component patterns |
 
 ---
 

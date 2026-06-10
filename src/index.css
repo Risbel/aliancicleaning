@@ -16,6 +16,7 @@
   --color-white-smoke: #f2f2f2;
   --color-honeydew: #cde2d7;
   --color-mint-leaf: #5bb286;
+  --color-teal-mist: #e8f8f6;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -122,6 +123,10 @@
   --sidebar-accent-foreground: #e8edf0;
   --sidebar-border: #1e2f3d;
   --sidebar-ring: var(--color-fresh-sky)
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 * {

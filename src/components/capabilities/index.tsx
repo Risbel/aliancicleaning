@@ -33,7 +33,7 @@ const capabilities = [
 
 export default function CapabilitiesSection() {
 	return (
-		<section className="bg-white-smoke px-6 py-24 lg:px-12 xl:px-16">
+		<section id="services" className="bg-linear-to-b from-teal-100 to-white px-6 pt-16 pb-24 lg:px-12 xl:px-16">
 			<div className="mx-auto max-w-7xl">
 				<div className="mb-14 flex flex-col items-center text-center">
 					<div className="mb-5 inline-flex items-center gap-2 rounded-full border border-baltic-blue/20 bg-baltic-blue/8 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-baltic-blue">
@@ -41,11 +41,11 @@ export default function CapabilitiesSection() {
 						What Sets Us Apart
 					</div>
 
-					<h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+					<h2 className="text-[2rem] font-bold leading-[1.1] tracking-tight text-[#1a2e3f] sm:text-[2.4rem] lg:text-[2.6rem] xl:text-[3rem]">
 						Eco-Friendly & Pet-Safe Services
 					</h2>
 
-					<p className="mt-4 max-w-lg text-base leading-relaxed text-muted-foreground">
+					<p className="mt-4 max-w-lg text-base leading-relaxed text-[#1a2e3f]/70">
 						Every visit is a commitment — of care, reliability, and a spotless home delivered with pride.
 					</p>
 				</div>

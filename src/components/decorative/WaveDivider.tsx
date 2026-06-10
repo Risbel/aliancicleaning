@@ -1,9 +1,10 @@
 interface WaveDividerProps {
 	fill?: string;
+	fillBack?: string;
 	className?: string;
 }
 
-export default function WaveDivider({ fill = '#f2f2f2', className = '' }: WaveDividerProps) {
+export default function WaveDivider({ fill = '#f2f2f2', fillBack, className = '' }: WaveDividerProps) {
 	return (
 		<div className={`absolute bottom-0 left-0 right-0 overflow-hidden leading-none ${className}`}>
 			<svg
@@ -15,7 +16,7 @@ export default function WaveDivider({ fill = '#f2f2f2', className = '' }: WaveDi
 			>
 				<path
 					d="M0,80 C240,160 480,0 720,80 C960,160 1200,0 1440,80 L1440,160 L0,160 Z"
-					fill={fill}
+					fill={fillBack ?? fill}
 					opacity="0.4"
 				/>
 				<path

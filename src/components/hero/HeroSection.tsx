@@ -18,6 +18,7 @@ export default function HeroSection() {
 			`}</style>
 
 			<section
+				id="home"
 				className="relative min-h-dvh overflow-x-hidden"
 				style={{
 					background: 'linear-gradient(135deg, #156390 0%, #54a8d0 55%, #cbe0ea 100%)',
@@ -120,12 +121,7 @@ export default function HeroSection() {
 						</p>
 
 						<div className="mt-8 flex flex-col gap-3 sm:flex-row">
-							<Button
-								size="xxxl"
-								asChild
-								variant="default"
-								className="bg-linear-to-r from-teal-700 to-baltic-blue hover:bg-teal-600 text-white"
-							>
+							<Button size="xxxl" asChild variant="gradient">
 								<a href="#booking">Request a Quote</a>
 							</Button>
 
