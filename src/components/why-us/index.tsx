@@ -1,33 +1,30 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { SparklesIcon, Clock01Icon, SearchFocusIcon, Leaf01Icon } from '@hugeicons/core-free-icons';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import WaveDivider from '../decorative/WaveDivider';
 
 const capabilities = [
 	{
 		title: 'Professionalism',
 		description: 'Our highly trained team delivers deep cleaning solutions and consistently flawless results.',
-		image: '/atomizer_webp.webp',
-		alt: 'Professional cleaning atomizer',
-		accent: '#156390',
+		icon: SparklesIcon,
+		accent: '#2aaaf4',
 	},
 	{
 		title: 'Punctuality',
 		description: 'We value your schedule, ensuring timely arrivals that never disrupt your daily routine.',
-		image: '/clock_webp.webp',
-		alt: 'Clock representing punctuality',
-		accent: '#ffffff',
+		icon: Clock01Icon,
+		accent: '#fdc90d',
 	},
 	{
 		title: 'Attention to Detail',
 		description: 'We meticulously treat every room, ensuring that every corner of your home is perfect.',
-		image: '/magnifying_glass_webp.webp',
-		alt: 'Magnifying glass representing attention to detail',
-		accent: '#5bb286',
+		icon: SearchFocusIcon,
+		accent: '#cb22ff',
 	},
 	{
 		title: 'Eco & Pet Friendly',
 		description: 'Safe cleaning using biodegradable products that care for your beloved pets and the planet.',
-		image: '/eco_pet_webp.webp',
-		alt: 'Eco and pet friendly cleaning products',
+		icon: Leaf01Icon,
 		accent: '#5bb286',
 	},
 ] as const;
@@ -56,10 +53,10 @@ export default function WhyUsSection() {
 						<Card key={cap.title} className="gap-2 hover:shadow-lg transition-shadow duration-300">
 							<div className="flex items-center justify-center">
 								<div
-									className="mb-4 flex items-center justify-center rounded-full w-fit"
+									className="mb-4 flex h-20 w-20 items-center justify-center rounded-full"
 									style={{ backgroundColor: `${cap.accent}18` }}
 								>
-									<img src={cap.image} alt={cap.alt} className="h-20 w-20 object-contain rounded-full" loading="lazy" />
+									<HugeiconsIcon icon={cap.icon} size={40} color={cap.accent} strokeWidth={1.5} />
 								</div>
 							</div>
 

@@ -1,6 +1,7 @@
 [
   {
     "id": "standard",
+    "image": "/vecteezy_cleaning_webp.webp",
     "name": "Standard Cleaning",
     "tagline": "Regular maintenance cleaning with eco-friendly products, keeping your home fresh, clean, and safe for your pets.",
     "imageBg": "#cbe0ea",
@@ -16,6 +17,7 @@
   },
   {
     "id": "deep",
+    "image": "/deep-cleaning.jpg",
     "name": "Deep Cleaning",
     "tagline": "A thorough top-to-bottom cleaning that removes built-up dirt and leaves every corner of your home spotless.",
     "imageBg": "#156390",
@@ -32,6 +34,7 @@
   },
   {
     "id": "move-in",
+    "image": "/vecteezy_professional-premium.webp",
     "name": "Move-In Cleaning",
     "tagline": "Prepare your new space with sustainable cleaning methods, ensuring a fresh, healthy environment from day one.",
     "imageBg": "#5bb286",

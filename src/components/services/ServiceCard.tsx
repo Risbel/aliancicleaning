@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 
 interface Service {
 	id: string;
+	image: string;
 	name: string;
 	tagline: string;
 	imageBg: string;
@@ -28,6 +29,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
 		>
 			<div className="relative">
 				<div className="h-44 w-full" style={{ backgroundColor: service.imageBg }}>
+					<img src={service.image} alt={service.name} className="h-full w-full object-cover" />
 					<div className="absolute inset-0 bg-linear-to-b from-transparent to-black/20" />
 				</div>
 
