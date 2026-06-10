@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import WaveDivider from '../decorative/WaveDivider';
 
 const capabilities = [
 	{
@@ -31,9 +32,9 @@ const capabilities = [
 	},
 ] as const;
 
-export default function CapabilitiesSection() {
+export default function WhyUsSection() {
 	return (
-		<section id="services" className="bg-linear-to-b from-teal-100 to-white px-6 pt-16 pb-24 lg:px-12 xl:px-16">
+		<section id="why-us" className="bg-linear-to-b from-teal-100 to-teal-200 px-6 pt-16 pb-24 lg:px-12 xl:px-16">
 			<div className="mx-auto max-w-7xl">
 				<div className="mb-14 flex flex-col items-center text-center">
 					<div className="mb-5 inline-flex items-center gap-2 rounded-full border border-baltic-blue/20 bg-baltic-blue/8 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-baltic-blue">

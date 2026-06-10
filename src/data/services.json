@@ -1,0 +1,48 @@
+[
+  {
+    "id": "standard",
+    "name": "Standard Cleaning",
+    "tagline": "Regular maintenance cleaning with eco-friendly products, keeping your home fresh, clean, and safe for your pets.",
+    "imageBg": "#cbe0ea",
+    "popular": false,
+    "features": [
+      "Dusting all surfaces",
+      "Vacuuming & mopping floors",
+      "Kitchen & bathroom sanitizing",
+      "Trash removal",
+      "Pet-safe, eco-friendly products"
+    ],
+    "cta": "Book Now"
+  },
+  {
+    "id": "deep",
+    "name": "Deep Cleaning",
+    "tagline": "A thorough top-to-bottom cleaning that removes built-up dirt and leaves every corner of your home spotless.",
+    "imageBg": "#156390",
+    "popular": true,
+    "features": [
+      "Everything in Standard",
+      "Inside oven & refrigerator",
+      "Baseboards & window sills",
+      "Cabinet interior cleaning",
+      "Grout & tile scrubbing",
+      "Light fixtures & ceiling fans"
+    ],
+    "cta": "Book Now"
+  },
+  {
+    "id": "move-in",
+    "name": "Move-In Cleaning",
+    "tagline": "Prepare your new space with sustainable cleaning methods, ensuring a fresh, healthy environment from day one.",
+    "imageBg": "#5bb286",
+    "popular": false,
+    "features": [
+      "Everything in Deep Cleaning",
+      "Inside all closets & storage",
+      "Window cleaning (interior)",
+      "Wall spot-cleaning",
+      "Appliance deep-clean"
+    ],
+    "cta": "Book Now"
+  }
+]

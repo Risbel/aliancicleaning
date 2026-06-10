@@ -29,7 +29,7 @@ export default function AboutSection() {
 	}, [api]);
 
 	return (
-		<section id="about" className="relative bg-white-smoke pb-44 pt-16">
+		<section id="about" className="relative bg-white-smoke pb-52 pt-16">
 			<div className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-16">
 				<div className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-16">
 					{/* Carousel — left on desktop, bottom on mobile */}
@@ -96,7 +96,7 @@ export default function AboutSection() {
 					</div>
 				</div>
 			</div>
-			<WaveDivider fill="#cbfbf1" fillBack="#0cecbf" />
+			<WaveDivider fill="#ccfbf1" fillBack="#99f6e4" />
 		</section>
 	);
 }
