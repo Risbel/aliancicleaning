@@ -24,8 +24,7 @@ create extension if not exists "uuid-ossp";
 create type public.cleaning_type as enum (
   'standard',
   'deep',
-  'move_in',
-  'move_out'
+  'move_in_out'
 );
 
 create type public.quote_status as enum (
@@ -445,10 +444,6 @@ values
     'Thorough top-to-bottom cleaning including baseboards, inside appliances, grout, etc.',
     90.00, 25.00, 20.00, 0.10, 20.00),
 
-  ('move_in',   'Move-In Cleaning',
-    'Full cleaning of an empty home before move-in, including cabinets and closets.',
-    100.00, 25.00, 20.00, 0.10, 20.00),
-
-  ('move_out',  'Move-Out Cleaning',
-    'Full cleaning of a vacated home to meet landlord/inspection standards.',
+  ('move_in_out', 'Move-In/Move-Out Cleaning',
+    'Full cleaning of a home before moving in or after moving out, covering cabinets, closets, appliances, and all surfaces to meet landlord or personal standards.',
     100.00, 25.00, 20.00, 0.10, 20.00);

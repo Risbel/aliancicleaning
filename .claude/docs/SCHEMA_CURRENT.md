@@ -102,14 +102,13 @@ Quote requests submitted through the public booking form.
 
 ## Seed Data (applied)
 
-All 4 cleaning plans are inserted:
+All 3 cleaning plans are inserted:
 
 | type | name | base | /bedroom | /bathroom | /sqft | pet fee |
 |------|------|------|----------|-----------|-------|---------|
 | `standard` | Standard Cleaning | $50 | $15 | $10 | $0.05 | $15 |
 | `deep` | Deep Cleaning | $90 | $25 | $20 | $0.10 | $20 |
-| `move_in` | Move-In Cleaning | $100 | $25 | $20 | $0.10 | $20 |
-| `move_out` | Move-Out Cleaning | $100 | $25 | $20 | $0.10 | $20 |
+| `move_in_out` | Move-In/Move-Out Cleaning | $100 | $25 | $20 | $0.10 | $20 |
 
 ---
 

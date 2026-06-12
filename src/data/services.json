@@ -33,18 +33,20 @@
     "cta": "Book Now"
   },
   {
-    "id": "move-in",
+    "id": "move_in_out",
     "image": "/vecteezy_professional-premium.webp",
-    "name": "Move-In Cleaning",
-    "tagline": "Prepare your new space with sustainable cleaning methods, ensuring a fresh, healthy environment from day one.",
+    "name": "Move-In/Move-Out Cleaning",
+    "tagline": "Comprehensive cleaning for your move. Whether settling into a new home or preparing to vacate, we ensure every surface meets your standards.",
     "imageBg": "#5bb286",
     "popular": false,
     "features": [
       "Everything in Deep Cleaning",
       "Inside all closets & storage",
-      "Window cleaning (interior)",
+      "Window cleaning (interior & exterior)",
       "Wall spot-cleaning",
-      "Appliance deep-clean"
+      "Appliance deep-clean",
+      "Landlord-inspection ready",
+      "Move-in fresh start guarantee"
     ],
     "cta": "Book Now"
   }
