@@ -19,7 +19,6 @@ const navLinks = [
 	{ label: 'About', href: '#about' },
 	{ label: 'Why Us', href: '#why-us' },
 	{ label: 'Services', href: '#services' },
-	{ label: 'Booking', href: '#booking' },
 ];
 
 function initialsFromEmail(email?: string | null) {
@@ -90,14 +89,6 @@ export default function Navbar() {
 						<a
 							key={link.href}
 							href={link.href}
-							onClick={
-								link.href === '#booking'
-									? (e) => {
-											e.preventDefault();
-											goToBooking();
-										}
-									: undefined
-							}
 							className="rounded-full px-3.5 py-1.5 text-[13px] text-nowrap font-medium text-white hover:text-white hover:bg-white/12 transition-all duration-200"
 						>
 							{link.label}
