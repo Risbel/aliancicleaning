@@ -12,6 +12,7 @@ Alianci Cleaning — a cleaning services landing page with booking system, auth,
 |-----------|-------------|
 | `.claude/docs/TECH_STACK.md` | Full tech stack (Vite, React, shadcn/ui, Tailwind, Supabase) |
 | `.claude/docs/BUSINESS_LOGIC.md` | Complete business rules, entities, routes, and flows |
+| `.claude/docs/PROJECT_STRUCTURE.md` | Folder layout, naming conventions, and where to add new files |
 
 ---
 

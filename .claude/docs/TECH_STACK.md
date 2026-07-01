@@ -25,6 +25,12 @@ This document outlines the core technologies used in this project.
 - Lightweight utility library for formatting, manipulating, and comparing dates
 - Tree-shakeable — only import the functions you need
 
+### [TanStack Query](https://tanstack.com/query) (`@tanstack/react-query`)
+- Manages server state: fetching, caching, invalidation, and mutations
+- Paired with `@tanstack/react-query-devtools` for cache inspection in development
+- `QueryClient` configured in `src/lib/query-client.ts` (`staleTime: 60_000`, `gcTime: 300_000`, `retry: 1`)
+- Query keys organized via factories in `src/lib/query-keys.ts` (`planKeys`, `quoteKeys`, `profileKeys`), hierarchical by entity → id → filters
+
 ---
 
 ## Backend & Database
@@ -34,6 +40,27 @@ This document outlines the core technologies used in this project.
 - Provides a managed relational database, authentication, storage, and real-time subscriptions
 - Exposes RESTful and GraphQL API auto-generated from the database schema
 - Used as the primary backend: database, auth, and file storage
+- Typed client singleton in `src/lib/supabase/client.ts`, generated types in `src/types/supabase.ts`
+
+---
+
+## Application Architecture
+
+Data flows through four layers, each with a single responsibility:
+
+```
+Supabase client  →  services  →  query hooks  →  components
+```
+
+| Layer | Location | Responsibility |
+|-------|----------|-----------------|
+| Client | `src/lib/supabase/client.ts` | Singleton typed Supabase client |
+| Services | `src/services/*.ts` | Plain async functions per domain/table (`auth.ts`, `plans.ts`, `profiles.ts`, `quotes.ts`); call Supabase directly and throw on error |
+| Query hooks | `src/hooks/queries/*.ts` | TanStack Query wrappers (`usePlans`, `useCustomerProfile`, `useQuotesByCustomer`, `useCreateQuote`, etc.) around services |
+| Auth state | `src/contexts/auth-context.tsx` + `src/hooks/auth/use-auth.ts` | React Context populated from `supabase.auth.getSession()` and `onAuthStateChange`; exposes `session`, `user`, `loading`, `signIn`, `signUp`, `signOut` via `useAuth()` |
+| Components | `src/components/**`, `src/App.tsx` | Consume query hooks and `useAuth()`; no direct Supabase calls |
+
+`QueryClientProvider` and `AuthProvider` are wired at the root in `src/main.tsx`.
 
 ---
 
@@ -46,6 +73,7 @@ This document outlines the core technologies used in this project.
 | Components | shadcn/ui | Accessible UI components |
 | Styling | Tailwind CSS | Utility-first styling |
 | Date Utils | date-fns | Date formatting and manipulation |
+| Server state | TanStack Query | Data fetching, caching, mutations |
 | Backend | Supabase | Database, auth, and storage |
 
 ---
