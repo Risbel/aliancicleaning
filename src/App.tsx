@@ -1,21 +1,24 @@
-import Navbar from '@/components/navbar';
-import HeroSection from '@/components/hero/HeroSection';
-import CapabilitiesSection from '@/components/why-us';
-import AboutSection from '@/components/about/AboutSection';
-import ServicesSection from '@/components/services';
-import Footer from '@/components/footer';
+import { Route, Routes } from 'react-router-dom';
+import { RequireAuth } from '@/components/auth/RequireAuth';
+import LandingPage from '@/pages/landing';
+import LoginPage from '@/pages/login';
+import SignupPage from '@/pages/signup';
+import BookingPage from '@/pages/booking';
 
 export default function App() {
 	return (
-		<>
-			<Navbar />
-			<main className="relative">
-				<HeroSection />
-				<AboutSection />
-				<CapabilitiesSection />
-				<ServicesSection />
-			</main>
-			<Footer />
-		</>
+		<Routes>
+			<Route path="/" element={<LandingPage />} />
+			<Route path="/login" element={<LoginPage />} />
+			<Route path="/signup" element={<SignupPage />} />
+			<Route
+				path="/booking"
+				element={
+					<RequireAuth>
+						<BookingPage />
+					</RequireAuth>
+				}
+			/>
+		</Routes>
 	);
 }

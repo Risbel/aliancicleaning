@@ -1,6 +1,18 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useAuth } from '@/hooks/auth/use-auth';
+import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
 
 const navLinks = [
 	{ label: 'Home', href: '#home' },
@@ -10,8 +22,53 @@ const navLinks = [
 	{ label: 'Booking', href: '#booking' },
 ];
 
+function initialsFromEmail(email?: string | null) {
+	if (!email) return '?';
+	return email.slice(0, 2).toUpperCase();
+}
+
+function UserMenu() {
+	const { user, signOut } = useAuth();
+	const navigate = useNavigate();
+
+	if (!user) {
+		return (
+			<Button variant="outline" size="sm" asChild>
+				<Link to="/login">Sign in</Link>
+			</Button>
+		);
+	}
+
+	async function handleSignOut() {
+		await signOut();
+		navigate('/');
+	}
+
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<button type="button" className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-white/50">
+					<Avatar size="default">
+						<AvatarFallback>{initialsFromEmail(user.email)}</AvatarFallback>
+					</Avatar>
+				</button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align="end" className="w-56">
+				<DropdownMenuLabel className="flex flex-col gap-0.5">
+					<span className="truncate text-sm font-medium text-foreground">{user.email}</span>
+				</DropdownMenuLabel>
+				<DropdownMenuSeparator />
+				<DropdownMenuItem variant="destructive" onClick={handleSignOut}>
+					Sign out
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
+}
+
 export default function Navbar() {
 	const [open, setOpen] = useState(false);
+	const goToBooking = useGoToBooking();
 
 	return (
 		<>
@@ -33,16 +90,27 @@ export default function Navbar() {
 						<a
 							key={link.href}
 							href={link.href}
-							className="rounded-full px-3.5 py-1.5 text-[13px] font-medium text-white hover:text-white hover:bg-white/12 transition-all duration-200"
+							onClick={
+								link.href === '#booking'
+									? (e) => {
+											e.preventDefault();
+											goToBooking();
+										}
+									: undefined
+							}
+							className="rounded-full px-3.5 py-1.5 text-[13px] text-nowrap font-medium text-white hover:text-white hover:bg-white/12 transition-all duration-200"
 						>
 							{link.label}
 						</a>
 					))}
 				</nav>
+				<div className="flex items-center gap-1">
+					<Button variant="gradient" size="sm" onClick={() => goToBooking()}>
+						Book Now
+					</Button>
 
-				<Button asChild variant="gradient" size="sm">
-					<a href="#booking">Book Now</a>
-				</Button>
+					<UserMenu />
+				</div>
 			</header>
 
 			{/* Mobile: full-width fixed */}
@@ -57,49 +125,53 @@ export default function Navbar() {
 						<span className="text-[15px] font-bold tracking-tight text-white">AlianciCleaning</span>
 					</a>
 
-					<button
-						type="button"
-						className="flex items-center justify-center w-9 h-9 rounded-full text-white/80 hover:text-white hover:bg-white/12 transition-all duration-200 relative"
-						onClick={() => setOpen(!open)}
-						aria-label={open ? 'Close menu' : 'Open menu'}
-					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="20"
-							height="20"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2.2"
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							className={cn(
-								'absolute transition-all duration-200',
-								open ? 'opacity-0 scale-75' : 'opacity-100 scale-100',
-							)}
+					<div className="flex items-center gap-2">
+						<UserMenu />
+
+						<button
+							type="button"
+							className="flex items-center justify-center w-9 h-9 rounded-full text-white/80 hover:text-white hover:bg-white/12 transition-all duration-200 relative"
+							onClick={() => setOpen(!open)}
+							aria-label={open ? 'Close menu' : 'Open menu'}
 						>
-							<line x1="4" x2="20" y1="8" y2="8" />
-							<line x1="4" x2="20" y1="16" y2="16" />
-						</svg>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="20"
-							height="20"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2.2"
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							className={cn(
-								'absolute transition-all duration-200',
-								open ? 'opacity-100 scale-100' : 'opacity-0 scale-75',
-							)}
-						>
-							<path d="M18 6 6 18" />
-							<path d="m6 6 12 12" />
-						</svg>
-					</button>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2.2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								className={cn(
+									'absolute transition-all duration-200',
+									open ? 'opacity-0 scale-75' : 'opacity-100 scale-100',
+								)}
+							>
+								<line x1="4" x2="20" y1="8" y2="8" />
+								<line x1="4" x2="20" y1="16" y2="16" />
+							</svg>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2.2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								className={cn(
+									'absolute transition-all duration-200',
+									open ? 'opacity-100 scale-100' : 'opacity-0 scale-75',
+								)}
+							>
+								<path d="M18 6 6 18" />
+								<path d="m6 6 12 12" />
+							</svg>
+						</button>
+					</div>
 				</div>
 
 				<div className={cn('overflow-hidden transition-all duration-300 ease-in-out', open ? 'max-h-80' : 'max-h-0')}>
@@ -109,16 +181,28 @@ export default function Navbar() {
 								key={link.href}
 								href={link.href}
 								className="block rounded-xl px-4 py-3 text-[15px] font-medium text-white hover:text-white hover:bg-white/10 transition-colors"
-								onClick={() => setOpen(false)}
+								onClick={(e) => {
+									setOpen(false);
+									if (link.href === '#booking') {
+										e.preventDefault();
+										goToBooking();
+									}
+								}}
 							>
 								{link.label}
 							</a>
 						))}
 						<div className="pt-2 px-1">
-							<Button asChild variant="gradient" size="lg" className="w-full">
-								<a href="#booking" onClick={() => setOpen(false)}>
-									Book Now
-								</a>
+							<Button
+								variant="gradient"
+								size="lg"
+								className="w-full"
+								onClick={() => {
+									setOpen(false);
+									goToBooking();
+								}}
+							>
+								Book Now
 							</Button>
 						</div>
 					</nav>

@@ -2,8 +2,11 @@ import { Button } from '@/components/ui/button';
 import GradientText from '@/components/ui/GradientText';
 import FloatingBubble from '@/components/decorative/FloatingBubble';
 import WaveDivider from '@/components/decorative/WaveDivider';
+import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
 
 export default function HeroSection() {
+	const goToBooking = useGoToBooking();
+
 	return (
 		<>
 			<style>{`
@@ -121,8 +124,8 @@ export default function HeroSection() {
 						</p>
 
 						<div className="mt-8 flex flex-col gap-3 sm:flex-row">
-							<Button size="xxxl" asChild variant="gradient">
-								<a href="#booking">Request a Quote</a>
+							<Button size="xxxl" variant="gradient" onClick={() => goToBooking()}>
+								Request a Quote
 							</Button>
 
 							<Button size="xxxl" asChild variant="outline">

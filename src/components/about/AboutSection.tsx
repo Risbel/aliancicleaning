@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import WaveDivider from '@/components/decorative/WaveDivider';
+import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
 import {
 	Carousel,
 	CarouselContent,
@@ -21,6 +22,7 @@ const checks = ['Eco Biodegradable Cleaning', 'Safe for All Your Pets'];
 
 export default function AboutSection() {
 	const [api, setApi] = React.useState<CarouselApi>();
+	const goToBooking = useGoToBooking();
 
 	React.useEffect(() => {
 		if (!api) return;
@@ -86,11 +88,11 @@ export default function AboutSection() {
 						</ul>
 
 						<div className="mt-6 flex items-center gap-4">
-							<Button variant="gradient" size="lg" asChild className="rounded-4xl cursor-pointer">
-								<a href="#about">Book Now ! </a>
+							<Button variant="gradient" size="lg" className="rounded-4xl cursor-pointer" onClick={() => goToBooking()}>
+								Book Now !
 							</Button>
 							<Button variant="outline" size="lg" asChild className="rounded-4xl cursor-pointer text-black shadow">
-								<a href="#about">More info</a>
+								<a href="#services">More info</a>
 							</Button>
 						</div>
 					</div>

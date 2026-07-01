@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
 import { cn } from '@/lib/utils';
 
 interface Service {
@@ -18,6 +19,8 @@ interface ServiceCardProps {
 }
 
 export default function ServiceCard({ service }: ServiceCardProps) {
+	const goToBooking = useGoToBooking();
+
 	return (
 		<Card
 			className={cn(
@@ -58,7 +61,12 @@ export default function ServiceCard({ service }: ServiceCardProps) {
 					))}
 				</ul>
 
-				<Button variant={service.popular ? 'gradient' : 'default'} size="lg" className="mt-1 w-full">
+				<Button
+					variant={service.popular ? 'gradient' : 'default'}
+					size="lg"
+					className="mt-1 w-full"
+					onClick={() => goToBooking(service.id)}
+				>
 					{service.cta}
 				</Button>
 			</CardContent>
