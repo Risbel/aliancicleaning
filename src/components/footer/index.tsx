@@ -10,8 +10,12 @@ import {
 } from '@hugeicons/core-free-icons';
 
 const socialLinks = [
-	{ icon: Facebook01Icon, label: 'Facebook', href: '#' },
-	{ icon: InstagramIcon, label: 'Instagram', href: '#' },
+	{ icon: Facebook01Icon, label: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61588506428744' },
+	{
+		icon: InstagramIcon,
+		label: 'Instagram',
+		href: 'https://l.facebook.com/l.php?u=https%3A%2F%2Fwww.instagram.com%2Faliancicleaningservices%3Ffbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExallCT3VHMVBUYUZXQUYwdHNydGMGYXBwX2lkEDIyMjAzOTE3ODgyMDA4OTIAAR5wR3tU4Ubs1y7xK7vXuNJuPjlqvjxWZk77mZtfLV8LY3dyxCPKpT-gMWO0wQ_aem_lo6pyJ7brI_jn7lIrBVC6Q&h=AUDgsb1kTKGzS3h0g4HRmRSUruF6ccUoLEGnc-5tdS22jO1RgeFj23OifXTW3R60CGQzya9b5j8m3QVpgTmLB8oG6UGmstfjOb3eoirIf5YSrb7OACBCJJkstX2uTnGy971C',
+	},
 	{ icon: Linkedin01Icon, label: 'LinkedIn', href: '#' },
 	{ icon: NewTwitterIcon, label: 'X', href: '#' },
 	{ icon: YoutubeIcon, label: 'YouTube', href: '#' },
