@@ -17,6 +17,19 @@ export async function createCustomerProfile(
 	return data;
 }
 
+export async function upsertCustomerProfile(
+	profile: TablesInsert<'customer_profiles'>,
+): Promise<Tables<'customer_profiles'>> {
+	const { data, error } = await supabase
+		.from('customer_profiles')
+		.upsert(profile, { onConflict: 'id' })
+		.select()
+		.single();
+
+	if (error) throw error;
+	return data;
+}
+
 export async function updateCustomerProfile(
 	userId: string,
 	updates: TablesUpdate<'customer_profiles'>,

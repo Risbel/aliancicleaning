@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { profileKeys } from '@/lib/query-keys';
-import { getCustomerProfile, updateCustomerProfile } from '@/services/profiles';
-import type { TablesUpdate } from '@/types/supabase';
+import { getCustomerProfile, updateCustomerProfile, upsertCustomerProfile } from '@/services/profiles';
+import type { TablesInsert, TablesUpdate } from '@/types/supabase';
 
 export function useCustomerProfile(userId: string | undefined) {
 	return useQuery({
@@ -18,6 +18,17 @@ export function useUpdateCustomerProfile(userId: string) {
 		mutationFn: (updates: TablesUpdate<'customer_profiles'>) => updateCustomerProfile(userId, updates),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: profileKeys.customer(userId) });
+		},
+	});
+}
+
+export function useUpsertCustomerProfile() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (profile: TablesInsert<'customer_profiles'>) => upsertCustomerProfile(profile),
+		onSuccess: (data) => {
+			queryClient.invalidateQueries({ queryKey: profileKeys.customer(data.id) });
 		},
 	});
 }
