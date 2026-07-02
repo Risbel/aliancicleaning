@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState, type ReactNode } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase/client';
-import { signInWithPassword, signOut as signOutService, signUpWithPassword } from '@/services/auth';
+import { signInWithGoogle, signInWithPassword, signOut as signOutService, signUpWithPassword } from '@/services/auth';
 
 type AuthContextValue = {
 	session: Session | null;
@@ -9,6 +9,7 @@ type AuthContextValue = {
 	loading: boolean;
 	signIn: (email: string, password: string) => ReturnType<typeof signInWithPassword>;
 	signUp: (email: string, password: string) => ReturnType<typeof signUpWithPassword>;
+	signInWithGoogle: () => ReturnType<typeof signInWithGoogle>;
 	signOut: () => Promise<void>;
 };
 
@@ -39,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		loading,
 		signIn: signInWithPassword,
 		signUp: signUpWithPassword,
+		signInWithGoogle,
 		signOut: signOutService,
 	};
 

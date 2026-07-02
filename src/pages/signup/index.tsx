@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthLayout } from '@/components/auth/AuthLayout';
+import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -80,11 +81,21 @@ export default function SignupPage() {
 
 					{serverError && <p className="text-sm text-destructive">{serverError}</p>}
 
-					<Button type="submit" variant="gradient" size="xl" className="mt-2 w-full" disabled={form.formState.isSubmitting}>
+					<Button
+						type="submit"
+						variant="gradient"
+						size="xl"
+						className="mt-2 w-full"
+						disabled={form.formState.isSubmitting}
+					>
 						{form.formState.isSubmitting ? 'Creating account...' : 'Sign up'}
 					</Button>
 				</form>
 			</Form>
+
+			<div className="mt-6">
+				<GoogleSignInButton />
+			</div>
 
 			<p className="mt-6 text-center text-sm text-muted-foreground">
 				Already have an account?{' '}
