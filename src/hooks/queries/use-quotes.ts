@@ -1,7 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { quoteKeys } from '@/lib/query-keys';
-import { createQuote, getQuote, getQuotesByCustomer } from '@/services/quotes';
+import { createQuote, getQuote, getQuotes, getQuotesByCustomer, type QuoteStatusFilter } from '@/services/quotes';
 import type { TablesInsert } from '@/types/supabase';
+
+export function useQuotes(filter: { status: QuoteStatusFilter; search?: string }) {
+	return useQuery({
+		queryKey: quoteKeys.byFilter(filter),
+		queryFn: () => getQuotes(filter),
+	});
+}
 
 export function useQuotesByCustomer(customerId: string | undefined) {
 	return useQuery({

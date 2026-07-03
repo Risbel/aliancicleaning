@@ -24,7 +24,7 @@ export default function HeroSection() {
 				id="home"
 				className="relative min-h-dvh overflow-x-hidden"
 				style={{
-					background: 'linear-gradient(135deg, #156390 0%, #54a8d0 55%, #cbe0ea 100%)',
+					background: 'linear-gradient(135deg, #08679e 0%, #2290c3 55%, #e4f1f7 100%)',
 				}}
 			>
 				{/* Floating background bubbles */}
@@ -111,7 +111,7 @@ export default function HeroSection() {
 							<GradientText
 								colors={['#ffffff', '#cde2d7', '#5bb286', '#cde2d7', '#ffffff']}
 								animationSpeed={4}
-								className="mx-0! max-w-none! justify-start! rounded-none! text-left text-[2.8rem] leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-5xl xl:text-[3.75rem] 2xl:text-[4.5rem] font-bold"
+								className="mx-0! max-w-none! justify-start! rounded-none! text-left text-[2.8rem] leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl 2xl:text-[4.5rem] font-extrabold"
 							>
 								YOUR HOME IN
 								<br />

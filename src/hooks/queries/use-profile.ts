@@ -1,7 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { profileKeys } from '@/lib/query-keys';
-import { getCustomerProfile, updateCustomerProfile, upsertCustomerProfile } from '@/services/profiles';
+import { getCustomerProfile, getStaffProfile, updateCustomerProfile, upsertCustomerProfile } from '@/services/profiles';
 import type { TablesInsert, TablesUpdate } from '@/types/supabase';
+
+export function useStaffProfile(userId: string | undefined) {
+	return useQuery({
+		queryKey: profileKeys.staff(userId ?? ''),
+		queryFn: () => getStaffProfile(userId!),
+		enabled: !!userId,
+	});
+}
 
 export function useCustomerProfile(userId: string | undefined) {
 	return useQuery({

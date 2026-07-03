@@ -34,12 +34,7 @@ export async function updateCustomerProfile(
 	userId: string,
 	updates: TablesUpdate<'customer_profiles'>,
 ): Promise<Tables<'customer_profiles'>> {
-	const { data, error } = await supabase
-		.from('customer_profiles')
-		.update(updates)
-		.eq('id', userId)
-		.select()
-		.single();
+	const { data, error } = await supabase.from('customer_profiles').update(updates).eq('id', userId).select().single();
 
 	if (error) throw error;
 	return data;

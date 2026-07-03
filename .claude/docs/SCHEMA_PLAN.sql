@@ -340,6 +340,14 @@ returns boolean as $$
   );
 $$ language sql stable security definer;
 
+create or replace function public.is_admin()
+returns boolean as $$
+  select exists (
+    select 1 from public.staff_profiles sp
+    where sp.id = auth.uid() and sp.role = 'admin'
+  );
+$$ language sql stable security definer;
+
 -- ---- cleaning_plans RLS ----------------------------------------------
 create policy "Public can view active plans"
 on public.cleaning_plans for select
@@ -406,18 +414,8 @@ using (id = auth.uid() or public.is_staff());
 
 create policy "Admins manage staff profiles"
 on public.staff_profiles for all
-using (
-  exists (
-    select 1 from public.staff_profiles sp
-    where sp.id = auth.uid() and sp.role = 'admin'
-  )
-)
-with check (
-  exists (
-    select 1 from public.staff_profiles sp
-    where sp.id = auth.uid() and sp.role = 'admin'
-  )
-);
+using (public.is_admin())
+with check (public.is_admin());
 
 -- ---- customer_profiles RLS ------------------------------------------
 create policy "Customers can view own profile"
@@ -427,6 +425,12 @@ using (id = auth.uid() or public.is_staff());
 create policy "Customers can update own profile"
 on public.customer_profiles for update
 using (id = auth.uid())
+with check (id = auth.uid());
+
+create policy "Customers can insert own profile"
+on public.customer_profiles
+for insert
+to public
 with check (id = auth.uid());
 
 -- =====================================================================

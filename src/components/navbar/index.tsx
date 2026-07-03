@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/auth/use-auth';
 import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
+import { useCustomerProfile } from '@/hooks/queries/use-profile';
 
 const navLinks = [
 	{ label: 'Home', href: '#home' },
@@ -29,6 +30,7 @@ function initialsFromEmail(email?: string | null) {
 function UserMenu() {
 	const { user, signOut } = useAuth();
 	const navigate = useNavigate();
+	const { data: customerProfile } = useCustomerProfile(user?.id);
 
 	if (!user) {
 		return (
@@ -57,6 +59,11 @@ function UserMenu() {
 					<span className="truncate text-sm font-medium text-foreground">{user.email}</span>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
+				{customerProfile && (
+					<DropdownMenuItem asChild>
+						<Link to="/dashboard/quotes">My Quotes</Link>
+					</DropdownMenuItem>
+				)}
 				<DropdownMenuItem variant="destructive" onClick={handleSignOut}>
 					Sign out
 				</DropdownMenuItem>

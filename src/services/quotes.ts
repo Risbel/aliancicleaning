@@ -1,5 +1,29 @@
 import { supabase } from '@/lib/supabase/client';
-import type { Tables, TablesInsert, TablesUpdate } from '@/types/supabase';
+import type { Database, Tables, TablesInsert, TablesUpdate } from '@/types/supabase';
+
+export type QuoteStatusFilter = 'all' | 'expired' | Database['public']['Enums']['quote_status'];
+
+export async function getQuotes(filter: { status: QuoteStatusFilter; search?: string }): Promise<Tables<'quotes'>[]> {
+	let query = supabase.from('quotes').select('*').order('created_at', { ascending: false });
+	const now = new Date().toISOString();
+
+	if (filter.status === 'pending') {
+		query = query.eq('status', 'pending').gte('desired_visit_date', now);
+	} else if (filter.status === 'expired') {
+		query = query.eq('status', 'pending').lt('desired_visit_date', now);
+	} else if (filter.status !== 'all') {
+		query = query.eq('status', filter.status);
+	}
+
+	if (filter.search) {
+		const term = filter.search.replace(/[,%]/g, '');
+		if (term) query = query.or(`customer_name.ilike.%${term}%,customer_email.ilike.%${term}%`);
+	}
+
+	const { data, error } = await query;
+	if (error) throw error;
+	return data;
+}
 
 export async function getQuotesByCustomer(customerId: string): Promise<Tables<'quotes'>[]> {
 	const { data, error } = await supabase

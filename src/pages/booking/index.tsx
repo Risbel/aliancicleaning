@@ -72,6 +72,10 @@ export default function BookingPage() {
 		if (user?.email && !profile) form.setValue('email', user.email);
 	}, [user, profile, form]);
 
+	useEffect(() => {
+		if (defaultPlan) form.setValue('planId', defaultPlan.id);
+	}, [defaultPlan, form]);
+
 	const values = form.watch();
 	const selectedPlan = plans?.find((plan) => plan.id === values.planId);
 	const estimatedPrice = selectedPlan

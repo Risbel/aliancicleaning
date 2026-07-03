@@ -7,6 +7,7 @@ export const quoteKeys = {
 	all: ['quotes'] as const,
 	lists: () => [...quoteKeys.all, 'list'] as const,
 	listByCustomer: (customerId: string) => [...quoteKeys.lists(), { customerId }] as const,
+	byFilter: (filter: { status: string; search?: string }) => [...quoteKeys.lists(), 'staff', filter] as const,
 	detail: (id: string) => [...quoteKeys.all, 'detail', id] as const,
 };
 
