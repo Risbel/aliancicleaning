@@ -3,6 +3,7 @@ import HeroSection from '@/components/hero/HeroSection';
 import CapabilitiesSection from '@/components/why-us';
 import AboutSection from '@/components/about/AboutSection';
 import ServicesSection from '@/components/services';
+import ReviewsSection from '@/components/reviews';
 import Footer from '@/components/footer';
 
 export default function LandingPage() {
@@ -14,6 +15,7 @@ export default function LandingPage() {
 				<AboutSection />
 				<CapabilitiesSection />
 				<ServicesSection />
+				<ReviewsSection />
 			</main>
 			<Footer />
 		</>

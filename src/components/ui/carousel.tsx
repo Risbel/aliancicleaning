@@ -166,7 +166,7 @@ function CarouselPrevious({
 			variant={variant}
 			size={size}
 			className={cn(
-				'absolute touch-manipulation rounded-full',
+				'absolute touch-manipulation rounded-full cursor-pointer',
 				orientation === 'horizontal'
 					? 'top-1/2 -left-12 -translate-y-1/2'
 					: '-top-12 left-1/2 -translate-x-1/2 rotate-90',
@@ -179,6 +179,64 @@ function CarouselPrevious({
 			<HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
 			<span className="sr-only">Previous slide</span>
 		</Button>
+	);
+}
+
+function useCarouselSelectedIndex(api: CarouselApi) {
+	const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+	React.useEffect(() => {
+		if (!api) return;
+
+		const onSelect = () => setSelectedIndex(api.selectedScrollSnap());
+		onSelect();
+
+		api.on('reInit', onSelect);
+		api.on('select', onSelect);
+
+		return () => {
+			api.off('reInit', onSelect);
+			api.off('select', onSelect);
+		};
+	}, [api]);
+
+	return selectedIndex;
+}
+
+function CarouselDots({ className, ...props }: React.ComponentProps<'div'>) {
+	const { api } = useCarousel();
+	const selectedIndex = useCarouselSelectedIndex(api);
+	const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([]);
+
+	React.useEffect(() => {
+		if (!api) return;
+
+		const onInit = () => setScrollSnaps(api.scrollSnapList());
+		onInit();
+
+		api.on('reInit', onInit);
+
+		return () => {
+			api.off('reInit', onInit);
+		};
+	}, [api]);
+
+	return (
+		<div className={cn('flex items-center justify-center gap-2', className)} data-slot="carousel-dots" {...props}>
+			{scrollSnaps.map((_, index) => (
+				<button
+					key={index}
+					type="button"
+					onClick={() => api?.scrollTo(index)}
+					aria-label={`Go to slide ${index + 1}`}
+					data-slot="carousel-dot"
+					className={cn(
+						'h-2 rounded-full transition-all duration-100',
+						index === selectedIndex ? 'w-6 bg-baltic-blue' : 'w-2 bg-baltic-blue/25 hover:bg-baltic-blue/40',
+					)}
+				/>
+			))}
+		</div>
 	);
 }
 
@@ -196,7 +254,7 @@ function CarouselNext({
 			variant={variant}
 			size={size}
 			className={cn(
-				'absolute touch-manipulation rounded-full',
+				'absolute touch-manipulation rounded-full cursor-pointer',
 				orientation === 'horizontal'
 					? 'top-1/2 -right-12 -translate-y-1/2'
 					: '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
@@ -212,4 +270,14 @@ function CarouselNext({
 	);
 }
 
-export { type CarouselApi, Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, useCarousel };
+export {
+	type CarouselApi,
+	Carousel,
+	CarouselContent,
+	CarouselItem,
+	CarouselPrevious,
+	CarouselNext,
+	CarouselDots,
+	useCarousel,
+	useCarouselSelectedIndex,
+};

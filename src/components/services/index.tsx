@@ -4,7 +4,7 @@ import ServiceCard from './ServiceCard';
 
 export default function ServicesSection() {
 	return (
-		<section id="services" className="relative overflow-hidden bg-white-smoke px-6 pt-24 pb-40 lg:px-12 xl:px-16">
+		<section id="services" className="relative overflow-hidden bg-white-smoke px-6 pt-24 pb-24 lg:px-12 xl:px-16">
 			<FloatingBubble size={140} color="#54a1ced2" opacity={1} top="25px" left="-60px" animationDuration="8s" />
 			<FloatingBubble
 				size={120}
