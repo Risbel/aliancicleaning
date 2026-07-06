@@ -3,8 +3,16 @@ import type { Database, Tables, TablesInsert, TablesUpdate } from '@/types/supab
 
 export type QuoteStatusFilter = 'all' | 'expired' | Database['public']['Enums']['quote_status'];
 
-export async function getQuotes(filter: { status: QuoteStatusFilter; search?: string }): Promise<Tables<'quotes'>[]> {
-	let query = supabase.from('quotes').select('*').order('created_at', { ascending: false });
+export type QuoteWithPlan = Tables<'quotes'> & {
+	cleaning_plans: Pick<Tables<'cleaning_plans'>, 'name'> | null;
+};
+
+export async function getQuotes(filter: {
+	status: QuoteStatusFilter;
+	search?: string;
+	assignedTo?: string;
+}): Promise<QuoteWithPlan[]> {
+	let query = supabase.from('quotes').select('*, cleaning_plans(name)').order('created_at', { ascending: false });
 	const now = new Date().toISOString();
 
 	if (filter.status === 'pending') {
@@ -14,6 +22,8 @@ export async function getQuotes(filter: { status: QuoteStatusFilter; search?: st
 	} else if (filter.status !== 'all') {
 		query = query.eq('status', filter.status);
 	}
+
+	if (filter.assignedTo) query = query.eq('assigned_to', filter.assignedTo);
 
 	if (filter.search) {
 		const term = filter.search.replace(/[,%]/g, '');
@@ -55,4 +65,24 @@ export async function updateQuote(id: string, updates: TablesUpdate<'quotes'>): 
 
 	if (error) throw error;
 	return data;
+}
+
+export async function deleteQuote(id: string): Promise<void> {
+	const { error } = await supabase.from('quotes').delete().eq('id', id);
+
+	if (error) throw error;
+}
+
+export async function getQuoteByConfirmationToken(token: string): Promise<Tables<'quotes'> | null> {
+	const { data, error } = await supabase.rpc('get_quote_by_confirmation_token', { p_token: token });
+
+	if (error) throw error;
+	return data?.[0] ?? null;
+}
+
+export async function acceptQuoteByConfirmationToken(token: string): Promise<Tables<'quotes'> | null> {
+	const { data, error } = await supabase.rpc('accept_quote_by_confirmation_token', { p_token: token });
+
+	if (error) throw error;
+	return data?.[0] ?? null;
 }

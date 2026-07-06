@@ -95,8 +95,17 @@ Quote requests submitted through the public booking form.
 | `status`             | `quote_status` | NOT NULL, DEFAULT `'pending'`       |
 | `admin_notes`        | `text`         |                                     |
 | `assigned_to`        | `uuid`         | FK → `staff_profiles(id)`           |
+| `confirmation_token` | `uuid`         | UNIQUE, set when status becomes `accepted` |
 | `created_at`         | `timestamptz`  | NOT NULL, DEFAULT `now()`           |
 | `updated_at`         | `timestamptz`  | NOT NULL, DEFAULT `now()`           |
+
+---
+
+## Functions
+
+### `public.get_quote_by_confirmation_token(p_token uuid)`
+
+`SECURITY DEFINER`, returns `setof quotes` matching `confirmation_token = p_token`. The only public read path for a quote — used by the `/confirmation/:token` page so an unauthenticated client can view their accepted quote without a broad RLS policy exposing all quotes. Granted to `anon` and `authenticated`.
 
 ---
 

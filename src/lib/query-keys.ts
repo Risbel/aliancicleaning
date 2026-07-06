@@ -9,10 +9,12 @@ export const quoteKeys = {
 	listByCustomer: (customerId: string) => [...quoteKeys.lists(), { customerId }] as const,
 	byFilter: (filter: { status: string; search?: string }) => [...quoteKeys.lists(), 'staff', filter] as const,
 	detail: (id: string) => [...quoteKeys.all, 'detail', id] as const,
+	byConfirmationToken: (token: string) => [...quoteKeys.all, 'confirmation', token] as const,
 };
 
 export const profileKeys = {
 	all: ['profiles'] as const,
 	customer: (userId: string) => [...profileKeys.all, 'customer', userId] as const,
 	staff: (userId: string) => [...profileKeys.all, 'staff', userId] as const,
+	staffList: () => [...profileKeys.all, 'staff-list'] as const,
 };

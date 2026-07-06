@@ -15,6 +15,16 @@ export const TIME_SLOT_HOURS: Record<TimePreference, number[]> = {
 	evening: [18, 19, 20],
 };
 
+export const TIME_PREFERENCE_LABELS: Record<TimePreference, string> = {
+	morning: 'Morning',
+	afternoon: 'Afternoon',
+	evening: 'Evening',
+};
+
+export function getTimePreferenceForHour(hour: number): TimePreference {
+	return TIME_PREFERENCES.find((preference) => TIME_SLOT_HOURS[preference].includes(hour)) ?? 'morning';
+}
+
 export const bookingSchema = z.object({
 	planId: z.string().min(1, 'Select a cleaning plan'),
 	bedrooms: z.coerce.number().int('Must be a whole number').min(0, 'Must be 0 or more'),

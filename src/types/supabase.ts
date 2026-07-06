@@ -125,6 +125,7 @@ export type Database = {
 					bathrooms: number;
 					bedrooms: number;
 					city: string | null;
+					confirmation_token: string | null;
 					created_at: string;
 					customer_email: string;
 					customer_id: string | null;
@@ -150,6 +151,7 @@ export type Database = {
 					bathrooms: number;
 					bedrooms: number;
 					city?: string | null;
+					confirmation_token?: string | null;
 					created_at?: string;
 					customer_email: string;
 					customer_id?: string | null;
@@ -175,6 +177,7 @@ export type Database = {
 					bathrooms?: number;
 					bedrooms?: number;
 					city?: string | null;
+					confirmation_token?: string | null;
 					created_at?: string;
 					customer_email?: string;
 					customer_id?: string | null;
@@ -243,6 +246,77 @@ export type Database = {
 			[_ in never]: never;
 		};
 		Functions: {
+			get_quote_by_confirmation_token: {
+				Args: { p_token: string };
+				Returns: {
+					address_line: string;
+					admin_notes: string | null;
+					assigned_to: string | null;
+					bathrooms: number;
+					bedrooms: number;
+					city: string | null;
+					confirmation_token: string | null;
+					created_at: string;
+					customer_email: string;
+					customer_id: string | null;
+					customer_name: string;
+					customer_note: string | null;
+					customer_phone: string;
+					desired_visit_date: string;
+					estimated_price: number | null;
+					final_price: number | null;
+					has_pets: boolean;
+					id: string;
+					plan_id: string;
+					square_footage: number;
+					state: string | null;
+					status: Database['public']['Enums']['quote_status'];
+					updated_at: string;
+					zip_code: string | null;
+				}[];
+				SetofOptions: {
+					from: '*';
+					to: 'quotes';
+					isOneToOne: false;
+					isSetofReturn: true;
+				};
+			};
+			accept_quote_by_confirmation_token: {
+				Args: { p_token: string };
+				Returns: {
+					address_line: string;
+					admin_notes: string | null;
+					assigned_to: string | null;
+					bathrooms: number;
+					bedrooms: number;
+					city: string | null;
+					confirmation_token: string | null;
+					created_at: string;
+					customer_email: string;
+					customer_id: string | null;
+					customer_name: string;
+					customer_note: string | null;
+					customer_phone: string;
+					desired_visit_date: string;
+					estimated_price: number | null;
+					final_price: number | null;
+					has_pets: boolean;
+					id: string;
+					plan_id: string;
+					square_footage: number;
+					state: string | null;
+					status: Database['public']['Enums']['quote_status'];
+					updated_at: string;
+					zip_code: string | null;
+				}[];
+				SetofOptions: {
+					from: '*';
+					to: 'quotes';
+					isOneToOne: false;
+					isSetofReturn: true;
+				};
+			};
+			is_admin: { Args: never; Returns: boolean };
 			is_staff: { Args: never; Returns: boolean };
 		};
 		Enums: {

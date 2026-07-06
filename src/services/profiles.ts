@@ -46,3 +46,10 @@ export async function getStaffProfile(userId: string): Promise<Tables<'staff_pro
 	if (error) throw error;
 	return data;
 }
+
+export async function getStaffProfiles(): Promise<Tables<'staff_profiles'>[]> {
+	const { data, error } = await supabase.from('staff_profiles').select('*').order('full_name');
+
+	if (error) throw error;
+	return data;
+}

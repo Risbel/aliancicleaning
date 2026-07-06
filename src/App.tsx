@@ -6,6 +6,7 @@ import LoginPage from '@/pages/login';
 import SignupPage from '@/pages/signup';
 import BookingPage from '@/pages/booking';
 import DashboardQuotesPage from '@/pages/dashboard/quotes';
+import ConfirmationPage from '@/pages/confirmation';
 
 export default function App() {
 	return (
@@ -29,6 +30,7 @@ export default function App() {
 					</RequireStaff>
 				}
 			/>
+			<Route path="/confirmation/:token" element={<ConfirmationPage />} />
 		</Routes>
 	);
 }

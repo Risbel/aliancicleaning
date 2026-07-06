@@ -51,7 +51,7 @@ export function ContactReviewStep({ form, plan, estimatedPrice }: ContactReviewS
 					<FormItem>
 						<FormLabel>Phone</FormLabel>
 						<FormControl>
-							<Input type="tel" autoComplete="tel" placeholder="(555) 123-4567" {...field} />
+							<Input type="tel" autoComplete="tel" prefix="+1" placeholder="(555) 123-4567" {...field} />
 						</FormControl>
 						<FormMessage />
 					</FormItem>

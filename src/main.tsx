@@ -8,6 +8,7 @@ import './index.css'
 import App from './App.tsx'
 import { queryClient } from './lib/query-client'
 import { AuthProvider } from './contexts/auth-context'
+import { Toaster } from '@/components/ui/sonner'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -18,6 +19,7 @@ createRoot(document.getElementById('root')!).render(
         </BrowserRouter>
       </AuthProvider>
       <ReactQueryDevtools initialIsOpen={false} />
+      <Toaster />
     </QueryClientProvider>
   </StrictMode>,
 )

@@ -128,7 +128,7 @@ export default function HeroSection() {
 								Request a Quote
 							</Button>
 
-							<Button size="xxxl" asChild variant="outline">
+							<Button size="xxxl" asChild variant="outline" className="text-white/80 hover:text-white">
 								<a href="#services">See Our Services</a>
 							</Button>
 						</div>
