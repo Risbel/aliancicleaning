@@ -1,21 +1,32 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useDebouncedCallback } from 'use-debounce';
+import { format } from 'date-fns';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
+	ArrowUpDownIcon,
+	ChevronDownIcon,
 	ChevronLeftIcon,
 	InformationCircleIcon,
-	ListChecks,
 	LoaderCircle,
 	MoreHorizontalIcon,
 	Pen,
 	RadioButtonFreeIcons,
-	RadioButtonIcon,
-	RefreshCw,
 	Send,
 	Trash,
 	UserCheck,
 } from '@hugeicons/core-free-icons';
+import {
+	flexRender,
+	getCoreRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
+	useReactTable,
+	type Column,
+	type ColumnDef,
+	type SortingState,
+	type VisibilityState,
+} from '@tanstack/react-table';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -40,6 +51,7 @@ import {
 } from '@/components/ui/dialog';
 import {
 	DropdownMenu,
+	DropdownMenuCheckboxItem,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuSeparator,
@@ -55,7 +67,7 @@ import { useStaffProfile } from '@/hooks/queries/use-profile';
 import { useDeleteQuote, useQuotes, useUpdateQuote } from '@/hooks/queries/use-quotes';
 import { cn } from '@/lib/utils';
 import { QUOTE_FILTER_TAGS, QUOTE_STATUS_BADGE_VARIANT, type QuoteStatus } from '@/lib/quote-status';
-import type { QuoteStatusFilter } from '@/services/quotes';
+import type { QuoteStatusFilter, QuoteWithPlan } from '@/services/quotes';
 import type { Tables, TablesUpdate } from '@/types/supabase';
 import { buttonVariants } from '@/components/ui/button-variants';
 
@@ -64,12 +76,38 @@ function displayStatus(quote: Tables<'quotes'>): QuoteStatusFilter {
 	return quote.status;
 }
 
+function SortableHeader({ column, label }: { column: Column<QuoteWithPlan, unknown>; label: string }) {
+	return (
+		<Button
+			variant="ghost"
+			size="sm"
+			className="-ml-3 h-8"
+			onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+		>
+			{label}
+			<HugeiconsIcon icon={ArrowUpDownIcon} className="size-4" />
+		</Button>
+	);
+}
+
 export default function DashboardQuotesPage() {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const status = (searchParams.get('status') as QuoteStatusFilter) || 'pending';
 	const search = searchParams.get('q') ?? '';
 
 	const [searchInput, setSearchInput] = useState(search);
+	const [sorting, setSorting] = useState<SortingState>([]);
+	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+		customer_name: true,
+		customer_email: true,
+		customer_phone: false,
+		plan: false,
+		desired_visit_date: true,
+		estimated_price: false,
+		final_price: true,
+		status: true,
+		created_at: false,
+	});
 
 	const { user } = useAuth();
 	const { data: staffProfile } = useStaffProfile(user?.id);
@@ -159,6 +197,135 @@ export default function DashboardQuotesPage() {
 		debouncedSetSearch(value);
 	}
 
+	const columns = useMemo<ColumnDef<QuoteWithPlan>[]>(
+		() => [
+			{
+				accessorKey: 'customer_name',
+				header: ({ column }) => <SortableHeader column={column} label="Customer" />,
+			},
+			{
+				accessorKey: 'customer_email',
+				header: 'Email',
+			},
+			{
+				accessorKey: 'customer_phone',
+				header: 'Phone',
+			},
+			{
+				id: 'plan',
+				accessorFn: (quote) => quote.cleaning_plans?.name ?? '-',
+				header: 'Plan',
+			},
+			{
+				accessorKey: 'desired_visit_date',
+				header: ({ column }) => <SortableHeader column={column} label="Desired visit" />,
+				sortingFn: 'datetime',
+				cell: ({ getValue }) => format(new Date(getValue<string>()), 'M/d/yyyy h:mm a'),
+			},
+			{
+				accessorKey: 'estimated_price',
+				header: 'Estimated price',
+				cell: ({ getValue }) => {
+					const value = getValue<number | null>();
+					return value != null ? `$${value.toFixed(2)}` : '-';
+				},
+			},
+			{
+				accessorKey: 'final_price',
+				header: ({ column }) => <SortableHeader column={column} label="Final price" />,
+				cell: ({ getValue }) => {
+					const value = getValue<number | null>();
+					return value != null ? `$${value.toFixed(2)}` : '-';
+				},
+			},
+			{
+				accessorKey: 'status',
+				header: 'Status',
+				cell: ({ row }) => {
+					const quote = row.original;
+					return (
+						<div className="flex items-center gap-2">
+							<Badge variant={QUOTE_STATUS_BADGE_VARIANT[displayStatus(quote)]}>{displayStatus(quote)}</Badge>
+							{updateQuote.isPending && updateQuote.variables?.id === quote.id && (
+								<HugeiconsIcon icon={LoaderCircle} className="size-4 animate-spin" />
+							)}
+						</div>
+					);
+				},
+			},
+			{
+				accessorKey: 'created_at',
+				header: ({ column }) => <SortableHeader column={column} label="Created" />,
+				sortingFn: 'datetime',
+				cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString(),
+			},
+			{
+				id: 'actions',
+				enableHiding: false,
+				header: () => <div className="text-right">Actions</div>,
+				cell: ({ row }) => {
+					const quote = row.original;
+					return (
+						<div className="text-right">
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button variant="ghost" size="icon-sm">
+										<HugeiconsIcon icon={MoreHorizontalIcon} className="size-4" />
+										<span className="sr-only">Open menu</span>
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end">
+									<DropdownMenuItem className="justify-between" onClick={() => setEditingQuote(quote)}>
+										Edit <HugeiconsIcon icon={Pen} className="size-4" />
+									</DropdownMenuItem>
+									<DropdownMenuItem className="justify-between" onClick={() => setChangingStatusQuote(quote)}>
+										Change status <HugeiconsIcon icon={RadioButtonFreeIcons} className="size-4" />
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										disabled={quote.final_price == null || quote.status === 'accepted'}
+										onClick={() => {
+											setConfirmationQuote(quote);
+											setConfirmationSent(false);
+										}}
+										className="justify-between"
+									>
+										Send confirmation <HugeiconsIcon icon={Send} className="size-4" />
+									</DropdownMenuItem>
+									{isAdmin && (
+										<DropdownMenuItem className="justify-between" onClick={() => setAssigningQuote(quote)}>
+											Assign <HugeiconsIcon icon={UserCheck} className="size-4" />
+										</DropdownMenuItem>
+									)}
+									<DropdownMenuSeparator />
+									<DropdownMenuItem
+										className="justify-between"
+										variant="destructive"
+										onClick={() => setDeletingQuote(quote)}
+									>
+										Delete <HugeiconsIcon icon={Trash} className="size-4" />
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</div>
+					);
+				},
+			},
+		],
+		[isAdmin, updateQuote.isPending, updateQuote.variables],
+	);
+
+	const table = useReactTable({
+		data: quotes ?? [],
+		columns,
+		state: { sorting, columnVisibility },
+		onSortingChange: setSorting,
+		onColumnVisibilityChange: setColumnVisibility,
+		getCoreRowModel: getCoreRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
+		initialState: { pagination: { pageSize: 10 } },
+	});
+
 	return (
 		<div className="min-h-dvh bg-background px-6 py-10 lg:px-12">
 			<Link className={cn('mb-6 absolute top-2 left-2', buttonVariants({ variant: 'ghost', size: 'sm' }))} to="/">
@@ -181,12 +348,36 @@ export default function DashboardQuotesPage() {
 					))}
 				</div>
 
-				<Input
-					value={searchInput}
-					onChange={(event) => handleSearchChange(event.target.value)}
-					placeholder="Search by name or email"
-					className="mb-6 max-w-sm"
-				/>
+				<div className="mb-6 flex items-center gap-2">
+					<Input
+						value={searchInput}
+						onChange={(event) => handleSearchChange(event.target.value)}
+						placeholder="Search by name or email"
+						className="max-w-sm"
+					/>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="outline" className="ml-auto">
+								Columns <HugeiconsIcon icon={ChevronDownIcon} className="size-4" />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							{table
+								.getAllColumns()
+								.filter((column) => column.getCanHide())
+								.map((column) => (
+									<DropdownMenuCheckboxItem
+										key={column.id}
+										className="capitalize"
+										checked={column.getIsVisible()}
+										onCheckedChange={(value) => column.toggleVisibility(!!value)}
+									>
+										{column.id.replace(/_/g, ' ')}
+									</DropdownMenuCheckboxItem>
+								))}
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div>
 
 				<Alert className="mb-6" variant={'warning'}>
 					<HugeiconsIcon icon={InformationCircleIcon} />
@@ -205,89 +396,53 @@ export default function DashboardQuotesPage() {
 				)}
 
 				{!isLoading && !isError && quotes && quotes.length > 0 && (
-					<div className="rounded-lg border border-input">
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead>Customer</TableHead>
-									<TableHead>Email</TableHead>
-									<TableHead>Phone</TableHead>
-									<TableHead>Plan</TableHead>
-									<TableHead>Desired visit</TableHead>
-									<TableHead>Estimated price</TableHead>
-									<TableHead>Final price</TableHead>
-									<TableHead>Status</TableHead>
-									<TableHead>Created</TableHead>
-									<TableHead className="text-right">Actions</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{quotes.map((quote) => (
-									<TableRow key={quote.id}>
-										<TableCell>{quote.customer_name}</TableCell>
-										<TableCell>{quote.customer_email}</TableCell>
-										<TableCell>{quote.customer_phone}</TableCell>
-										<TableCell>{quote.cleaning_plans?.name ?? '-'}</TableCell>
-										<TableCell>{new Date(quote.desired_visit_date).toLocaleDateString()}</TableCell>
-										<TableCell>
-											{quote.estimated_price != null ? `$${quote.estimated_price.toFixed(2)}` : '-'}
-										</TableCell>
-										<TableCell>{quote.final_price != null ? `$${quote.final_price.toFixed(2)}` : '-'}</TableCell>
-										<TableCell>
-											<div className="flex items-center gap-2">
-												<Badge variant={QUOTE_STATUS_BADGE_VARIANT[displayStatus(quote)]}>{displayStatus(quote)}</Badge>
-												{updateQuote.isPending && updateQuote.variables?.id === quote.id && (
-													<HugeiconsIcon icon={LoaderCircle} className="size-4 animate-spin" />
-												)}
-											</div>
-										</TableCell>
-										<TableCell>{new Date(quote.created_at).toLocaleDateString()}</TableCell>
-										<TableCell className="text-right">
-											<DropdownMenu>
-												<DropdownMenuTrigger asChild>
-													<Button variant="ghost" size="icon-sm">
-														<HugeiconsIcon icon={MoreHorizontalIcon} className="size-4" />
-														<span className="sr-only">Open menu</span>
-													</Button>
-												</DropdownMenuTrigger>
-												<DropdownMenuContent align="end">
-													<DropdownMenuItem className="justify-between" onClick={() => setEditingQuote(quote)}>
-														Edit <HugeiconsIcon icon={Pen} className="size-4" />
-													</DropdownMenuItem>
-													<DropdownMenuItem className="justify-between" onClick={() => setChangingStatusQuote(quote)}>
-														Change status <HugeiconsIcon icon={RadioButtonFreeIcons} className="size-4" />
-													</DropdownMenuItem>
-													<DropdownMenuItem
-														disabled={quote.final_price == null || quote.status === 'accepted'}
-														onClick={() => {
-															setConfirmationQuote(quote);
-															setConfirmationSent(false);
-														}}
-														className="justify-between"
-													>
-														Send confirmation <HugeiconsIcon icon={Send} className="size-4" />
-													</DropdownMenuItem>
-													{isAdmin && (
-														<DropdownMenuItem className="justify-between" onClick={() => setAssigningQuote(quote)}>
-															Assign <HugeiconsIcon icon={UserCheck} className="size-4" />
-														</DropdownMenuItem>
-													)}
-													<DropdownMenuSeparator />
-													<DropdownMenuItem
-														className="justify-between"
-														variant="destructive"
-														onClick={() => setDeletingQuote(quote)}
-													>
-														Delete <HugeiconsIcon icon={Trash} className="size-4" />
-													</DropdownMenuItem>
-												</DropdownMenuContent>
-											</DropdownMenu>
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</div>
+					<>
+						<div className="rounded-lg border border-input">
+							<Table>
+								<TableHeader>
+									{table.getHeaderGroups().map((headerGroup) => (
+										<TableRow key={headerGroup.id}>
+											{headerGroup.headers.map((header) => (
+												<TableHead key={header.id}>
+													{header.isPlaceholder
+														? null
+														: flexRender(header.column.columnDef.header, header.getContext())}
+												</TableHead>
+											))}
+										</TableRow>
+									))}
+								</TableHeader>
+								<TableBody>
+									{table.getRowModel().rows.map((row) => (
+										<TableRow key={row.id}>
+											{row.getVisibleCells().map((cell) => (
+												<TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+											))}
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
+						</div>
+
+						<div className="mt-4 flex items-center justify-between">
+							<p className="text-sm text-muted-foreground">
+								Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+							</p>
+							<div className="flex gap-2">
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={() => table.previousPage()}
+									disabled={!table.getCanPreviousPage()}
+								>
+									Previous
+								</Button>
+								<Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+									Next
+								</Button>
+							</div>
+						</div>
+					</>
 				)}
 
 				{editingQuote && (
@@ -329,7 +484,7 @@ export default function DashboardQuotesPage() {
 								<div className="flex justify-between py-1">
 									<span className="text-muted-foreground">Desired visit</span>
 									<span className="font-medium text-foreground">
-										{new Date(confirmationQuote.desired_visit_date).toLocaleDateString()}
+										{format(new Date(confirmationQuote.desired_visit_date), 'M/d/yyyy h:mm a')}
 									</span>
 								</div>
 								<div className="flex justify-between py-1">
