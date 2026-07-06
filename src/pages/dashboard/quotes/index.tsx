@@ -349,7 +349,12 @@ export default function DashboardQuotesPage() {
 				</div>
 
 				<div className="mb-6 flex items-center gap-2">
+					<label htmlFor="quote-search" className="sr-only">
+						Search quotes
+					</label>
 					<Input
+						id="quote-search"
+						name="quote-search"
 						value={searchInput}
 						onChange={(event) => handleSearchChange(event.target.value)}
 						placeholder="Search by name or email"
@@ -513,7 +518,12 @@ export default function DashboardQuotesPage() {
 								<p className="text-sm text-muted-foreground">
 									Email sending isn't set up yet, so share this confirmation link with the client manually:
 								</p>
+								<label htmlFor="confirmation-link" className="sr-only">
+									Confirmation link
+								</label>
 								<Input
+									id="confirmation-link"
+									name="confirmation-link"
 									readOnly
 									value={
 										confirmationQuote
