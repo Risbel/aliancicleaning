@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import WaveDivider from '@/components/decorative/WaveDivider';
+import { AnimatedHeading, StaggerContainer, StaggerItem } from '@/components/motion/Reveal';
 import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
 import {
 	Carousel,
@@ -26,16 +27,16 @@ export default function AboutSection() {
 
 	React.useEffect(() => {
 		if (!api) return;
-		const timer = setInterval(() => api.scrollNext(), 3000);
+		const timer = setInterval(() => api.scrollNext(), 5000);
 		return () => clearInterval(timer);
 	}, [api]);
 
 	return (
 		<section id="about" className="relative bg-white-smoke pb-52 pt-16">
 			<div className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-16">
-				<div className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-16">
+				<StaggerContainer className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-16">
 					{/* Carousel — left on desktop, bottom on mobile */}
-					<div className="order-2 lg:order-1 lg:flex-1">
+					<StaggerItem variant="left" className="order-2 lg:order-1 lg:flex-1">
 						<Carousel className="rounded-3xl overflow-hidden shadow" setApi={setApi} opts={{ loop: true }}>
 							<CarouselContent>
 								{images.map(({ src, alt }) => (
@@ -48,55 +49,62 @@ export default function AboutSection() {
 							<CarouselPrevious className="left-3 translate-x-0 bg-white/20 backdrop-blur-sm border-white/30 hover:bg-white/35" />
 							<CarouselNext className="right-3 translate-x-0 bg-white/20 backdrop-blur-sm border-white/30 hover:bg-white/35" />
 						</Carousel>
-					</div>
+					</StaggerItem>
 
 					{/* Text — right on desktop, top on mobile */}
 					<div className="order-1 lg:order-2 lg:flex-1 flex flex-col justify-center">
-						<div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-mint-leaf/30 bg-mint-leaf/10 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-mint-leaf">
+						<StaggerItem
+							variant="right"
+							className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-mint-leaf/30 bg-mint-leaf/10 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-mint-leaf"
+						>
 							<span className="size-1.5 rounded-full bg-mint-leaf shadow-xs shadow-mint-leaf/60" />
 							ECO-FRIENDLY
-						</div>
+						</StaggerItem>
 
-						<h2 className="text-[2rem] font-bold leading-[1.1] tracking-tight text-[#1a2e3f] sm:text-[2.4rem] lg:text-[2.6rem] xl:text-[3rem]">
-							Eco-Conscious &<br />
-							Pet-Safe Care
-						</h2>
+						<AnimatedHeading
+							text="Eco-Conscious & Pet-Safe Care"
+							className="text-[2rem] font-bold leading-[1.1] tracking-tight text-[#1a2e3f] sm:text-[2.4rem] lg:text-[2.6rem] xl:text-[3rem]"
+						/>
 
-						<p className="mt-5 max-w-md text-base leading-relaxed text-[#1a2e3f]/70">
-							At Alianci Cleaning Services, we protect what matters most. As a proudly eco-friendly service, our ethical
-							commitment drives us to use biodegradable products that respect the environment and your pets' health,
-							creating a much healthier, cleaner, and fully sustainable home for you.
-						</p>
+						<StaggerItem variant="right">
+							<p className="mt-5 max-w-md text-base leading-relaxed text-[#1a2e3f]/70">
+								At Alianci Cleaning Services, we protect what matters most. As a proudly eco-friendly service, our
+								ethical commitment drives us to use biodegradable products that respect the environment and your pets'
+								health, creating a much healthier, cleaner, and fully sustainable home for you.
+							</p>
+						</StaggerItem>
 
 						<ul className="mt-7 flex flex-col gap-3">
 							{checks.map((label) => (
-								<li key={label} className="flex items-center gap-3 text-sm font-medium text-[#1a2e3f]">
-									<span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-mint-leaf/15">
-										<svg
-											className="size-3.5 text-mint-leaf"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor"
-											strokeWidth={2.5}
-										>
-											<path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-										</svg>
-									</span>
-									✓ {label}
+								<li key={label}>
+									<StaggerItem variant="right" className="flex items-center gap-3 text-sm font-medium text-[#1a2e3f]">
+										<span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-mint-leaf/15">
+											<svg
+												className="size-3.5 text-mint-leaf"
+												fill="none"
+												viewBox="0 0 24 24"
+												stroke="currentColor"
+												strokeWidth={2.5}
+											>
+												<path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+											</svg>
+										</span>
+										✓ {label}
+									</StaggerItem>
 								</li>
 							))}
 						</ul>
 
-						<div className="mt-6 flex items-center gap-4">
+						<StaggerItem variant="right" className="mt-6 flex items-center gap-4">
 							<Button variant="gradient" size="lg" className="rounded-4xl cursor-pointer" onClick={() => goToBooking()}>
 								Book Now !
 							</Button>
 							<Button variant="outline" size="lg" asChild className="rounded-4xl cursor-pointer text-black shadow">
 								<a href="#services">More info</a>
 							</Button>
-						</div>
+						</StaggerItem>
 					</div>
-				</div>
+				</StaggerContainer>
 			</div>
 			<WaveDivider fill="#ccfbf1" fillBack="#99f6e4" />
 		</section>

@@ -10,6 +10,7 @@ import {
 	useCarouselSelectedIndex,
 	type CarouselApi,
 } from '@/components/ui/carousel';
+import { AnimatedHeading, Reveal } from '@/components/motion/Reveal';
 
 type Review = {
 	src: string;
@@ -94,17 +95,18 @@ export default function ReviewsSection() {
 		<section id="reviews" className="relative bg-white-smoke pb-24">
 			<div className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-16">
 				<div className="flex flex-col items-center text-center">
-					<div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-baltic-blue/30 bg-baltic-blue/10 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-baltic-blue">
+					<Reveal className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-baltic-blue/30 bg-baltic-blue/10 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-baltic-blue">
 						<span className="size-1.5 rounded-full bg-baltic-blue shadow-xs shadow-baltic-blue/60" />
 						TESTIMONIALS
-					</div>
+					</Reveal>
 
-					<h2 className="text-[2rem] font-bold leading-[1.1] tracking-tight text-[#1a2e3f] sm:text-[2.4rem] lg:text-[2.6rem] xl:text-[3rem]">
-						What Our Clients Say
-					</h2>
+					<AnimatedHeading
+						text="What Our Clients Say"
+						className="text-[2rem] font-bold leading-[1.1] tracking-tight text-[#1a2e3f] sm:text-[2.4rem] lg:text-[2.6rem] xl:text-[3rem]"
+					/>
 				</div>
 
-				<div className="mt-10">
+				<Reveal delay={0.15} className="mt-10">
 					<Carousel setApi={setApi} opts={{ loop: true, align: 'center' }}>
 						<CarouselContent className="py-6">
 							{reviews.map((review, index) => (
@@ -150,7 +152,7 @@ export default function ReviewsSection() {
 
 						<CarouselDots className="mt-8" />
 					</Carousel>
-				</div>
+				</Reveal>
 			</div>
 		</section>
 	);

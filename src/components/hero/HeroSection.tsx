@@ -1,11 +1,14 @@
+import { motion, useReducedMotion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import GradientText from '@/components/ui/GradientText';
 import FloatingBubble from '@/components/decorative/FloatingBubble';
 import WaveDivider from '@/components/decorative/WaveDivider';
+import { StaggerContainer, StaggerItem } from '@/components/motion/Reveal';
 import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
 
 export default function HeroSection() {
 	const goToBooking = useGoToBooking();
+	const reduced = useReducedMotion();
 
 	return (
 		<>
@@ -101,13 +104,13 @@ export default function HeroSection() {
 				{/* Content grid */}
 				<div className="relative z-10 mx-auto flex min-h-dvh max-w-7xl flex-col items-center px-6 pb-24 pt-24 lg:flex-row lg:gap-12 lg:pb-40 lg:px-12 xl:px-16">
 					{/* Left: text */}
-					<div className="flex flex-1 flex-col justify-center">
-						<div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-white/80 backdrop-blur-sm">
+					<StaggerContainer onMount className="flex flex-1 flex-col justify-center">
+						<StaggerItem className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-white/80 backdrop-blur-sm">
 							<span className="size-1.5 rounded-full bg-mint-leaf shadow-xs shadow-mint-leaf/60" />
 							Austin's Premium Cleaning
-						</div>
+						</StaggerItem>
 
-						<div className="w-full">
+						<StaggerItem className="w-full">
 							<GradientText
 								colors={['#ffffff', '#cde2d7', '#5bb286', '#cde2d7', '#ffffff']}
 								animationSpeed={4}
@@ -117,13 +120,15 @@ export default function HeroSection() {
 								<br />
 								SAFE HANDS
 							</GradientText>
-						</div>
+						</StaggerItem>
 
-						<p className="mt-4 md:mt-6 max-w-md text-base leading-relaxed text-white/80 sm:text-lg">
-							Austin's detail-oriented cleaning experts using eco-friendly and pet-safe products for you.
-						</p>
+						<StaggerItem>
+							<p className="mt-4 md:mt-6 max-w-md text-base leading-relaxed text-white/80 sm:text-lg">
+								Austin's detail-oriented cleaning experts using eco-friendly and pet-safe products for you.
+							</p>
+						</StaggerItem>
 
-						<div className="mt-8 flex flex-col gap-3 sm:flex-row">
+						<StaggerItem className="mt-8 flex flex-col gap-3 sm:flex-row">
 							<Button size="xxxl" variant="gradient" onClick={() => goToBooking()}>
 								Request a Quote
 							</Button>
@@ -131,11 +136,16 @@ export default function HeroSection() {
 							<Button size="xxxl" asChild variant="outline" className="text-white/80 hover:text-white">
 								<a href="#services">See Our Services</a>
 							</Button>
-						</div>
+						</StaggerItem>
 
-						<div className="hidden mt-10 md:flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/80">
+						<StaggerContainer
+							onMount
+							staggerChildren={0.15}
+							delayChildren={0.7}
+							className="hidden mt-10 md:flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/80"
+						>
 							{['Eco-Friendly', 'Pet-Safe', 'Fully Insured'].map((tag) => (
-								<span key={tag} className="flex items-center gap-1.5">
+								<StaggerItem key={tag} className="flex items-center gap-1.5">
 									<svg
 										className="size-5 text-green-500"
 										fill="none"
@@ -150,13 +160,18 @@ export default function HeroSection() {
 										/>
 									</svg>
 									{tag}
-								</span>
+								</StaggerItem>
 							))}
-						</div>
-					</div>
+						</StaggerContainer>
+					</StaggerContainer>
 
 					{/* Right: logo circle */}
-					<div className="mt-12 flex shrink-0 items-center justify-center lg:mt-0 lg:w-105 xl:w-120">
+					<motion.div
+						initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.8 }}
+						animate={{ opacity: 1, scale: 1 }}
+						transition={{ type: 'spring', stiffness: 200, damping: 22, delay: 0.4 }}
+						className="mt-12 flex shrink-0 items-center justify-center lg:mt-0 lg:w-105 xl:w-120"
+					>
 						<div className="relative" style={{ animation: 'logo-float 5s ease-in-out infinite' }}>
 							{/* Outer glow ring */}
 							<div
@@ -205,7 +220,7 @@ export default function HeroSection() {
 							<div className="absolute -bottom-1 -left-3 size-3 rounded-full bg-fresh-sky shadow-md shadow-fresh-sky/50" />
 							<div className="absolute top-1/4 -left-4 size-2 rounded-full bg-white/70" />
 						</div>
-					</div>
+					</motion.div>
 				</div>
 
 				{/* Wave bottom divider */}

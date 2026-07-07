@@ -1,6 +1,7 @@
 import FloatingBubble from '@/components/decorative/FloatingBubble';
 import services from '@/data/services.json';
 import ServiceCard from './ServiceCard';
+import { AnimatedHeading, Reveal, StaggerContainer, StaggerItem } from '@/components/motion/Reveal';
 
 export default function ServicesSection() {
 	return (
@@ -56,26 +57,31 @@ export default function ServicesSection() {
 
 			<div className="relative z-10 mx-auto max-w-7xl">
 				<div className="mb-14 flex flex-col items-center text-center">
-					<div className="mb-5 inline-flex items-center gap-2 rounded-full border border-mint-leaf/25 bg-mint-leaf/8 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-mint-leaf">
+					<Reveal className="mb-5 inline-flex items-center gap-2 rounded-full border border-mint-leaf/25 bg-mint-leaf/8 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-mint-leaf">
 						<span className="size-1.5 rounded-full bg-mint-leaf shadow-sm shadow-mint-leaf/60" />
 						Cleaning Services
-					</div>
+					</Reveal>
 
-					<h2 className="max-w-2xl text-[2rem] font-bold leading-[1.1] tracking-tight text-[#1a2e3f] sm:text-[2.4rem] lg:text-[2.6rem] xl:text-[3rem]">
-						Choose the Cleaning Service That Fits Your Needs.
-					</h2>
+					<AnimatedHeading
+						text="Choose the Cleaning Service That Fits Your Needs."
+						className="max-w-2xl text-[2rem] font-bold leading-[1.1] tracking-tight text-[#1a2e3f] sm:text-[2.4rem] lg:text-[2.6rem] xl:text-[3rem]"
+					/>
 
-					<p className="mt-4 max-w-lg text-base leading-relaxed text-[#1a2e3f]/70">
-						We offer cleaning that is 100% safe for pets and the environment. Choose the ideal service to keep your home
-						shining responsibly.
-					</p>
+					<Reveal delay={0.2}>
+						<p className="mt-4 max-w-lg text-base leading-relaxed text-[#1a2e3f]/70">
+							We offer cleaning that is 100% safe for pets and the environment. Choose the ideal service to keep your home
+							shining responsibly.
+						</p>
+					</Reveal>
 				</div>
 
-				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:items-end lg:py-6">
+				<StaggerContainer className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:items-end lg:py-6">
 					{services.map((service) => (
-						<ServiceCard key={service.id} service={service} />
+						<StaggerItem key={service.id}>
+							<ServiceCard service={service} />
+						</StaggerItem>
 					))}
-				</div>
+				</StaggerContainer>
 			</div>
 		</section>
 	);
