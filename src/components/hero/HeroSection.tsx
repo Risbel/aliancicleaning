@@ -5,8 +5,6 @@ import FloatingBubble from '@/components/decorative/FloatingBubble';
 import WaveDivider from '@/components/decorative/WaveDivider';
 import { StaggerContainer, StaggerItem } from '@/components/motion/Reveal';
 import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { ArrowBigRight, ArrowBigRightDashIcon, ArrowMoveLeftDownIcon, ArrowRight } from '@hugeicons/core-free-icons';
 
 export default function HeroSection() {
 	const goToBooking = useGoToBooking();
