@@ -14,6 +14,8 @@ import {
 import { useAuth } from '@/hooks/auth/use-auth';
 import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
 import { useCustomerProfile } from '@/hooks/queries/use-profile';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ListChecks, LogOut } from '@hugeicons/core-free-icons';
 
 const navLinks = [
 	{ label: 'Home', href: '#home' },
@@ -55,18 +57,25 @@ function UserMenu() {
 					</Avatar>
 				</button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" className="w-56">
-				<DropdownMenuLabel className="flex flex-col gap-0.5">
-					<span className="truncate text-sm font-medium text-foreground">{user.email}</span>
+			<DropdownMenuContent align="end" className="w-56 rounded-lg">
+				<DropdownMenuLabel className="flex flex-col">
+					<span className="truncate text-sm font-medium text-foreground">{user.user_metadata?.name}</span>
+					<span>{user.email}</span>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				{customerProfile && (
-					<DropdownMenuItem asChild>
-						<Link to="/dashboard/quotes">My Quotes</Link>
+					<DropdownMenuItem asChild className="justify-between rounded-sm cursor-pointer">
+						<Link to="/dashboard/quotes">
+							My Quotes <HugeiconsIcon icon={ListChecks} />
+						</Link>
 					</DropdownMenuItem>
 				)}
-				<DropdownMenuItem variant="destructive" onClick={handleSignOut}>
-					Sign out
+				<DropdownMenuItem
+					variant="destructive"
+					className="justify-between rounded-sm cursor-pointer"
+					onClick={handleSignOut}
+				>
+					<span>Sign out</span> <HugeiconsIcon icon={LogOut} />
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
