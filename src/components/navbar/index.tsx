@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -50,6 +50,7 @@ function UserMenu() {
 			<DropdownMenuTrigger asChild>
 				<button type="button" className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-white/50">
 					<Avatar size="default">
+						{user.user_metadata?.picture && <AvatarImage src={user.user_metadata.picture} alt={user.email} />}
 						<AvatarFallback>{initialsFromEmail(user.email)}</AvatarFallback>
 					</Avatar>
 				</button>
