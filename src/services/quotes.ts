@@ -1,3 +1,4 @@
+import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase/client';
 import type { Database, Tables, TablesInsert, TablesUpdate } from '@/types/supabase';
 
@@ -71,6 +72,28 @@ export async function deleteQuote(id: string): Promise<void> {
 	const { error } = await supabase.from('quotes').delete().eq('id', id);
 
 	if (error) throw error;
+}
+
+export type SendQuoteConfirmationResult = {
+	quote: Tables<'quotes'>;
+	emailSent: boolean;
+	emailError?: string;
+};
+
+export async function sendQuoteConfirmation(quoteId: string): Promise<SendQuoteConfirmationResult> {
+	const { data, error } = await supabase.functions.invoke<SendQuoteConfirmationResult>('send-quote-confirmation', {
+		body: { quoteId },
+	});
+
+	if (error) {
+		if (error instanceof FunctionsHttpError) {
+			const body = await error.context.json().catch(() => null);
+			throw new Error(body?.error ?? error.message);
+		}
+		throw error;
+	}
+	if (!data) throw new Error('Empty response from send-quote-confirmation');
+	return data;
 }
 
 export async function getQuoteByConfirmationToken(token: string): Promise<Tables<'quotes'> | null> {

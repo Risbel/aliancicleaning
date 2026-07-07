@@ -13,8 +13,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { useUpdateQuote } from '@/hooks/queries/use-quotes';
-import type { Tables, TablesUpdate } from '@/types/supabase';
+import { useSendQuoteConfirmation } from '@/hooks/queries/use-quotes';
+import type { Tables } from '@/types/supabase';
 
 function isAlreadySent(quote: Tables<'quotes'>) {
 	return quote.status === 'quoted' || quote.status === 'accepted';
@@ -29,23 +29,24 @@ export function SendConfirmationDialog({
 }) {
 	const [sent, setSent] = useState(() => isAlreadySent(quote));
 	const [currentQuote, setCurrentQuote] = useState(quote);
-	const updateQuote = useUpdateQuote();
+	const [emailSent, setEmailSent] = useState<boolean | null>(null);
+	const sendConfirmation = useSendQuoteConfirmation();
 
 	async function handleSend() {
-		const updates: TablesUpdate<'quotes'> = {};
-		if (currentQuote.status === 'pending' || currentQuote.status === 'reviewed') updates.status = 'quoted';
-		if (!currentQuote.confirmation_token) updates.confirmation_token = crypto.randomUUID();
-
 		try {
-			const updated =
-				Object.keys(updates).length > 0
-					? await updateQuote.mutateAsync({ id: currentQuote.id, updates })
-					: currentQuote;
+			const result = await sendConfirmation.mutateAsync(currentQuote.id);
 
-			setCurrentQuote(updated);
+			setCurrentQuote(result.quote);
+			setEmailSent(result.emailSent);
 			setSent(true);
+
+			if (result.emailSent) {
+				toast.success(`Confirmation email sent to ${result.quote.customer_email}`);
+			} else {
+				toast.error(result.emailError ?? 'Email could not be sent. Share the link manually.');
+			}
 		} catch (error) {
-			toast.error(error instanceof Error ? error.message : 'Failed to prepare confirmation.');
+			toast.error(error instanceof Error ? error.message : 'Failed to send confirmation.');
 		}
 	}
 
@@ -87,7 +88,11 @@ export function SendConfirmationDialog({
 				{sent ? (
 					<>
 						<p className="text-sm text-muted-foreground">
-							Email sending isn't set up yet, so share this confirmation link with the client manually:
+							{emailSent === true &&
+								`Confirmation email sent to ${currentQuote.customer_email}. You can also share this link manually:`}
+							{emailSent === false &&
+								'The email could not be sent, so share this confirmation link with the client manually:'}
+							{emailSent === null && 'Share this confirmation link with the client:'}
 						</p>
 						<label htmlFor="confirmation-link" className="sr-only">
 							Confirmation link
@@ -110,8 +115,8 @@ export function SendConfirmationDialog({
 						<Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
 							Cancel
 						</Button>
-						<Button className="space-x-3" type="button" onClick={handleSend} disabled={updateQuote.isPending}>
-							{updateQuote.isPending ? 'Sending...' : 'Send'} <HugeiconsIcon icon={Send} className="size-4" />
+						<Button className="space-x-3" type="button" onClick={handleSend} disabled={sendConfirmation.isPending}>
+							{sendConfirmation.isPending ? 'Sending...' : 'Send'} <HugeiconsIcon icon={Send} className="size-4" />
 						</Button>
 					</DialogFooter>
 				)}

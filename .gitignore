@@ -32,3 +32,6 @@ dist-ssr
 *.sw?
 
 CLIENT_HANDOFF.md
+
+# Supabase CLI cache/metadata files. They're created locally when we run commands like supabase link or supabase functions deploy.
+supabase/.temp/

@@ -8,6 +8,7 @@ import {
 	getQuoteByConfirmationToken,
 	getQuotes,
 	getQuotesByCustomer,
+	sendQuoteConfirmation,
 	updateQuote,
 	type QuoteStatusFilter,
 } from '@/services/quotes';
@@ -74,6 +75,18 @@ export function useUpdateQuote() {
 		onSettled: (data) => {
 			queryClient.invalidateQueries({ queryKey: quoteKeys.lists() });
 			if (data) queryClient.invalidateQueries({ queryKey: quoteKeys.detail(data.id) });
+		},
+	});
+}
+
+export function useSendQuoteConfirmation() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (quoteId: string) => sendQuoteConfirmation(quoteId),
+		onSuccess: (data) => {
+			queryClient.invalidateQueries({ queryKey: quoteKeys.lists() });
+			queryClient.invalidateQueries({ queryKey: quoteKeys.detail(data.quote.id) });
 		},
 	});
 }

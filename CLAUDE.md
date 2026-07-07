@@ -14,6 +14,7 @@ This file is the primary context for Claude Code working on this project. Read i
 | `.claude/docs/BUSINESS_LOGIC.md` | Complete business rules, entities, routes, and flows |
 | `.claude/docs/STYLE_GUIDE.md` | Color palette, gradients, button variants, layout and component patterns |
 | `.claude/docs/PROJECT_STRUCTURE.md` | Folder layout, naming conventions, and where to add new files |
+| `.claude/docs/EMAIL_SENDING.md` | Quote confirmation email: Resend + edge function setup, secrets, go-live checklist |
 
 ---
 
