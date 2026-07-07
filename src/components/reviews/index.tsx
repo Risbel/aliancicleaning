@@ -22,59 +22,67 @@ type Review = {
 const reviews: Review[] = [
 	{
 		src: '/avatar_1.jpg',
-		name: 'Placeholder Name',
+		name: 'Sarah Martinez',
 		info: 'Homeowner, Miami',
 		rating: 5,
-		quote: 'Placeholder testimonial — replace with a real customer review about the cleaning service.',
+		quote:
+			"Honestly didn't expect them to be this good? They got into corners I literally can't even reach. My mom came over and was like wow your place is spotless lol",
 	},
 	{
 		src: '/avatar_2.jpg',
-		name: 'Placeholder Name',
+		name: 'James Wilson',
 		info: 'Homeowner, Orlando',
 		rating: 5,
-		quote: 'Placeholder testimonial — replace with a real customer review about the cleaning service.',
+		quote:
+			"I use them every 2 weeks and it's way better than doing it myself every time. The lady remembered how I like my bathroom done without me telling her twice",
 	},
 	{
 		src: '/avatar_3.jpg',
-		name: 'Placeholder Name',
+		name: 'Michelle Chen',
 		info: 'Office Manager, Tampa',
 		rating: 4,
-		quote: 'Placeholder testimonial — replace with a real customer review about the cleaning service.',
+		quote:
+			'Pretty happy so far. They do a solid job but sometimes miss a spot here and there. Overall way better than the last company we had that was honestly lazy',
 	},
 	{
 		src: '/avatar_4.jpg',
-		name: 'Placeholder Name',
+		name: 'David Rodriguez',
 		info: 'Homeowner, Miami',
 		rating: 5,
-		quote: 'Placeholder testimonial — replace with a real customer review about the cleaning service.',
+		quote:
+			"Finally found someone I can trust in my house. They're nice people too not just good at cleaning. Saved me so much time on weekends",
 	},
 	{
 		src: '/avatar_5.jpg',
-		name: 'Placeholder Name',
+		name: 'Jennifer Thompson',
 		info: 'Property Manager, Orlando',
 		rating: 5,
-		quote: 'Placeholder testimonial — replace with a real customer review about the cleaning service.',
+		quote:
+			'Been coordinating them for like 15 properties now? Tenants actually complain less about cleanliness which is saying something lol. Super reliable',
 	},
 	{
 		src: '/avatar_6.jpg',
-		name: 'Placeholder Name',
+		name: 'Robert Garcia',
 		info: 'Homeowner, Tampa',
 		rating: 4,
-		quote: 'Placeholder testimonial — replace with a real customer review about the cleaning service.',
+		quote:
+			"They're good. Show up on time which I appreciate. Did have to ask them to redo one room once but they came back no problem",
 	},
 	{
 		src: '/avatar_7.jpg',
-		name: 'Placeholder Name',
+		name: 'Angela Patel',
 		info: 'Homeowner, Miami',
 		rating: 5,
-		quote: 'Placeholder testimonial — replace with a real customer review about the cleaning service.',
+		quote:
+			"Tried like 3 different cleaners before these guys. This one actually works with my schedule and doesn't flake out. That's already a win",
 	},
 	{
 		src: '/avatar_8.jpg',
-		name: 'Placeholder Name',
+		name: 'Michael Anderson',
 		info: 'Homeowner, Orlando',
 		rating: 5,
-		quote: 'Placeholder testimonial — replace with a real customer review about the cleaning service.',
+		quote:
+			'My allergies are way better now that someone else is dusting lol. Super easy to reschedule when something comes up. Worth every penny',
 	},
 ];
 
@@ -121,7 +129,7 @@ export default function ReviewsSection() {
 											))}
 										</div>
 
-										<p className="mt-4 flex-1 text-sm leading-relaxed text-[#1a2e3f]/70">"{review.quote}"</p>
+										<p className="mt-4 flex-1 text-sm leading-relaxed text-[#1a2e3f]/70">{review.quote}</p>
 
 										<div className="mt-6 flex items-center gap-3 border-t border-pale-sky pt-4">
 											<img

@@ -66,9 +66,17 @@ export default function Footer() {
 
 				<hr className="mt-12 border-white/10" />
 
-				<p className="mt-6 text-xs text-[#e8edf0]/40">
-					© 2026 Alianci Cleaning Services. Todos los derechos reservados.
-				</p>
+				<div className="mt-6 flex flex-col gap-3">
+					<p className="text-xs text-[#e8edf0]/40">© 2026 Alianci Cleaning Services. Todos los derechos reservados.</p>
+					<div className="text-xs text-[#e8edf0]/50 flex gap-2">
+						<p className="mb-2">Dev contact:</p>
+						<div className="flex flex-col gap-1 sm:flex-row sm:gap-4">
+							<a href="mailto:risbel961019@gmail.com" className="hover:text-white transition-colors duration-200">
+								risbel961019@gmail.com
+							</a>
+						</div>
+					</div>
+				</div>
 			</div>
 		</footer>
 	);

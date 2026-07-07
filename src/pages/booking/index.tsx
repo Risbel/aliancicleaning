@@ -24,6 +24,7 @@ import {
 	type BookingValues,
 } from '@/lib/validation/booking-schema';
 import { cn } from '@/lib/utils';
+import FloatingContactButtons from '@/components/FloatingContactButtons';
 
 export default function BookingPage() {
 	const [searchParams] = useSearchParams();
@@ -137,6 +138,7 @@ export default function BookingPage() {
 
 	return (
 		<div className="relative">
+			<FloatingContactButtons />
 			<Link
 				to="/"
 				className={cn(

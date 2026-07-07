@@ -112,7 +112,7 @@ export default function Navbar() {
 			</header>
 
 			{/* Mobile: full-width fixed */}
-			<header className="fixed top-0 left-0 right-0 z-50 md:hidden bg-linear-to-r from-baltic-blue/90 to-fresh-sky/80 backdrop-blur-md border-b border-white/15 shadow-lg shadow-black/10">
+			<header className="fixed top-0 left-0 right-0 z-50 md:hidden bg-linear-to-tr from-baltic-blue/80 to-fresh-sky/40 backdrop-blur-md border-b border-white/15 shadow-lg shadow-black/10">
 				<div className="flex h-14 items-center justify-between px-5">
 					<a href="/" className="flex items-center gap-2">
 						<img
