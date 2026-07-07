@@ -15,6 +15,7 @@ import { TimePreferenceField } from '@/components/forms/TimePreferenceField';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { useUpdateQuote } from '@/hooks/queries/use-quotes';
 import { TIME_PREFERENCE_HOURS, getTimePreferenceForHour } from '@/lib/validation/booking-schema';
 import { quoteEditSchema, type QuoteEditValues } from '@/lib/validation/quote-edit-schema';
@@ -27,6 +28,7 @@ function toDefaultValues(quote: Tables<'quotes'>): QuoteEditValues {
 		finalPrice: quote.final_price ?? undefined,
 		desiredVisitDate: desiredVisit,
 		timePreference: getTimePreferenceForHour(desiredVisit.getHours()),
+		adminNotes: quote.admin_notes ?? '',
 	};
 }
 
@@ -58,6 +60,7 @@ export function EditQuoteDialog({
 				customer_phone: values.customerPhone,
 				final_price: values.finalPrice ?? null,
 				desired_visit_date: desiredVisitDate.toISOString(),
+				admin_notes: values.adminNotes || null,
 			},
 		});
 		onOpenChange(false);
@@ -122,6 +125,20 @@ export function EditQuoteDialog({
 												field.onChange(event.target.value === '' ? undefined : event.target.valueAsNumber)
 											}
 										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="adminNotes"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Admin notes</FormLabel>
+									<FormControl>
+										<Textarea placeholder="Write a note for an assigned staff member" {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>

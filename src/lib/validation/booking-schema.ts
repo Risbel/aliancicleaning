@@ -41,6 +41,7 @@ export const bookingSchema = z.object({
 	fullName: z.string().min(1, 'Name is required'),
 	email: z.string().email('Enter a valid email address'),
 	phone: z.string().min(7, 'Enter a valid phone number'),
+	customer_note: z.string().optional(),
 });
 
 export type BookingValues = z.infer<typeof bookingSchema>;

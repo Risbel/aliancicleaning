@@ -4,6 +4,7 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/comp
 import { Input } from '@/components/ui/input';
 import type { BookingValues } from '@/lib/validation/booking-schema';
 import type { Tables } from '@/types/supabase';
+import { Textarea } from '../ui/textarea';
 
 interface ContactReviewStepProps {
 	form: UseFormReturn<BookingValues>;
@@ -52,6 +53,20 @@ export function ContactReviewStep({ form, plan, estimatedPrice }: ContactReviewS
 						<FormLabel>Phone</FormLabel>
 						<FormControl>
 							<Input type="tel" autoComplete="tel" prefix="+1" placeholder="(555) 123-4567" {...field} />
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
+			<FormField
+				control={form.control}
+				name="customer_note"
+				render={({ field }) => (
+					<FormItem>
+						<FormLabel>Note</FormLabel>
+						<FormControl>
+							<Textarea placeholder="Additional notes, clarifications, or comments." {...field} />
 						</FormControl>
 						<FormMessage />
 					</FormItem>

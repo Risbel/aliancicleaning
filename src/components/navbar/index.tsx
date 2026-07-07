@@ -34,7 +34,7 @@ function UserMenu() {
 
 	if (!user) {
 		return (
-			<Button variant="outline" size="sm" asChild>
+			<Button className="text-white hover:text-white" variant="outline" size="sm" asChild>
 				<Link to="/login">Sign in</Link>
 			</Button>
 		);

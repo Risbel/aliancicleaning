@@ -6,6 +6,7 @@ export const quoteEditSchema = z.object({
 	finalPrice: z.number().min(0, 'Must be 0 or more').optional(),
 	desiredVisitDate: z.date({ required_error: 'Select a date' }),
 	timePreference: z.enum(TIME_PREFERENCES, { required_error: 'Select a time preference' }),
+	adminNotes: z.string().optional(),
 });
 
 export type QuoteEditValues = z.infer<typeof quoteEditSchema>;

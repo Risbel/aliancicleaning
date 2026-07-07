@@ -7,6 +7,7 @@ import {
 	ArrowUpDownIcon,
 	ChevronDownIcon,
 	ChevronLeftIcon,
+	EyeIcon,
 	InformationCircleIcon,
 	LoaderCircle,
 	MoreHorizontalIcon,
@@ -42,14 +43,6 @@ import {
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from '@/components/ui/dialog';
-import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
 	DropdownMenuContent,
@@ -62,6 +55,8 @@ import { toast } from 'sonner';
 import { AssignQuoteDialog } from '@/components/dashboard/quotes/AssignQuoteDialog';
 import { ChangeQuoteStatusDialog } from '@/components/dashboard/quotes/ChangeQuoteStatusDialog';
 import { EditQuoteDialog } from '@/components/dashboard/quotes/EditQuoteDialog';
+import { QuoteDetailsDialog } from '@/components/dashboard/quotes/QuoteDetailsDialog';
+import { SendConfirmationDialog } from '@/components/dashboard/quotes/SendConfirmationDialog';
 import { useAuth } from '@/hooks/auth/use-auth';
 import { useStaffProfile } from '@/hooks/queries/use-profile';
 import { useDeleteQuote, useQuotes, useUpdateQuote } from '@/hooks/queries/use-quotes';
@@ -128,7 +123,7 @@ export default function DashboardQuotesPage() {
 	const [deletingQuote, setDeletingQuote] = useState<Tables<'quotes'> | null>(null);
 	const [changingStatusQuote, setChangingStatusQuote] = useState<Tables<'quotes'> | null>(null);
 	const [confirmationQuote, setConfirmationQuote] = useState<Tables<'quotes'> | null>(null);
-	const [confirmationSent, setConfirmationSent] = useState(false);
+	const [viewingQuote, setViewingQuote] = useState<Tables<'quotes'> | null>(null);
 	const deleteQuote = useDeleteQuote();
 	const updateQuote = useUpdateQuote();
 
@@ -157,22 +152,6 @@ export default function DashboardQuotesPage() {
 			setChangingStatusQuote(null);
 		} catch (error) {
 			toast.error(error instanceof Error ? error.message : 'Failed to update status.');
-		}
-	}
-
-	async function handleSendConfirmation(quote: Tables<'quotes'>) {
-		const updates: TablesUpdate<'quotes'> = {};
-		if (quote.status === 'pending' || quote.status === 'reviewed') updates.status = 'quoted';
-		if (!quote.confirmation_token) updates.confirmation_token = crypto.randomUUID();
-
-		try {
-			const updated =
-				Object.keys(updates).length > 0 ? await updateQuote.mutateAsync({ id: quote.id, updates }) : quote;
-			toast('Confirmation ready to send.');
-			setConfirmationQuote(updated);
-			setConfirmationSent(true);
-		} catch (error) {
-			toast.error(error instanceof Error ? error.message : 'Failed to prepare confirmation.');
 		}
 	}
 
@@ -275,6 +254,9 @@ export default function DashboardQuotesPage() {
 									</Button>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent align="end">
+									<DropdownMenuItem className="justify-between" onClick={() => setViewingQuote(quote)}>
+										View details <HugeiconsIcon icon={EyeIcon} className="size-4" />
+									</DropdownMenuItem>
 									<DropdownMenuItem className="justify-between" onClick={() => setEditingQuote(quote)}>
 										Edit <HugeiconsIcon icon={Pen} className="size-4" />
 									</DropdownMenuItem>
@@ -282,11 +264,14 @@ export default function DashboardQuotesPage() {
 										Change status <HugeiconsIcon icon={RadioButtonFreeIcons} className="size-4" />
 									</DropdownMenuItem>
 									<DropdownMenuItem
-										disabled={quote.final_price == null || quote.status === 'accepted'}
-										onClick={() => {
-											setConfirmationQuote(quote);
-											setConfirmationSent(false);
-										}}
+										disabled={
+											quote.final_price == null ||
+											quote.status === 'accepted' ||
+											quote.status === 'quoted' ||
+											quote.status === 'completed' ||
+											quote.status === 'cancelled'
+										}
+										onClick={() => setConfirmationQuote(quote)}
 										className="justify-between"
 									>
 										Send confirmation <HugeiconsIcon icon={Send} className="size-4" />
@@ -450,6 +435,10 @@ export default function DashboardQuotesPage() {
 					</>
 				)}
 
+				{viewingQuote && (
+					<QuoteDetailsDialog quote={viewingQuote} onOpenChange={(open) => !open && setViewingQuote(null)} />
+				)}
+
 				{editingQuote && (
 					<EditQuoteDialog quote={editingQuote} onOpenChange={(open) => !open && setEditingQuote(null)} />
 				)}
@@ -467,100 +456,12 @@ export default function DashboardQuotesPage() {
 					/>
 				)}
 
-				<Dialog
-					open={!!confirmationQuote}
-					onOpenChange={(open) => {
-						if (!open) {
-							setConfirmationQuote(null);
-							setConfirmationSent(false);
-						}
-					}}
-				>
-					<DialogContent>
-						<DialogHeader>
-							<DialogTitle>Send confirmation</DialogTitle>
-							<DialogDescription>
-								{confirmationQuote?.customer_name} &middot; {confirmationQuote?.customer_email}
-							</DialogDescription>
-						</DialogHeader>
-
-						{confirmationQuote && (
-							<div className="rounded-lg border border-input p-4 text-sm">
-								<div className="flex justify-between py-1">
-									<span className="text-muted-foreground">Desired visit</span>
-									<span className="font-medium text-foreground">
-										{format(new Date(confirmationQuote.desired_visit_date), 'M/d/yyyy h:mm a')}
-									</span>
-								</div>
-								<div className="flex justify-between py-1">
-									<span className="text-muted-foreground">Address</span>
-									<span className="font-medium text-foreground">{confirmationQuote.address_line}</span>
-								</div>
-								<div className="flex justify-between py-1">
-									<span className="text-muted-foreground">Estimated price</span>
-									<span className="font-medium text-foreground">
-										{confirmationQuote.estimated_price != null
-											? `$${confirmationQuote.estimated_price.toFixed(2)}`
-											: '-'}
-									</span>
-								</div>
-								<div className="flex justify-between py-1">
-									<span className="text-muted-foreground">Final price</span>
-									<span className="font-medium text-foreground">
-										{confirmationQuote.final_price != null ? `$${confirmationQuote.final_price.toFixed(2)}` : '-'}
-									</span>
-								</div>
-							</div>
-						)}
-
-						{confirmationSent ? (
-							<>
-								<p className="text-sm text-muted-foreground">
-									Email sending isn't set up yet, so share this confirmation link with the client manually:
-								</p>
-								<label htmlFor="confirmation-link" className="sr-only">
-									Confirmation link
-								</label>
-								<Input
-									id="confirmation-link"
-									name="confirmation-link"
-									readOnly
-									value={
-										confirmationQuote
-											? `${window.location.origin}/confirmation/${confirmationQuote.confirmation_token}`
-											: ''
-									}
-									onFocus={(event) => event.target.select()}
-								/>
-								<DialogFooter>
-									<Button
-										type="button"
-										onClick={() => {
-											setConfirmationQuote(null);
-											setConfirmationSent(false);
-										}}
-									>
-										Done
-									</Button>
-								</DialogFooter>
-							</>
-						) : (
-							<DialogFooter>
-								<Button type="button" variant="outline" onClick={() => setConfirmationQuote(null)}>
-									Cancel
-								</Button>
-								<Button
-									className="space-x-3"
-									type="button"
-									onClick={() => confirmationQuote && handleSendConfirmation(confirmationQuote)}
-									disabled={updateQuote.isPending}
-								>
-									{updateQuote.isPending ? 'Sending...' : 'Send'} <HugeiconsIcon icon={Send} className="size-4" />
-								</Button>
-							</DialogFooter>
-						)}
-					</DialogContent>
-				</Dialog>
+				{confirmationQuote && (
+					<SendConfirmationDialog
+						quote={confirmationQuote}
+						onOpenChange={(open) => !open && setConfirmationQuote(null)}
+					/>
+				)}
 
 				<AlertDialog open={!!deletingQuote} onOpenChange={(open) => !open && setDeletingQuote(null)}>
 					<AlertDialogContent>
