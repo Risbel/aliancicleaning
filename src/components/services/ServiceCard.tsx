@@ -24,10 +24,9 @@ export default function ServiceCard({ service }: ServiceCardProps) {
 	return (
 		<Card
 			className={cn(
-				'overflow-hidden p-0 transition-all duration-300',
-				service.popular
-					? 'relative z-10 ring-2 ring-blue-600/80 shadow-xl shadow-baltic-blue/15 lg:scale-[1.045] lg:-translate-y-3'
-					: 'hover:shadow-lg shadow-md',
+				'overflow-hidden p-0',
+				service.popular &&
+					'relative z-10 ring-2 ring-blue-600/80 shadow-xl shadow-baltic-blue/15 lg:scale-[1.045] lg:-translate-y-3',
 			)}
 		>
 			<div className="relative">

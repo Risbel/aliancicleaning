@@ -6,7 +6,7 @@ const buttonVariants = cva(
 		variants: {
 			variant: {
 				default: 'bg-primary text-primary-foreground hover:bg-primary/80',
-				gradient: 'bg-linear-to-tr from-teal-600 to-baltic-blue text-white hover:from-teal-700 hover:to-baltic-blue/90',
+				gradient: 'bg-linear-to-tr from-teal-600 to-baltic-blue text-white hover:from-teal-500 hover:to-baltic-blue/90',
 				outline: 'hover:bg-input/20 aria-expanded:bg-muted aria-expanded:text-white',
 				secondary:
 					'bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground',
@@ -15,6 +15,8 @@ const buttonVariants = cva(
 				destructive:
 					'bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40',
 				link: 'text-primary underline-offset-4 hover:underline',
+				shine:
+					'animate-background-shine bg-[length:200%_100%] bg-[linear-gradient(110deg,#156390,45%,#5db48750,55%,#156390)] text-white shadow-md shadow-baltic-blue/20 hover:shadow-lg hover:shadow-baltic-blue/30 hover:brightness-110 active:brightness-90',
 			},
 			size: {
 				default: 'text-sm h-9 gap-1.5 px-3 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5',

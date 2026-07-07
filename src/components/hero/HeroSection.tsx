@@ -21,6 +21,16 @@ export default function HeroSection() {
 					0%, 100% { transform: translateY(0px); }
 					50%       { transform: translateY(-12px); }
 				}
+				@keyframes ring-spin {
+					to { transform: rotate(360deg); }
+				}
+				@keyframes ring-spin-reverse {
+					to { transform: rotate(-360deg); }
+				}
+				@keyframes orbit-dot-pulse {
+					0%, 100% { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
+					50%       { opacity: 0.5; transform: translate(-50%, -50%) scale(0.7); }
+				}
 			`}</style>
 
 			<section
@@ -129,7 +139,7 @@ export default function HeroSection() {
 						</StaggerItem>
 
 						<StaggerItem className="mt-8 flex flex-col gap-3 sm:flex-row">
-							<Button size="xxxl" variant="gradient" onClick={() => goToBooking()}>
+							<Button size="xxxl" variant="shine" onClick={() => goToBooking()}>
 								Request a Quote
 							</Button>
 
@@ -183,22 +193,26 @@ export default function HeroSection() {
 									filter: 'blur(0px)',
 									boxShadow:
 										'0 0 0 8px rgba(84,168,208,0.2), 0 0 0 16px rgba(21,99,144,0.12), 0 20px 60px rgba(21,99,144,0.4)',
+									animation: reduced ? undefined : 'ring-spin-reverse 18s linear infinite',
 								}}
 							/>
 
 							{/* Gradient border ring */}
 							<div
-								className="relative flex items-center justify-center rounded-full"
-								style={{
-									background: 'conic-gradient(from 0deg, #5bb286, #54a8d0, #ffffff, #cde2d7, #5bb286)',
-									padding: '4px',
-									width: 320,
-									height: 320,
-								}}
+								className="relative flex items-center justify-center overflow-hidden rounded-full"
+								style={{ width: 320, height: 320, padding: '4px' }}
 							>
+								<div
+									className="absolute inset-0 rounded-full"
+									style={{
+										background: 'conic-gradient(from 0deg, #5bb286, #54a8d0, #ffffff, #cde2d7, #5bb286)',
+										animation: reduced ? undefined : 'ring-spin 6s linear infinite',
+									}}
+								/>
+
 								{/* White inner ring */}
 								<div
-									className="flex items-center justify-center rounded-full bg-white/15 backdrop-blur-sm"
+									className="relative flex items-center justify-center rounded-full bg-white/15 backdrop-blur-sm"
 									style={{ width: 312 - 8, height: 312 - 8, padding: '6px' }}
 								>
 									<div

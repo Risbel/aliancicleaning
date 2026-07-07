@@ -96,7 +96,7 @@ export default function AboutSection() {
 						</ul>
 
 						<StaggerItem variant="right" className="mt-6 flex items-center gap-4">
-							<Button variant="gradient" size="lg" className="rounded-4xl cursor-pointer" onClick={() => goToBooking()}>
+							<Button variant="gradient" size="lg" onClick={() => goToBooking()}>
 								Book Now !
 							</Button>
 							<Button variant="outline" size="lg" asChild className="rounded-4xl cursor-pointer text-black shadow">
