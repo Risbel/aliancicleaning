@@ -1,4 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
+import { render } from 'react-email';
+import { createElement } from 'react';
+import QuoteConfirmationEmail from './_templates/quote-confirmation.tsx';
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -17,8 +20,7 @@ function formatPrice(value: number | null) {
 	return value != null ? `$${value.toFixed(2)}` : null;
 }
 
-function buildEmail(quote: Record<string, unknown>, confirmationUrl: string) {
-	const name = quote.customer_name as string;
+async function buildEmail(quote: Record<string, unknown>, confirmationUrl: string, siteUrl: string) {
 	const visitDate = new Date(quote.desired_visit_date as string).toLocaleString('en-US', {
 		weekday: 'long',
 		month: 'long',
@@ -27,61 +29,19 @@ function buildEmail(quote: Record<string, unknown>, confirmationUrl: string) {
 		hour: 'numeric',
 		minute: '2-digit',
 	});
-	const address = quote.address_line as string;
 	const price = formatPrice(quote.final_price as number | null) ?? formatPrice(quote.estimated_price as number | null);
 
-	const rows = [
-		['Visit date', visitDate],
-		['Address', address],
-		...(price ? [['Price', price]] : []),
-	]
-		.map(
-			([label, value]) => `
-				<tr>
-					<td style="padding: 8px 0; color: #6b7a86; font-size: 14px;">${label}</td>
-					<td style="padding: 8px 0; color: #1a2e3f; font-size: 14px; font-weight: 600; text-align: right;">${value}</td>
-				</tr>`,
-		)
-		.join('');
+	const email = createElement(QuoteConfirmationEmail, {
+		customerName: quote.customer_name as string,
+		visitDate,
+		address: quote.address_line as string,
+		price,
+		confirmationUrl,
+		siteUrl,
+	});
 
-	const html = `
-		<div style="background-color: #f2f2f2; padding: 32px 16px; font-family: Arial, Helvetica, sans-serif;">
-			<div style="max-width: 560px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
-				<div style="background: linear-gradient(135deg, #156390 0%, #54a8d0 100%); padding: 28px 32px;">
-					<h1 style="margin: 0; color: #ffffff; font-size: 22px;">Alianci Cleaning</h1>
-				</div>
-				<div style="padding: 32px;">
-					<p style="margin: 0 0 16px; color: #1a2e3f; font-size: 16px;">Hi ${name},</p>
-					<p style="margin: 0 0 24px; color: #1a2e3f; font-size: 15px; line-height: 1.6;">
-						Your cleaning quote is ready. Review the details below and confirm your booking.
-					</p>
-					<table style="width: 100%; border-collapse: collapse; border-top: 1px solid #cbe0ea; border-bottom: 1px solid #cbe0ea; margin-bottom: 28px;">
-						${rows}
-					</table>
-					<div style="text-align: center; margin-bottom: 28px;">
-						<a href="${confirmationUrl}" style="display: inline-block; background-color: #156390; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 12px 32px; border-radius: 8px;">
-							Confirm your booking
-						</a>
-					</div>
-					<p style="margin: 0; color: #6b7a86; font-size: 13px; line-height: 1.6;">
-						If the button does not work, copy and paste this link into your browser:<br />
-						<a href="${confirmationUrl}" style="color: #156390; word-break: break-all;">${confirmationUrl}</a>
-					</p>
-				</div>
-			</div>
-		</div>`;
-
-	const text = [
-		`Hi ${name},`,
-		'',
-		'Your cleaning quote is ready. Review the details below and confirm your booking.',
-		'',
-		`Visit date: ${visitDate}`,
-		`Address: ${address}`,
-		...(price ? [`Price: ${price}`] : []),
-		'',
-		`Confirm your booking: ${confirmationUrl}`,
-	].join('\n');
+	const html = await render(email);
+	const text = await render(email, { plainText: true });
 
 	return { html, text };
 }
@@ -131,7 +91,7 @@ Deno.serve(async (req) => {
 	const siteUrl = Deno.env.get('SITE_URL') ?? 'http://localhost:5173';
 	const confirmationUrl = `${siteUrl}/confirmation/${currentQuote.confirmation_token}`;
 	const from = Deno.env.get('EMAIL_FROM') ?? 'Alianci Cleaning <onboarding@resend.dev>';
-	const { html, text } = buildEmail(currentQuote, confirmationUrl);
+	const { html, text } = await buildEmail(currentQuote, confirmationUrl, siteUrl);
 
 	const resendResponse = await fetch('https://api.resend.com/emails', {
 		method: 'POST',

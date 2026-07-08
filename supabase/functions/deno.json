@@ -1,8 +1,14 @@
 {
 	"imports": {
-		"@supabase/supabase-js": "npm:@supabase/supabase-js@2"
+		"@supabase/supabase-js": "npm:@supabase/supabase-js@2",
+		"react-email": "npm:react-email@6.6.6",
+		"react": "npm:react@19",
+		"react/jsx-runtime": "npm:react@19/jsx-runtime"
 	},
 	"compilerOptions": {
-		"lib": ["deno.window"]
+		"lib": ["deno.window", "dom"],
+		"jsx": "react-jsx",
+		"jsxImportSource": "react",
+		"jsxImportSourceTypes": "npm:@types/react@19"
 	}
 }

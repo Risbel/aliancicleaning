@@ -18,12 +18,21 @@ If the email fails, the quote update still persists and the dialog shows the con
 
 | File | Role |
 |------|------|
-| `supabase/functions/send-quote-confirmation/index.ts` | Edge function: auth check, quote update, email build + send |
-| `supabase/functions/send-quote-confirmation/deno.json` | Import map used by the deploy bundler (each function needs its own) |
+| `supabase/functions/send-quote-confirmation/index.ts` | Edge function: auth check, quote update, template render + send |
+| `supabase/functions/send-quote-confirmation/_templates/quote-confirmation.tsx` | React Email template (@react-email/components + Tailwind), brand-styled |
+| `supabase/functions/send-quote-confirmation/deno.json` | Import map + JSX options used by the deploy bundler (each function needs its own) |
 | `supabase/functions/deno.json` | Import map + compiler options for the editor (Deno extension) |
 | `src/services/quotes.ts` | `sendQuoteConfirmation(quoteId)` — invokes the function |
 | `src/hooks/queries/use-quotes.ts` | `useSendQuoteConfirmation()` mutation |
 | `src/components/dashboard/quotes/SendConfirmationDialog.tsx` | Dashboard UI that triggers the send |
+
+## Previewing the template locally
+
+```sh
+pnpm email:dev
+```
+
+Starts the React Email preview server at `localhost:3000`, rendering the templates in `supabase/functions/send-quote-confirmation/_templates/` with their default (sample) props. Edits hot-reload.
 
 ## Secrets (Supabase, not in the repo)
 
