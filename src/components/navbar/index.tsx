@@ -13,9 +13,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/auth/use-auth';
 import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
-import { useCustomerProfile } from '@/hooks/queries/use-profile';
+import { useCustomerProfile, useStaffProfile } from '@/hooks/queries/use-profile';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { ListChecks, LogOut } from '@hugeicons/core-free-icons';
+import { CoinsDollarIcon, ListChecks, LogOut } from '@hugeicons/core-free-icons';
 
 const navLinks = [
 	{ label: 'Home', href: '#home' },
@@ -33,6 +33,8 @@ function UserMenu() {
 	const { user, signOut } = useAuth();
 	const navigate = useNavigate();
 	const { data: customerProfile } = useCustomerProfile(user?.id);
+	const { data: staffProfile } = useStaffProfile(user?.id);
+	const isAdmin = staffProfile?.role === 'admin';
 
 	if (!user) {
 		return (
@@ -67,6 +69,13 @@ function UserMenu() {
 					<DropdownMenuItem asChild className="justify-between rounded-sm cursor-pointer">
 						<Link to="/dashboard/quotes">
 							My Quotes <HugeiconsIcon icon={ListChecks} />
+						</Link>
+					</DropdownMenuItem>
+				)}
+				{isAdmin && (
+					<DropdownMenuItem asChild className="justify-between rounded-sm cursor-pointer">
+						<Link to="/dashboard/plans">
+							Plan Pricing <HugeiconsIcon icon={CoinsDollarIcon} />
 						</Link>
 					</DropdownMenuItem>
 				)}

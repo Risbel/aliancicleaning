@@ -7,10 +7,10 @@
     "imageBg": "#cbe0ea",
     "popular": false,
     "features": [
-      "Dusting all surfaces",
+      "Dusting all surfaces & ceiling fans",
       "Vacuuming & mopping floors",
       "Kitchen & bathroom sanitizing",
-      "Trash removal",
+      "Baseboards & light switches",
       "Pet-safe, eco-friendly products"
     ],
     "cta": "Book Now"
@@ -25,8 +25,8 @@
     "features": [
       "Everything in Standard",
       "Inside oven & refrigerator",
-      "Baseboards & window sills",
-      "Cabinet interior cleaning",
+      "Baseboards, doors & window sills",
+      "Blinds & window tracks",
       "Grout & tile scrubbing",
       "Light fixtures & ceiling fans"
     ],
@@ -41,10 +41,9 @@
     "popular": false,
     "features": [
       "Everything in Deep Cleaning",
-      "Inside all closets & storage",
-      "Window cleaning (interior & exterior)",
-      "Wall spot-cleaning",
-      "Appliance deep-clean",
+      "Inside all cabinets, drawers & closets",
+      "Interior window cleaning",
+      "Detailed stovetop & appliance deep-clean",
       "Landlord-inspection ready",
       "Move-in fresh start guarantee"
     ],

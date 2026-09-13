@@ -1,6 +1,7 @@
 export const planKeys = {
 	all: ['plans'] as const,
 	lists: () => [...planKeys.all, 'list'] as const,
+	adminList: () => [...planKeys.all, 'admin-list'] as const,
 };
 
 export const quoteKeys = {
