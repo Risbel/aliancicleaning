@@ -29,8 +29,8 @@ const QuoteConfirmationEmail = ({
 	visitDate = 'Monday, July 13, 2026 at 10:00 AM',
 	address = '123 Main St, Boston, MA',
 	price = '$120.00',
-	confirmationUrl = 'https://aliancicleaning.vercel.app/confirmation/sample-token',
-	siteUrl = 'https://aliancicleaning.vercel.app',
+	confirmationUrl = 'https://www.aliancicleaning.com/confirmation/sample-token',
+	siteUrl = 'https://www.aliancicleaning.com',
 }: QuoteConfirmationEmailProps) => {
 	const rows = [['Visit date', visitDate], ['Address', address], ...(price ? [['Price', price]] : [])];
 
@@ -61,7 +61,7 @@ const QuoteConfirmationEmail = ({
 							<Row>
 								<Column className="w-12">
 									<Img
-										src={`${siteUrl}/favicon/favicon-96x96.png`}
+										src={`${siteUrl}/favicon/web-app-manifest-192x192.png`}
 										width="44"
 										height="44"
 										alt="Alianci Cleaning"
