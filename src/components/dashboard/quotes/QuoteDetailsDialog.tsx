@@ -1,10 +1,11 @@
 import { format } from 'date-fns';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Call02Icon, Copy01Icon, GoogleMapsIcon, Mail01Icon } from '@hugeicons/core-free-icons';
+import { Call02Icon, Copy01Icon, GoogleMapsIcon, Mail01Icon, WhatsappIcon } from '@hugeicons/core-free-icons';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { QUOTE_STATUS_BADGE_VARIANT } from '@/lib/quote-status';
 import type { Tables } from '@/types/supabase';
 import type { ReactNode } from 'react';
@@ -70,6 +71,15 @@ export function QuoteDetailsDialog({
 }) {
 	const address = [quote.address_line, quote.city, quote.state, quote.zip_code].filter(Boolean).join(', ');
 	const mapsUrl = address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}` : null;
+	const confirmationUrl = quote.confirmation_token
+		? `${window.location.origin}/confirmation/${quote.confirmation_token}`
+		: null;
+	const isAccepted = quote.status === 'accepted';
+	const whatsappUrl = confirmationUrl
+		? `https://wa.me/${quote.customer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(
+				`Hi ${quote.customer_name}, here's your booking confirmation link: ${confirmationUrl}`,
+			)}`
+		: null;
 
 	return (
 		<Dialog open onOpenChange={onOpenChange}>
@@ -145,6 +155,42 @@ export function QuoteDetailsDialog({
 									</a>
 								</Button>
 							)
+						}
+					/>
+					<DetailRow
+						label="Confirmation link"
+						value={confirmationUrl ?? '-'}
+						actions={
+							confirmationUrl &&
+							(isAccepted ? (
+								<TooltipProvider>
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<span className="inline-flex items-center gap-1">
+												<Button variant="ghost" size="icon-xs" disabled>
+													<HugeiconsIcon icon={Copy01Icon} className="size-4" />
+													<span className="sr-only">Copy confirmation link</span>
+												</Button>
+												<Button variant="ghost" size="icon-xs" disabled>
+													<HugeiconsIcon icon={WhatsappIcon} className="size-4" />
+													<span className="sr-only">Share confirmation link on WhatsApp</span>
+												</Button>
+											</span>
+										</TooltipTrigger>
+										<TooltipContent>This quote has already been accepted.</TooltipContent>
+									</Tooltip>
+								</TooltipProvider>
+							) : (
+								<>
+									<CopyButton value={confirmationUrl} label="Confirmation link" />
+									<Button variant="ghost" size="icon-xs" asChild>
+										<a href={whatsappUrl!} target="_blank" rel="noopener noreferrer">
+											<HugeiconsIcon icon={WhatsappIcon} className="size-4" />
+											<span className="sr-only">Share confirmation link on WhatsApp</span>
+										</a>
+									</Button>
+								</>
+							))
 						}
 					/>
 					<DetailRow label="Zip code" value={quote.zip_code ?? '-'} />
