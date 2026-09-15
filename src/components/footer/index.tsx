@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
 	Mail01Icon,
@@ -68,6 +69,14 @@ export default function Footer() {
 
 				<div className="mt-6 flex flex-col gap-3">
 					<p className="text-xs text-[#e8edf0]/40">© 2026 Alianci Cleaning Services. Todos los derechos reservados.</p>
+					<div className="flex gap-4 text-xs text-[#e8edf0]/50">
+						<Link to="/privacy" className="hover:text-white transition-colors duration-200">
+							Privacy Policy
+						</Link>
+						<Link to="/terms" className="hover:text-white transition-colors duration-200">
+							Terms of Service
+						</Link>
+					</div>
 					<div className="text-xs text-[#e8edf0]/50 flex gap-2">
 						<p className="mb-2">Dev contact:</p>
 						<div className="flex flex-col gap-1 sm:flex-row sm:gap-4">

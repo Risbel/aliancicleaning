@@ -9,6 +9,8 @@ import BookingPage from '@/pages/booking';
 import DashboardQuotesPage from '@/pages/dashboard/quotes';
 import DashboardPlansPage from '@/pages/dashboard/plans';
 import ConfirmationPage from '@/pages/confirmation';
+import PrivacyPage from '@/pages/privacy';
+import TermsPage from '@/pages/terms';
 
 export default function App() {
 	return (
@@ -41,6 +43,8 @@ export default function App() {
 				}
 			/>
 			<Route path="/confirmation/:token" element={<ConfirmationPage />} />
+			<Route path="/privacy" element={<PrivacyPage />} />
+			<Route path="/terms" element={<TermsPage />} />
 		</Routes>
 	);
 }
