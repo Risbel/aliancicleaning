@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny-ps" viewBox="0 0 300 300" width="300" height="300">
+  <title>Alianci Cleaning</title>
+  <rect x="0" y="0" width="300" height="300" rx="36" ry="36" fill="#156390"/>
+  <path fill="#ffffff" fill-rule="evenodd" d="M140,65 L160,65 L210,235 L90,235 Z M150,119 L166,175 L134,175 Z M127,197 L173,197 L184,235 L116,235 Z"/>
+</svg>
