@@ -31,10 +31,15 @@ function CopyButton({ value, label }: { value: string; label: string }) {
 function DetailRow({ label, value, actions }: { label: string; value: ReactNode; actions?: ReactNode }) {
 	return (
 		<div className="flex items-center justify-between gap-4 py-1">
-			<span className="text-muted-foreground">{label}</span>
-			<div className="flex items-center gap-1">
-				<span className="text-right font-medium text-foreground">{value}</span>
-				{actions}
+			<span className="shrink-0 text-muted-foreground">{label}</span>
+			<div className="flex min-w-0 items-center gap-1">
+				<span
+					className="min-w-0 flex-1 truncate text-right font-medium text-foreground"
+					title={typeof value === 'string' ? value : undefined}
+				>
+					{value}
+				</span>
+				{actions && <div className="flex shrink-0 items-center gap-1">{actions}</div>}
 			</div>
 		</div>
 	);
@@ -86,12 +91,12 @@ export function QuoteDetailsDialog({
 			<DialogContent className="max-h-full md:max-h-5/6 overflow-hidden overflow-y-scroll pb-24">
 				<DialogHeader>
 					<DialogTitle>Quote details</DialogTitle>
-					<DialogDescription>
+					<DialogDescription className="break-words">
 						{quote.customer_name} &middot; {quote.customer_email}
 					</DialogDescription>
 				</DialogHeader>
 
-				<div className="rounded-lg border border-input p-4 text-sm">
+				<div className="min-w-0 rounded-lg border border-input p-4 text-sm">
 					<div className="mb-2 flex items-center justify-between border-b border-input pb-2">
 						<span className="text-xs font-medium uppercase text-muted-foreground">All details</span>
 						<Button
