@@ -41,8 +41,8 @@ Set with `pnpm dlx supabase secrets set NAME=value`. The function reads them at 
 | Secret | Value |
 |--------|-------|
 | `RESEND_API_KEY` | API key from the Resend dashboard (set) |
-| `SITE_URL` | `https://aliancicleaning.vercel.app` (set, **stale** — the `.vercel.app` domain was removed from Vercel; update to `https://aliancicleaning.com`, see Go-live checklist) — base URL for confirmation links |
-| `EMAIL_FROM` | Not set yet. Defaults to `Alianci Cleaning <onboarding@resend.dev>` |
+| `SITE_URL` | `https://aliancicleaning.com` (set) — base URL for confirmation links |
+| `EMAIL_FROM` | `Alianci Cleaning <no-reply@aliancicleaning.com>` (set) |
 
 ## Deploying the function
 
@@ -52,32 +52,34 @@ pnpm dlx supabase functions deploy send-quote-confirmation
 
 Requires `pnpm dlx supabase login` and `pnpm dlx supabase link --project-ref xhpkmvznulvrydytqnun` (already done on this machine).
 
-## Current limitation (test mode)
-
-The Resend domain is not verified yet, so emails send from `onboarding@resend.dev` and Resend only delivers to the email address the Resend account was created with. Sends to any other recipient fail; the dialog falls back to the manual link.
-
-## Go-live checklist
+## Go-live checklist (done)
 
 Prerequisites: access to the Namecheap Advanced DNS panel for `aliancicleaning.com`, the Resend dashboard, and a linked Supabase CLI (`pnpm dlx supabase login` + `pnpm dlx supabase link --project-ref xhpkmvznulvrydytqnun`). Credentials for all of these are in `CLIENT_HANDOFF.md` (gitignored, local only — don't copy them into this doc).
 
-**Status:** the domain move is already done — Vercel serves `aliancicleaning.com` directly and the `aliancicleaning.vercel.app` domain has been removed from the project. What's left is verifying the Resend sending domain and updating the now-stale `SITE_URL` secret.
+**Status:** fully live. `aliancicleaning.com` is attached to Vercel, the Resend sending domain is **verified**, and both `EMAIL_FROM`/`SITE_URL` Supabase secrets are set. Emails send from `no-reply@aliancicleaning.com` to any recipient (no longer restricted to the Resend account's own address).
 
-1. **Vercel/Namecheap (done):** `aliancicleaning.com` is attached to the Vercel project and serving the live site. No further action needed here.
+1. **Vercel/Namecheap:** `aliancicleaning.com` is attached to the Vercel project and serving the live site.
 
-2. **Resend: verify the sending domain**
-   - Resend dashboard → **Domains** → **Add Domain** → enter `aliancicleaning.com`.
-   - Add the DNS records Resend shows (SPF `TXT`, DKIM `TXT`/`CNAME`, usually also an `MX` for a `send` subdomain — use exactly what Resend's UI displays, it can vary) in Namecheap → Domain List → Manage → Advanced DNS. These are additive alongside the existing Vercel hosting records — different hosts, no conflict.
-   - Wait until Resend marks the domain **Verified** (DNS propagation can take a while, but usually only minutes to a couple hours).
+2. **Resend sending domain — verified.** DNS records added in Namecheap Advanced DNS:
+   - DKIM: `TXT resend._domainkey` → `p=MIGfMA0GCSq...` (Resend-generated public key)
+   - SPF: `CNAME rsend` → `rsend.forge.rmta.net`, `CNAME send` → `send.forge.rmta.net`
+   - These are additive alongside the existing Vercel hosting records — different hosts, no conflict.
 
-3. **Supabase: update the runtime secrets**
-   ```sh
-   pnpm dlx supabase secrets set "EMAIL_FROM=Alianci Cleaning <no-reply@aliancicleaning.com>"
-   pnpm dlx supabase secrets set SITE_URL=https://aliancicleaning.com
-   ```
-   The `SITE_URL` update isn't optional cleanup — it currently points at the removed `.vercel.app` domain, so confirmation links are broken until this is set. No redeploy needed; the function reads both at runtime.
+3. **Supabase runtime secrets — set:**
+   - `EMAIL_FROM=Alianci Cleaning <no-reply@aliancicleaning.com>`
+   - `SITE_URL=https://aliancicleaning.com`
 
-4. **Test end-to-end:** send a confirmation to a real external email address (not the Resend account's own address — that's the only address test mode delivers to) and confirm it arrives from `no-reply@aliancicleaning.com`, and that the confirmation link opens `https://aliancicleaning.com/confirmation/<token>` correctly. If it doesn't arrive, check Resend's **Logs** tab first — that's where SPF/DKIM misconfigurations usually show up.
+4. **If something's misconfigured:** the app degrades gracefully — a Resend send failure still updates the quote status and the dashboard falls back to showing the confirmation link for manual sharing (existing behavior, no fix needed). Check Resend's **Logs** tab first for SPF/DKIM delivery issues.
 
-5. **If something's misconfigured:** the app degrades gracefully — a Resend send failure still updates the quote status and the dashboard falls back to showing the confirmation link for manual sharing (existing behavior, no fix needed).
+## BIMI (brand mark in inbox) — done, live
 
-No code changes or redeploys are needed for go-live; all three values above are runtime secrets/config.
+Shows the Alianci Cleaning "A" mark next to the sender name in inboxes that support BIMI (Brand Indicators for Message Identification).
+
+**Status:** live and confirmed working. DMARC is at `p=quarantine`, the `default._bimi` TXT record points at `https://www.aliancicleaning.com/bimi/logo.svg`, and the mark **renders correctly in Yahoo Mail** (confirmed via a real test send). Gmail shows its own default sender-initial avatar instead — expected, see note below, not a misconfiguration.
+
+DNS records in Namecheap Advanced DNS:
+
+- `_dmarc` (TXT): `v=DMARC1; p=quarantine; pct=100;` — moved off `p=none` since BIMI isn't shown by any provider without DMARC enforcement. `quarantine` (not `reject`) since there's no `rua=` reporting address configured to monitor impact; revisit `p=reject` later once confident no legitimate mail is being caught.
+- `default._bimi` (TXT): `v=BIMI1; l=https://www.aliancicleaning.com/bimi/logo.svg;` — uses the `www` host, not the bare domain, since `aliancicleaning.com` 308-redirects to `www.aliancicleaning.com` (Vercel's canonical-host redirect) and not every mail provider follows redirects when fetching the BIMI SVG. No `a=` tag (that would point to a VMC — see below).
+
+**Gmail note:** Gmail requires a VMC (Verified Mark Certificate) to show a BIMI mark, regardless of DNS/SVG setup — it currently shows its own default sender-initial avatar instead, which is expected. A VMC needs a registered trademark and costs ~$1,300+/yr from an authorized CA (DigiCert or Entrust) — revisit only if the business registers a trademark for the logo.
