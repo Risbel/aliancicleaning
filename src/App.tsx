@@ -7,6 +7,7 @@ import LoginPage from '@/pages/login';
 import SignupPage from '@/pages/signup';
 import BookingPage from '@/pages/booking';
 import DashboardQuotesPage from '@/pages/dashboard/quotes';
+import DashboardMyQuotesPage from '@/pages/my-quotes';
 import DashboardPlansPage from '@/pages/dashboard/plans';
 import ConfirmationPage from '@/pages/confirmation';
 import PrivacyPage from '@/pages/privacy';
@@ -32,6 +33,14 @@ export default function App() {
 					<RequireStaff>
 						<DashboardQuotesPage />
 					</RequireStaff>
+				}
+			/>
+			<Route
+				path="/my-quotes"
+				element={
+					<RequireAuth>
+						<DashboardMyQuotesPage />
+					</RequireAuth>
 				}
 			/>
 			<Route

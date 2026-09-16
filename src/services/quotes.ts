@@ -36,10 +36,10 @@ export async function getQuotes(filter: {
 	return data;
 }
 
-export async function getQuotesByCustomer(customerId: string): Promise<Tables<'quotes'>[]> {
+export async function getQuotesByCustomer(customerId: string): Promise<QuoteWithPlan[]> {
 	const { data, error } = await supabase
 		.from('quotes')
-		.select('*')
+		.select('*, cleaning_plans(name)')
 		.eq('customer_id', customerId)
 		.order('created_at', { ascending: false });
 
