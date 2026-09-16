@@ -6,10 +6,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { buttonVariants } from '@/components/ui/button-variants';
 import { PlanPricingForm } from '@/components/dashboard/plans/PlanPricingForm';
 import { useAllPlans } from '@/hooks/queries/use-plans';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { cn } from '@/lib/utils';
 
 export default function DashboardPlansPage() {
 	const { data: plans, isLoading, isError } = useAllPlans();
+
+	usePageMeta({
+		title: 'Plan Pricing | Alianci Cleaning Dashboard',
+		noIndex: true,
+	});
 
 	return (
 		<div className="min-h-dvh bg-background px-6 py-10 lg:px-12">

@@ -1,7 +1,13 @@
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 export default function TermsPage() {
+	usePageMeta({
+		title: 'Terms of Service | Alianci Cleaning',
+		description: "Read Alianci Cleaning's terms of service governing use of this website and bookings.",
+	});
+
 	return (
 		<>
 			<Navbar />

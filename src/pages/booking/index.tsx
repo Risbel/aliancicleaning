@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
 import { useAuth } from '@/hooks/auth/use-auth';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { useCustomerProfile, useUpsertCustomerProfile } from '@/hooks/queries/use-profile';
 import { usePlans } from '@/hooks/queries/use-plans';
 import { useCreateQuote } from '@/hooks/queries/use-quotes';
@@ -34,6 +35,12 @@ export default function BookingPage() {
 	const { data: profile } = useCustomerProfile(user?.id);
 	const createQuote = useCreateQuote();
 	const upsertProfile = useUpsertCustomerProfile();
+
+	usePageMeta({
+		title: 'Book a Cleaning | Alianci Cleaning',
+		description: 'Request a quote and book your Austin home cleaning in minutes.',
+		noIndex: true,
+	});
 
 	const [step, setStep] = useState(1);
 	const [submitted, setSubmitted] = useState(false);

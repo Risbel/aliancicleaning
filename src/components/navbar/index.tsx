@@ -101,7 +101,7 @@ export default function Navbar() {
 			<header className="fixed top-5 left-1/2 z-50 -translate-x-1/2 hidden md:flex h-13 items-center gap-2 rounded-full px-2 bg-linear-to-r from-blue-950/70 to-baltic-blue/50 backdrop-blur-md border border-white/20 shadow-lg shadow-black/15">
 				<a href="/" className="flex items-center gap-2">
 					<img
-						src="/favicon/web-app-manifest-512x512.png"
+						src="/favicon/nav-icon.png"
 						alt="Alianci Cleaning"
 						className="h-9 w-9 rounded-full object-cover"
 					/>
@@ -135,7 +135,7 @@ export default function Navbar() {
 				<div className="flex h-14 items-center justify-between px-5">
 					<a href="/" className="flex items-center gap-2">
 						<img
-							src="/favicon/web-app-manifest-512x512.png"
+							src="/favicon/nav-icon.png"
 							alt="Alianci Cleaning"
 							className="h-8 w-8 rounded-full object-cover"
 						/>

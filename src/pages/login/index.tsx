@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/auth/use-auth';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { loginSchema, type LoginValues } from '@/lib/validation/auth-schemas';
 
 export default function LoginPage() {
@@ -15,6 +16,12 @@ export default function LoginPage() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [serverError, setServerError] = useState<string | null>(null);
+
+	usePageMeta({
+		title: 'Log In | Alianci Cleaning',
+		description: 'Log in to your Alianci Cleaning account to book and manage your cleanings.',
+		noIndex: true,
+	});
 
 	const from = (location.state as { from?: string } | null)?.from ?? '/booking';
 

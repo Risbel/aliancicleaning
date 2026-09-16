@@ -121,15 +121,17 @@ export default function HeroSection() {
 						</StaggerItem>
 
 						<StaggerItem className="w-full">
-							<GradientText
-								colors={['#ffffff', '#cde2d7', '#5bb286', '#cde2d7', '#ffffff']}
-								animationSpeed={4}
-								className="mx-0! max-w-none! justify-start! rounded-none! text-left text-[2.8rem] leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl 2xl:text-[4.5rem] font-extrabold"
-							>
-								YOUR HOME IN
-								<br />
-								SAFE HANDS
-							</GradientText>
+							<h1>
+								<GradientText
+									colors={['#ffffff', '#cde2d7', '#5bb286', '#cde2d7', '#ffffff']}
+									animationSpeed={4}
+									className="mx-0! max-w-none! justify-start! rounded-none! text-left text-[2.8rem] leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl 2xl:text-[4.5rem] font-extrabold"
+								>
+									YOUR HOME IN
+									<br />
+									SAFE HANDS
+								</GradientText>
+							</h1>
 						</StaggerItem>
 
 						<StaggerItem>

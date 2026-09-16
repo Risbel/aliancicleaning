@@ -1,7 +1,13 @@
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 export default function PrivacyPage() {
+	usePageMeta({
+		title: 'Privacy Policy | Alianci Cleaning',
+		description: "Read Alianci Cleaning's privacy policy on how we collect and use your information.",
+	});
+
 	return (
 		<>
 			<Navbar />

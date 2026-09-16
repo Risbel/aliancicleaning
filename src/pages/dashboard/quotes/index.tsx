@@ -60,6 +60,7 @@ import { SendConfirmationDialog } from '@/components/dashboard/quotes/SendConfir
 import { useAuth } from '@/hooks/auth/use-auth';
 import { useStaffProfile } from '@/hooks/queries/use-profile';
 import { useDeleteQuote, useQuotes, useUpdateQuote } from '@/hooks/queries/use-quotes';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { cn } from '@/lib/utils';
 import { QUOTE_FILTER_TAGS, QUOTE_STATUS_BADGE_VARIANT, type QuoteStatus } from '@/lib/quote-status';
 import type { QuoteStatusFilter, QuoteWithPlan } from '@/services/quotes';
@@ -86,6 +87,11 @@ function SortableHeader({ column, label }: { column: Column<QuoteWithPlan, unkno
 }
 
 export default function DashboardQuotesPage() {
+	usePageMeta({
+		title: 'Quotes | Alianci Cleaning Dashboard',
+		noIndex: true,
+	});
+
 	const [searchParams, setSearchParams] = useSearchParams();
 	const status = (searchParams.get('status') as QuoteStatusFilter) || 'pending';
 	const search = searchParams.get('q') ?? '';

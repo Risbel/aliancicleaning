@@ -5,12 +5,19 @@ import { CheckmarkCircle02Icon } from '@hugeicons/core-free-icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAcceptQuoteByConfirmationToken, useQuoteByConfirmationToken } from '@/hooks/queries/use-quotes';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 export default function ConfirmationPage() {
 	const { token } = useParams<{ token: string }>();
 	const { data: quote, isLoading, isError } = useQuoteByConfirmationToken(token);
 	const acceptQuote = useAcceptQuoteByConfirmationToken();
 	const hasRequestedAccept = useRef(false);
+
+	usePageMeta({
+		title: 'Booking Confirmation | Alianci Cleaning',
+		description: 'Confirm your Alianci Cleaning booking.',
+		noIndex: true,
+	});
 
 	useEffect(() => {
 		if (!token || !quote || quote.status === 'accepted' || hasRequestedAccept.current) return;
