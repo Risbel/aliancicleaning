@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { buttonVariants } from '@/components/ui/button-variants';
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import FloatingBubble from '@/components/decorative/FloatingBubble';
 import { useAuth } from '@/hooks/auth/use-auth';
 import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
@@ -22,6 +23,33 @@ function formatAddress(quote: QuoteWithPlan) {
 function formatPrice(quote: QuoteWithPlan) {
 	const value = quote.final_price ?? quote.estimated_price;
 	return value != null ? `$${value.toFixed(2)}` : 'Pending review';
+}
+
+function QuoteCardSkeleton() {
+	return (
+		<Card>
+			<CardHeader>
+				<Skeleton className="h-5 w-32" />
+				<Skeleton className="h-3 w-40" />
+				<CardAction>
+					<Skeleton className="h-5 w-16 rounded-full" />
+				</CardAction>
+			</CardHeader>
+			<CardContent className="flex flex-col gap-4">
+				<div className="grid grid-cols-2 gap-4 border-y border-input py-4">
+					<div className="flex flex-col gap-1.5">
+						<Skeleton className="h-3 w-24" />
+						<Skeleton className="h-4 w-28" />
+					</div>
+					<div className="flex flex-col gap-1.5">
+						<Skeleton className="h-3 w-16" />
+						<Skeleton className="h-4 w-20" />
+					</div>
+				</div>
+				<Skeleton className="h-4 w-3/4" />
+			</CardContent>
+		</Card>
+	);
 }
 
 export default function DashboardMyQuotesPage() {
@@ -88,7 +116,13 @@ export default function DashboardMyQuotesPage() {
 
 			<div className="px-6 lg:px-12">
 				<div className="relative z-10 mx-auto -mt-10 max-w-3xl pb-16">
-					{isLoading && <p className="text-sm text-muted-foreground">Loading quotes...</p>}
+					{isLoading && (
+						<div className="flex flex-col gap-5">
+							<QuoteCardSkeleton />
+							<QuoteCardSkeleton />
+							<QuoteCardSkeleton />
+						</div>
+					)}
 					{isError && <p className="text-sm text-destructive">Failed to load quotes.</p>}
 					{!isLoading && !isError && quotes?.length === 0 && (
 						<Card className="items-start gap-3 px-6 py-8">
