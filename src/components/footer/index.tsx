@@ -3,6 +3,7 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import {
 	Mail01Icon,
 	Call02Icon,
+	WhatsappIcon,
 	Facebook01Icon,
 	InstagramIcon,
 	Linkedin01Icon,
@@ -61,6 +62,15 @@ export default function Footer() {
 						>
 							<HugeiconsIcon icon={Call02Icon} size={18} strokeWidth={1.5} />
 							512-902-8518
+						</a>
+						<a
+							href="https://wa.me/15129028518"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="flex items-center gap-3 text-sm text-[#e8edf0]/70 transition-colors duration-200 hover:text-white"
+						>
+							<HugeiconsIcon icon={WhatsappIcon} size={18} strokeWidth={1.5} />
+							WhatsApp
 						</a>
 					</div>
 				</div>

@@ -1,5 +1,7 @@
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Call02Icon, WhatsappIcon } from '@hugeicons/core-free-icons';
+import { Call02Icon, Message01Icon } from '@hugeicons/core-free-icons';
+
+const smsBody = encodeURIComponent("Hi, I'd like to request a cleaning quote.");
 
 export default function FloatingContactButtons() {
 	return (
@@ -7,18 +9,16 @@ export default function FloatingContactButtons() {
 			<a
 				href="tel:+15129028518"
 				aria-label="Call us"
-				className="flex items-center justify-center h-12 w-12 rounded-full bg-linear-to-br from-blue-500/50 to-blue-600/50 backdrop-blur-sm text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110"
+				className="flex items-center justify-center h-12 w-12 rounded-full bg-linear-to-br from-teal-500 to-teal-600 backdrop-blur-sm text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110"
 			>
 				<HugeiconsIcon icon={Call02Icon} size={22} strokeWidth={1.5} />
 			</a>
 			<a
-				href="https://wa.me/15129028518"
-				target="_blank"
-				rel="noopener noreferrer"
-				aria-label="Chat on WhatsApp"
-				className="flex items-center justify-center h-12 w-12 rounded-full bg-linear-to-br from-green-500/80 to-green-600/80 backdrop-blur-sm text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110"
+				href={`sms:+15129028518?body=${smsBody}`}
+				aria-label="Send us a text message"
+				className="flex items-center justify-center h-12 w-12 rounded-full bg-linear-to-br from-blue-500/80 to-blue-600/80 backdrop-blur-sm text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110"
 			>
-				<HugeiconsIcon icon={WhatsappIcon} size={22} strokeWidth={1.5} />
+				<HugeiconsIcon icon={Message01Icon} size={22} strokeWidth={1.5} />
 			</a>
 		</div>
 	);
