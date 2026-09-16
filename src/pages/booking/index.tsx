@@ -131,6 +131,7 @@ export default function BookingPage() {
 			plan_id: selectedPlan.id,
 			desired_visit_date: desiredVisitDate.toISOString(),
 			estimated_price: estimatedPrice,
+			customer_note: data.customer_note || null,
 		});
 
 		setSubmitted(true);

@@ -20,6 +20,7 @@ interface QuoteConfirmationEmailProps {
 	visitDate?: string;
 	address?: string;
 	price?: string | null;
+	adminNotes?: string | null;
 	confirmationUrl?: string;
 	siteUrl?: string;
 }
@@ -29,6 +30,7 @@ const QuoteConfirmationEmail = ({
 	visitDate = 'Monday, July 13, 2026 at 10:00 AM',
 	address = '123 Main St, Boston, MA',
 	price = '$120.00',
+	adminNotes,
 	confirmationUrl = 'https://www.aliancicleaning.com/confirmation/sample-token',
 	siteUrl = 'https://www.aliancicleaning.com',
 }: QuoteConfirmationEmailProps) => {
@@ -86,6 +88,12 @@ const QuoteConfirmationEmail = ({
 									</Row>
 								))}
 							</Section>
+							{adminNotes && (
+								<Section className="mb-7 rounded-lg bg-white-smoke px-4 py-3">
+									<Text className="m-0 mb-1 text-[13px] font-semibold text-foreground">Note from our team</Text>
+									<Text className="m-0 text-[13px] leading-relaxed text-muted-foreground">{adminNotes}</Text>
+								</Section>
+							)}
 							<Section className="mb-7 text-center">
 								<Button
 									href={confirmationUrl}

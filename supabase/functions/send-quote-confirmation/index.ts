@@ -36,6 +36,7 @@ async function buildEmail(quote: Record<string, unknown>, confirmationUrl: strin
 		visitDate,
 		address: quote.address_line as string,
 		price,
+		adminNotes: quote.admin_notes as string | null,
 		confirmationUrl,
 		siteUrl,
 	});
