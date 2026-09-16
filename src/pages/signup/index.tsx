@@ -20,6 +20,7 @@ export default function SignupPage() {
 	usePageMeta({
 		title: 'Sign Up | Alianci Cleaning',
 		description: 'Create an account to book and manage your Austin home cleanings.',
+		path: '/signup',
 		noIndex: true,
 	});
 

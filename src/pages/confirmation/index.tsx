@@ -16,6 +16,7 @@ export default function ConfirmationPage() {
 	usePageMeta({
 		title: 'Booking Confirmation | Alianci Cleaning',
 		description: 'Confirm your Alianci Cleaning booking.',
+		path: token ? `/confirmation/${token}` : '/confirmation',
 		noIndex: true,
 	});
 

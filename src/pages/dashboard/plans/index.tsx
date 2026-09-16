@@ -14,6 +14,7 @@ export default function DashboardPlansPage() {
 
 	usePageMeta({
 		title: 'Plan Pricing | Alianci Cleaning Dashboard',
+		path: '/dashboard/plans',
 		noIndex: true,
 	});
 

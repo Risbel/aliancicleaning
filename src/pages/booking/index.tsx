@@ -39,6 +39,7 @@ export default function BookingPage() {
 	usePageMeta({
 		title: 'Book a Cleaning | Alianci Cleaning',
 		description: 'Request a quote and book your Austin home cleaning in minutes.',
+		path: '/booking',
 		noIndex: true,
 	});
 

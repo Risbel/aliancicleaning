@@ -20,6 +20,7 @@ export default function LoginPage() {
 	usePageMeta({
 		title: 'Log In | Alianci Cleaning',
 		description: 'Log in to your Alianci Cleaning account to book and manage your cleanings.',
+		path: '/login',
 		noIndex: true,
 	});
 

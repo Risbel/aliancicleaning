@@ -6,6 +6,7 @@ export default function PrivacyPage() {
 	usePageMeta({
 		title: 'Privacy Policy | Alianci Cleaning',
 		description: "Read Alianci Cleaning's privacy policy on how we collect and use your information.",
+		path: '/privacy',
 	});
 
 	return (

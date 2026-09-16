@@ -6,6 +6,7 @@ export default function TermsPage() {
 	usePageMeta({
 		title: 'Terms of Service | Alianci Cleaning',
 		description: "Read Alianci Cleaning's terms of service governing use of this website and bookings.",
+		path: '/terms',
 	});
 
 	return (

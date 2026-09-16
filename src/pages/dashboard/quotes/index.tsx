@@ -89,6 +89,7 @@ function SortableHeader({ column, label }: { column: Column<QuoteWithPlan, unkno
 export default function DashboardQuotesPage() {
 	usePageMeta({
 		title: 'Quotes | Alianci Cleaning Dashboard',
+		path: '/dashboard/quotes',
 		noIndex: true,
 	});
 
