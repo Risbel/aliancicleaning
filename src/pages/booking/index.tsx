@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { AddressAndDateStep } from '@/components/booking/AddressAndDateStep';
-import { BookingSuccess } from '@/components/booking/BookingSuccess';
 import { BookingSummary } from '@/components/booking/BookingSummary';
 import { ContactReviewStep } from '@/components/booking/ContactReviewStep';
 import { PlanAndDetailsStep } from '@/components/booking/PlanAndDetailsStep';
@@ -29,7 +28,20 @@ import FloatingContactButtons from '@/components/FloatingContactButtons';
 
 export default function BookingPage() {
 	const [searchParams] = useSearchParams();
+	const navigate = useNavigate();
 	const planType = searchParams.get('plan');
+	const rebookParams = {
+		planId: searchParams.get('planId'),
+		bedrooms: searchParams.get('bedrooms'),
+		bathrooms: searchParams.get('bathrooms'),
+		squareFootage: searchParams.get('squareFootage'),
+		hasPets: searchParams.get('hasPets'),
+		addressLine: searchParams.get('addressLine'),
+		city: searchParams.get('city'),
+		state: searchParams.get('state'),
+		zipCode: searchParams.get('zipCode'),
+	};
+	const isRebooking = rebookParams.bedrooms != null;
 	const { user } = useAuth();
 	const { data: plans } = usePlans();
 	const { data: profile } = useCustomerProfile(user?.id);
@@ -43,10 +55,12 @@ export default function BookingPage() {
 		noIndex: true,
 	});
 
-	const [step, setStep] = useState(1);
-	const [submitted, setSubmitted] = useState(false);
+	const [step, setStep] = useState(() => (isRebooking ? 2 : 1));
 
-	const defaultPlan = useMemo(() => plans?.find((plan) => plan.type === planType), [plans, planType]);
+	const defaultPlan = useMemo(
+		() => plans?.find((plan) => plan.id === rebookParams.planId || plan.type === planType),
+		[plans, planType, rebookParams.planId],
+	);
 
 	const form = useForm<BookingValues>({
 		resolver: zodResolver(bookingSchema),
@@ -71,11 +85,24 @@ export default function BookingPage() {
 		form.setValue('fullName', profile.full_name);
 		form.setValue('email', profile.email);
 		if (profile.phone) form.setValue('phone', profile.phone);
+		if (isRebooking) return;
 		if (profile.address_line) form.setValue('addressLine', profile.address_line);
 		if (profile.city) form.setValue('city', profile.city);
 		if (profile.state) form.setValue('state', profile.state);
 		if (profile.zip_code) form.setValue('zipCode', profile.zip_code);
-	}, [profile, form]);
+	}, [profile, form, isRebooking]);
+
+	useEffect(() => {
+		if (!isRebooking) return;
+		if (rebookParams.bedrooms) form.setValue('bedrooms', Number(rebookParams.bedrooms));
+		if (rebookParams.bathrooms) form.setValue('bathrooms', Number(rebookParams.bathrooms));
+		if (rebookParams.squareFootage) form.setValue('squareFootage', Number(rebookParams.squareFootage));
+		if (rebookParams.hasPets != null) form.setValue('hasPets', rebookParams.hasPets === 'true');
+		if (rebookParams.addressLine) form.setValue('addressLine', rebookParams.addressLine);
+		if (rebookParams.city) form.setValue('city', rebookParams.city);
+		if (rebookParams.state) form.setValue('state', rebookParams.state);
+		if (rebookParams.zipCode) form.setValue('zipCode', rebookParams.zipCode);
+	}, []);
 
 	useEffect(() => {
 		if (user?.email && !profile) form.setValue('email', user.email);
@@ -142,7 +169,7 @@ export default function BookingPage() {
 			customer_note: data.customer_note || null,
 		});
 
-		setSubmitted(true);
+		navigate('/my-quotes');
 	}
 
 	return (
@@ -166,51 +193,43 @@ export default function BookingPage() {
 
 					<Card>
 						<CardContent className="flex flex-col gap-6">
-							{submitted ? (
-								<BookingSuccess />
-							) : (
-								<>
-									<StepIndicator currentStep={step} />
+							<StepIndicator currentStep={step} />
 
-									<Form {...form}>
-										<form
-											onSubmit={form.handleSubmit(onSubmit)}
-											className="flex flex-col gap-6"
-											onKeyDown={(event) => {
-												if (event.key === 'Enter' && step < TOTAL_BOOKING_STEPS) event.preventDefault();
-											}}
-										>
-											{step === 1 && <PlanAndDetailsStep form={form} plans={plans ?? []} />}
-											{step === 2 && <AddressAndDateStep form={form} />}
-											{step === 3 && (
-												<ContactReviewStep form={form} plan={selectedPlan} estimatedPrice={estimatedPrice} />
-											)}
+							<Form {...form}>
+								<form
+									onSubmit={form.handleSubmit(onSubmit)}
+									className="flex flex-col gap-6"
+									onKeyDown={(event) => {
+										if (event.key === 'Enter' && step < TOTAL_BOOKING_STEPS) event.preventDefault();
+									}}
+								>
+									{step === 1 && <PlanAndDetailsStep form={form} plans={plans ?? []} />}
+									{step === 2 && <AddressAndDateStep form={form} />}
+									{step === 3 && <ContactReviewStep form={form} plan={selectedPlan} estimatedPrice={estimatedPrice} />}
 
-											<BookingSummary planName={selectedPlan?.name} estimatedPrice={estimatedPrice} />
+									<BookingSummary planName={selectedPlan?.name} estimatedPrice={estimatedPrice} />
 
-											<div className="flex items-center justify-between gap-3">
-												{step > 1 ? (
-													<Button type="button" variant="ghost" onClick={handleBack}>
-														Back
-													</Button>
-												) : (
-													<span />
-												)}
+									<div className="flex items-center justify-between gap-3">
+										{step > 1 ? (
+											<Button type="button" variant="ghost" onClick={handleBack}>
+												Back
+											</Button>
+										) : (
+											<span />
+										)}
 
-												{step < TOTAL_BOOKING_STEPS ? (
-													<Button key="continue" type="button" variant="gradient" onClick={handleNext}>
-														Continue
-													</Button>
-												) : (
-													<Button key="submit" type="submit" variant="gradient" disabled={form.formState.isSubmitting}>
-														{form.formState.isSubmitting ? 'Submitting...' : 'Submit request'}
-													</Button>
-												)}
-											</div>
-										</form>
-									</Form>
-								</>
-							)}
+										{step < TOTAL_BOOKING_STEPS ? (
+											<Button key="continue" type="button" variant="gradient" onClick={handleNext}>
+												Continue
+											</Button>
+										) : (
+											<Button key="submit" type="submit" variant="gradient" disabled={form.formState.isSubmitting}>
+												{form.formState.isSubmitting ? 'Submitting...' : 'Submit request'}
+											</Button>
+										)}
+									</div>
+								</form>
+							</Form>
 						</CardContent>
 					</Card>
 				</div>

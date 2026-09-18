@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ChevronLeftIcon, InformationCircleIcon, MapPinIcon } from '@hugeicons/core-free-icons';
@@ -13,16 +13,34 @@ import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
 import { useQuotesByCustomer } from '@/hooks/queries/use-quotes';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { cn } from '@/lib/utils';
-import { QUOTE_STATUS_BADGE_VARIANT } from '@/lib/quote-status';
+import { QUOTE_STATUS_BADGE_VARIANT, QUOTE_STATUS_CUSTOMER_MESSAGE, getQuoteStatusFilter } from '@/lib/quote-status';
 import type { QuoteWithPlan } from '@/services/quotes';
 
 function formatAddress(quote: QuoteWithPlan) {
-	return [quote.address_line, quote.city, quote.state].filter(Boolean).join(', ') + (quote.zip_code ? ` ${quote.zip_code}` : '');
+	return (
+		[quote.address_line, quote.city, quote.state].filter(Boolean).join(', ') +
+		(quote.zip_code ? ` ${quote.zip_code}` : '')
+	);
 }
 
 function formatPrice(quote: QuoteWithPlan) {
 	const value = quote.final_price ?? quote.estimated_price;
 	return value != null ? `$${value.toFixed(2)}` : 'Pending review';
+}
+
+function buildRebookUrl(quote: QuoteWithPlan) {
+	const params = new URLSearchParams({
+		planId: quote.plan_id,
+		bedrooms: String(quote.bedrooms),
+		bathrooms: String(quote.bathrooms),
+		squareFootage: String(quote.square_footage),
+		hasPets: String(quote.has_pets),
+		addressLine: quote.address_line,
+	});
+	if (quote.city) params.set('city', quote.city);
+	if (quote.state) params.set('state', quote.state);
+	if (quote.zip_code) params.set('zipCode', quote.zip_code);
+	return `/booking?${params.toString()}`;
 }
 
 function QuoteCardSkeleton() {
@@ -62,6 +80,7 @@ export default function DashboardMyQuotesPage() {
 	const { user } = useAuth();
 	const { data: quotes, isLoading, isError } = useQuotesByCustomer(user?.id);
 	const goToBooking = useGoToBooking();
+	const navigate = useNavigate();
 
 	return (
 		<div className="min-h-dvh bg-background">
@@ -135,52 +154,76 @@ export default function DashboardMyQuotesPage() {
 
 					{!isLoading && !isError && quotes && quotes.length > 0 && (
 						<div className="flex flex-col gap-5">
-							{quotes.map((quote) => (
-								<Card key={quote.id} className="shadow-lg shadow-baltic-blue/10">
-									<CardHeader>
-										<CardTitle className="text-lg">{quote.cleaning_plans?.name ?? 'Custom plan'}</CardTitle>
-										<p className="text-xs text-muted-foreground">
-											Submitted {new Date(quote.created_at).toLocaleDateString()}
-										</p>
-										<CardAction>
-											<Badge variant={QUOTE_STATUS_BADGE_VARIANT[quote.status]} className="capitalize">
-												{quote.status}
-											</Badge>
-										</CardAction>
-									</CardHeader>
-									<CardContent className="flex flex-col gap-4">
-										<div className="grid grid-cols-2 gap-4 border-y border-input py-4">
-											<div>
-												<p className="mb-1 text-[11px] font-bold tracking-wide text-muted-foreground uppercase">
-													Desired visit
-												</p>
-												<p className="text-sm font-semibold text-foreground">
-													{format(new Date(quote.desired_visit_date), 'M/d/yyyy h:mm a')}
-												</p>
+							{quotes.map((quote) => {
+								const statusFilter = getQuoteStatusFilter(quote);
+								return (
+									<Card key={quote.id} className="shadow-lg shadow-baltic-blue/10">
+										<CardHeader>
+											<CardTitle className="text-lg">{quote.cleaning_plans?.name ?? 'Custom plan'}</CardTitle>
+											<p className="text-xs text-muted-foreground">
+												Submitted {new Date(quote.created_at).toLocaleDateString()}
+											</p>
+											<CardAction>
+												<Badge variant={QUOTE_STATUS_BADGE_VARIANT[statusFilter]} className="capitalize">
+													{statusFilter}
+												</Badge>
+											</CardAction>
+										</CardHeader>
+										<CardContent className="flex flex-col gap-4">
+											<div className="grid grid-cols-2 gap-4 border-y border-input py-4">
+												<div>
+													<p className="mb-1 text-[11px] font-bold tracking-wide text-muted-foreground uppercase">
+														Desired visit
+													</p>
+													<p className="text-sm font-semibold text-foreground">
+														{format(new Date(quote.desired_visit_date), 'M/d/yyyy h:mm a')}
+													</p>
+												</div>
+												<div>
+													<p className="mb-1 text-[11px] font-bold tracking-wide text-muted-foreground uppercase">
+														Price
+													</p>
+													<p className="text-sm font-semibold text-foreground">{formatPrice(quote)}</p>
+												</div>
 											</div>
-											<div>
-												<p className="mb-1 text-[11px] font-bold tracking-wide text-muted-foreground uppercase">Price</p>
-												<p className="text-sm font-semibold text-foreground">{formatPrice(quote)}</p>
-											</div>
-										</div>
 
-										<div className="flex items-center gap-2 text-sm text-muted-foreground">
-											<HugeiconsIcon icon={MapPinIcon} className="size-4 text-fresh-sky" />
-											{formatAddress(quote)}
-										</div>
+											<div className="flex items-center gap-2 text-sm text-muted-foreground">
+												<HugeiconsIcon icon={MapPinIcon} className="size-4 text-fresh-sky" />
+												{formatAddress(quote)}
+											</div>
 
-										{quote.admin_notes && (
-											<div className="flex gap-2.5 rounded-xl border border-honeydew bg-honeydew/40 px-3.5 py-3">
-												<HugeiconsIcon icon={InformationCircleIcon} className="mt-0.5 size-4 shrink-0 text-mint-leaf" />
-												<p className="text-sm leading-relaxed text-foreground">
-													<span className="font-semibold">Note from our team: </span>
-													{quote.admin_notes}
+											{quote.admin_notes && (
+												<div className="flex gap-2.5 rounded-xl border border-honeydew bg-honeydew/40 px-3.5 py-3">
+													<HugeiconsIcon
+														icon={InformationCircleIcon}
+														className="mt-0.5 size-4 shrink-0 text-mint-leaf"
+													/>
+													<p className="text-sm leading-relaxed text-foreground">
+														<span className="font-semibold">Note from our team: </span>
+														{quote.admin_notes}
+													</p>
+												</div>
+											)}
+
+											<div className="flex gap-2.5 rounded-xl border border-input bg-muted/40 px-3.5 py-3">
+												<HugeiconsIcon icon={InformationCircleIcon} className="mt-0.5 size-4 shrink-0 text-fresh-sky" />
+												<p className="text-sm leading-relaxed text-muted-foreground">
+													{QUOTE_STATUS_CUSTOMER_MESSAGE[statusFilter]}
 												</p>
 											</div>
-										)}
-									</CardContent>
-								</Card>
-							))}
+
+											<Button
+												variant="outline"
+												size="sm"
+												className="self-start"
+												onClick={() => navigate(buildRebookUrl(quote))}
+											>
+												Book Again
+											</Button>
+										</CardContent>
+									</Card>
+								);
+							})}
 						</div>
 					)}
 				</div>
