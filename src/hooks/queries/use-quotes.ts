@@ -14,7 +14,12 @@ import {
 } from '@/services/quotes';
 import type { Tables, TablesInsert, TablesUpdate } from '@/types/supabase';
 
-export function useQuotes(filter: { status: QuoteStatusFilter; search?: string; assignedTo?: string }) {
+export function useQuotes(filter: {
+	status: QuoteStatusFilter;
+	search?: string;
+	assignedTo?: string;
+	customerId?: string;
+}) {
 	return useQuery({
 		queryKey: quoteKeys.byFilter(filter),
 		queryFn: () => getQuotes(filter),

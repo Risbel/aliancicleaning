@@ -15,7 +15,7 @@ import { useAuth } from '@/hooks/auth/use-auth';
 import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
 import { useStaffProfile } from '@/hooks/queries/use-profile';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { CoinsDollarIcon, ListChecks, LogOut } from '@hugeicons/core-free-icons';
+import { CoinsDollarIcon, ListChecks, LogOut, UserMultipleIcon } from '@hugeicons/core-free-icons';
 
 const navLinks = [
 	{ label: 'Home', href: '#home' },
@@ -76,6 +76,13 @@ function UserMenu() {
 						</Link>
 					</DropdownMenuItem>
 				)}
+				{staffProfile && (
+					<DropdownMenuItem asChild className="justify-between rounded-sm cursor-pointer">
+						<Link to="/dashboard/clients">
+							Clients <HugeiconsIcon icon={UserMultipleIcon} />
+						</Link>
+					</DropdownMenuItem>
+				)}
 				{isAdmin && (
 					<DropdownMenuItem asChild className="justify-between rounded-sm cursor-pointer">
 						<Link to="/dashboard/plans">
@@ -104,11 +111,7 @@ export default function Navbar() {
 			{/* Desktop: floating pill */}
 			<header className="fixed top-5 left-1/2 z-50 -translate-x-1/2 hidden md:flex h-13 items-center gap-2 rounded-full px-2 bg-linear-to-r from-blue-950/70 to-baltic-blue/50 backdrop-blur-md border border-white/20 shadow-lg shadow-black/15">
 				<a href="/" className="flex items-center gap-2">
-					<img
-						src="/favicon/nav-icon.png"
-						alt="Alianci Cleaning"
-						className="h-9 w-9 rounded-full object-cover"
-					/>
+					<img src="/favicon/nav-icon.png" alt="Alianci Cleaning" className="h-9 w-9 rounded-full object-cover" />
 					<span className="text-md font-semibold tracking-tight text-white">AlianciCleaning</span>
 				</a>
 
@@ -138,11 +141,7 @@ export default function Navbar() {
 			<header className="fixed top-0 left-0 right-0 z-50 md:hidden bg-linear-to-tr from-baltic-blue/80 to-fresh-sky/40 backdrop-blur-md border-b border-white/15 shadow-lg shadow-black/10">
 				<div className="flex h-14 items-center justify-between px-5">
 					<a href="/" className="flex items-center gap-2">
-						<img
-							src="/favicon/nav-icon.png"
-							alt="Alianci Cleaning"
-							className="h-8 w-8 rounded-full object-cover"
-						/>
+						<img src="/favicon/nav-icon.png" alt="Alianci Cleaning" className="h-8 w-8 rounded-full object-cover" />
 						<span className="text-[15px] font-bold tracking-tight text-white">AlianciCleaning</span>
 					</a>
 

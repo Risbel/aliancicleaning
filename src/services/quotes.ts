@@ -12,6 +12,7 @@ export async function getQuotes(filter: {
 	status: QuoteStatusFilter;
 	search?: string;
 	assignedTo?: string;
+	customerId?: string;
 }): Promise<QuoteWithPlan[]> {
 	let query = supabase.from('quotes').select('*, cleaning_plans(name)').order('created_at', { ascending: false });
 	const now = new Date().toISOString();
@@ -25,6 +26,7 @@ export async function getQuotes(filter: {
 	}
 
 	if (filter.assignedTo) query = query.eq('assigned_to', filter.assignedTo);
+	if (filter.customerId) query = query.eq('customer_id', filter.customerId);
 
 	if (filter.search) {
 		const term = filter.search.replace(/[,%]/g, '');

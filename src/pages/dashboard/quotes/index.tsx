@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
 	ArrowUpDownIcon,
+	Cancel01Icon,
 	ChevronDownIcon,
 	ChevronLeftIcon,
 	EyeIcon,
@@ -58,6 +59,7 @@ import { EditQuoteDialog } from '@/components/dashboard/quotes/EditQuoteDialog';
 import { QuoteDetailsDialog } from '@/components/dashboard/quotes/QuoteDetailsDialog';
 import { SendConfirmationDialog } from '@/components/dashboard/quotes/SendConfirmationDialog';
 import { useAuth } from '@/hooks/auth/use-auth';
+import { useCustomer } from '@/hooks/queries/use-customers';
 import { useStaffProfile } from '@/hooks/queries/use-profile';
 import { useDeleteQuote, useQuotes, useUpdateQuote } from '@/hooks/queries/use-quotes';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -96,6 +98,8 @@ export default function DashboardQuotesPage() {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const status = (searchParams.get('status') as QuoteStatusFilter) || 'pending';
 	const search = searchParams.get('q') ?? '';
+	const customerId = searchParams.get('customer') ?? undefined;
+	const { data: filterCustomer } = useCustomer(customerId);
 
 	const [searchInput, setSearchInput] = useState(search);
 	const [sorting, setSorting] = useState<SortingState>([]);
@@ -123,6 +127,7 @@ export default function DashboardQuotesPage() {
 		status,
 		search: search || undefined,
 		assignedTo: isAdmin ? undefined : user?.id,
+		customerId,
 	});
 
 	const [editingQuote, setEditingQuote] = useState<Tables<'quotes'> | null>(null);
@@ -166,6 +171,13 @@ export default function DashboardQuotesPage() {
 		setSearchParams((params) => {
 			if (nextStatus === 'pending') params.delete('status');
 			else params.set('status', nextStatus);
+			return params;
+		});
+	}
+
+	function clearCustomerFilter() {
+		setSearchParams((params) => {
+			params.delete('customer');
 			return params;
 		});
 	}
@@ -339,6 +351,18 @@ export default function DashboardQuotesPage() {
 						</button>
 					))}
 				</div>
+
+				{customerId && (
+					<div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+						Client:
+						<Badge variant="outline" className="gap-1 pr-1">
+							{filterCustomer?.full_name ?? 'Loading...'}
+							<button type="button" onClick={clearCustomerFilter} aria-label="Clear client filter">
+								<HugeiconsIcon icon={Cancel01Icon} className="size-3.5" />
+							</button>
+						</Badge>
+					</div>
+				)}
 
 				<div className="mb-6 flex items-center gap-2">
 					<label htmlFor="quote-search" className="sr-only">

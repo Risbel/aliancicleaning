@@ -8,9 +8,18 @@ export const quoteKeys = {
 	all: ['quotes'] as const,
 	lists: () => [...quoteKeys.all, 'list'] as const,
 	listByCustomer: (customerId: string) => [...quoteKeys.lists(), { customerId }] as const,
-	byFilter: (filter: { status: string; search?: string }) => [...quoteKeys.lists(), 'staff', filter] as const,
+	byFilter: (filter: { status: string; search?: string; customerId?: string }) =>
+		[...quoteKeys.lists(), 'staff', filter] as const,
 	detail: (id: string) => [...quoteKeys.all, 'detail', id] as const,
 	byConfirmationToken: (token: string) => [...quoteKeys.all, 'confirmation', token] as const,
+};
+
+export const customerKeys = {
+	all: ['customers'] as const,
+	lists: () => [...customerKeys.all, 'list'] as const,
+	byFilter: (filter: { type: string; search?: string }) => [...customerKeys.lists(), filter] as const,
+	accounts: () => [...customerKeys.lists(), 'accounts'] as const,
+	detail: (id: string) => [...customerKeys.all, 'detail', id] as const,
 };
 
 export const profileKeys = {
