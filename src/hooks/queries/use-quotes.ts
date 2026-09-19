@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { quoteKeys } from '@/lib/query-keys';
+import { customerKeys, quoteKeys } from '@/lib/query-keys';
 import {
 	acceptQuoteByConfirmationToken,
 	createQuote,
@@ -49,6 +49,7 @@ export function useCreateQuote() {
 		mutationFn: (quote: TablesInsert<'quotes'>) => createQuote(quote),
 		onSuccess: (data) => {
 			queryClient.invalidateQueries({ queryKey: quoteKeys.lists() });
+			queryClient.invalidateQueries({ queryKey: customerKeys.lists() });
 			if (data.customer_id) {
 				queryClient.invalidateQueries({ queryKey: quoteKeys.listByCustomer(data.customer_id) });
 			}

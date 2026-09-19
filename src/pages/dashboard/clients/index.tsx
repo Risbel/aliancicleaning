@@ -5,6 +5,7 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import {
 	ArrowUpDownIcon,
 	ChevronDownIcon,
+	FileAddIcon,
 	GitMergeIcon,
 	ListChecks,
 	MoreHorizontalIcon,
@@ -34,6 +35,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ClientFormDialog } from '@/components/dashboard/clients/ClientFormDialog';
+import { CreateQuoteDialog } from '@/components/dashboard/clients/CreateQuoteDialog';
 import { MergeClientDialog } from '@/components/dashboard/clients/MergeClientDialog';
 import { useCustomers } from '@/hooks/queries/use-customers';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -93,6 +95,7 @@ export default function DashboardClientsPage() {
 
 	const [formCustomer, setFormCustomer] = useState<Tables<'customer_profiles'> | null | undefined>(undefined);
 	const [mergingCustomer, setMergingCustomer] = useState<CustomerWithQuoteCount | null>(null);
+	const [quotingCustomer, setQuotingCustomer] = useState<CustomerWithQuoteCount | null>(null);
 
 	function setType(nextType: CustomerTypeFilter) {
 		setSearchParams((params) => {
@@ -174,6 +177,9 @@ export default function DashboardClientsPage() {
 									</Button>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent align="end">
+									<DropdownMenuItem className="justify-between" onClick={() => setQuotingCustomer(customer)}>
+										New quote <HugeiconsIcon icon={FileAddIcon} className="size-4" />
+									</DropdownMenuItem>
 									<DropdownMenuItem className="justify-between" onClick={() => setFormCustomer(customer)}>
 										Edit <HugeiconsIcon icon={Pen} className="size-4" />
 									</DropdownMenuItem>
@@ -332,6 +338,10 @@ export default function DashboardClientsPage() {
 
 				{mergingCustomer && (
 					<MergeClientDialog customer={mergingCustomer} onOpenChange={(open) => !open && setMergingCustomer(null)} />
+				)}
+
+				{quotingCustomer && (
+					<CreateQuoteDialog customer={quotingCustomer} onOpenChange={(open) => !open && setQuotingCustomer(null)} />
 				)}
 			</div>
 		</div>

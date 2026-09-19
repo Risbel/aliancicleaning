@@ -91,7 +91,15 @@ A `Booking` is created when an authenticated client submits the booking form. It
 
 ## 5. Quotes
 
-A `Quote` is created when a visitor submits the public quote/booking form, before it becomes a confirmed service. Staff manage the quote lifecycle from `/dashboard/quotes`.
+A `Quote` is created when a visitor submits the public quote/booking form, before it becomes a confirmed service. Staff can also create quotes on a client's behalf (e.g. taken over the phone) via the **New quote** action on `/dashboard/clients`, for both manual clients and account holders. Staff manage the quote lifecycle from `/dashboard/quotes`.
+
+### Staff-created quotes
+
+- Linked to the client via `customer_id`; contact snapshot (`customer_name`, `customer_email`, `customer_phone`) is taken from the client record. `customer_email` is `null` for manual clients without an email.
+- Created as `pending` and unassigned — assignment remains an admin action.
+- `estimated_price` is auto-calculated from the plan formula as in the public form; staff may optionally set `final_price` at creation.
+- If the client record had no phone, the phone entered in the quote is saved back to the client.
+- Quotes created for an account holder appear in their `/my-quotes`.
 
 ### Quote Table — Key Fields
 
@@ -188,6 +196,7 @@ Accessible to any staff member (`staff_profiles` row). `/dashboard/plans` is res
 
 - Displays all registered users with `role: client`.
 - Shows contact info: name, email, phone, address, and registration date.
+- Row actions: **New quote** (create a quote for that client), Edit, View quotes, and Merge into account (manual clients only).
 
 ### `/dashboard/plans` — Plan Management
 
