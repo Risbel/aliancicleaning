@@ -185,7 +185,7 @@ Accessible to any staff member (`staff_profiles` row). `/dashboard/plans` and `/
 
 | Route | Description |
 |---|---|
-| `/dashboard` | Overview (placeholder text for now; charts planned) |
+| `/dashboard` | Overview: KPIs, revenue, pipeline, plan mix, upcoming jobs |
 | `/dashboard/quotes` | Quotes list and management |
 | `/dashboard/clients` | List of all users with `role: client` |
 | `/dashboard/plans` | Manage cleaning plans (create, edit, delete) — admin only |
@@ -193,7 +193,27 @@ Accessible to any staff member (`staff_profiles` row). `/dashboard/plans` and `/
 
 ### `/dashboard` — Overview
 
-- Currently renders only placeholder text. Charts and metrics are planned but not implemented.
+A minimal performance overview. Admins see business-wide numbers; non-admin staff see only quotes assigned to them. The scope is enforced in the database functions (see `SCHEMA_CURRENT.md`), not only in the UI.
+
+A range select (Last 7 days / 30 days (default) / 90 days / 12 months) is stored in the URL as `?range=`. Ranges include today and use the browser time zone.
+
+**KPI cards** (range-based cards compare against the previous period of the same length)
+
+| Card | Definition |
+|---|---|
+| Revenue | Sum of `final_price` (falling back to `estimated_price`) of `completed` quotes whose `desired_visit_date` is in the range |
+| Quote requests | Quotes whose `created_at` is in the range |
+| Conversion rate | Quotes created in the range that are now `accepted` or `completed`, divided by quote requests; delta shown in percentage points |
+| Awaiting review | Live count of `pending` quotes whose visit date has not passed. Admins also see how many open quotes (`pending`, `reviewed`, `quoted`, `accepted`) are unassigned. Links to `/dashboard/quotes?status=pending` |
+
+**Widgets**
+
+- **Revenue**: area chart of completed revenue per day (7d/30d), week (90d), or month (12m), bucketed by visit date. Empty buckets are 0. The tooltip also shows completed jobs.
+- **Upcoming jobs**: the next 5 `accepted` quotes with a future visit date (date, client, city, price). "View all" opens `/dashboard/quotes?status=accepted`.
+- **Pipeline**: live horizontal bars for `pending`, `reviewed`, `quoted`, `accepted`, and `expired` (pending past the visit date). Not affected by the range. Clicking a bar opens `/dashboard/quotes` filtered to that status.
+- **Plan mix**: donut of quote requests per cleaning plan in the range, with share and completed revenue. Plan colors are assigned by plan name so they stay stable; more than 3 plans fold into "Other".
+
+Any quote mutation (create, edit, status change, send confirmation, delete) invalidates the dashboard cache.
 
 ### `/dashboard/clients` — Client List
 
@@ -264,7 +284,7 @@ The sidebar footer has a "Back to site" link. From the public site, staff reach 
 | `/login` | Public | User login |
 | `/signup` | Public | User registration |
 | `/booking` | Authenticated (client) | Booking form |
-| `/dashboard` | Authenticated (staff) | Dashboard overview (placeholder) |
+| `/dashboard` | Authenticated (staff) | Dashboard overview (metrics and charts) |
 | `/dashboard/clients` | Authenticated (staff) | Client list |
 | `/dashboard/plans` | Authenticated (admin) | Plan management |
 | `/dashboard/quotes` | Authenticated (staff) | Quotes list and management |

@@ -12,19 +12,20 @@ src/
 ├── components/
 │   ├── ui/              shadcn/ui primitives (button, card, avatar, dropdown-menu, carousel...)
 │   ├── <feature>/       One folder per landing-page section (hero, navbar, footer, about, services, why-us, reviews)
-│   ├── dashboard/       DashboardLayout + DashboardSidebar, plus per-page subfolders (quotes/, clients/, plans/, staff/) for dialogs and forms
+│   ├── dashboard/       DashboardLayout + DashboardSidebar, plus per-page subfolders (overview/, quotes/, clients/, plans/, staff/) for widgets, dialogs and forms, and shared `StatCard`
 │   └── decorative/      Purely visual, non-semantic components (FloatingBubble, WaveDivider)
 ├── contexts/            React context providers (auth-context.tsx)
 ├── data/                Static JSON content (services.json)
 ├── hooks/
 │   ├── auth/            Auth-related hooks (use-auth.ts)
-│   └── queries/         TanStack Query hooks, one per resource (use-plans.ts, use-profile.ts, use-quotes.ts, use-customers.ts, use-staff.ts)
+│   └── queries/         TanStack Query hooks, one per resource (use-plans.ts, use-profile.ts, use-quotes.ts, use-customers.ts, use-staff.ts, use-dashboard.ts)
 ├── lib/
 │   ├── supabase/        Supabase client setup (client.ts)
 │   ├── query-client.ts  TanStack Query client instance
 │   ├── query-keys.ts    Centralized query key factory
+│   ├── format.ts        Currency and number formatters
 │   └── utils.ts         Generic helpers (e.g. cn())
-├── services/            Supabase data-access functions, one file per resource (auth.ts, plans.ts, profiles.ts, quotes.ts, customers.ts, staff.ts)
+├── services/            Supabase data-access functions, one file per resource (auth.ts, plans.ts, profiles.ts, quotes.ts, customers.ts, staff.ts, dashboard.ts)
 ├── types/               Shared TypeScript types (supabase.ts — generated DB types)
 ├── App.tsx
 ├── main.tsx

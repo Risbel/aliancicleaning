@@ -21,6 +21,10 @@ This document outlines the core technologies used in this project.
 - Enables consistent design through a shared token system (spacing, colors, typography)
 - Integrates via `@tailwindcss/vite` plugin
 
+### [Recharts](https://recharts.org/) via shadcn charts
+- Used for dashboard charts through the shadcn `chart` primitive (`src/components/ui/chart.tsx`: `ChartContainer`, `ChartTooltip`, `ChartTooltipContent`)
+- Colors come from `--chart-*` tokens or per-chart `ChartConfig` themes (light and dark)
+
 ### [date-fns](https://date-fns.org/)
 - Lightweight utility library for formatting, manipulating, and comparing dates
 - Tree-shakeable — only import the functions you need
@@ -29,7 +33,7 @@ This document outlines the core technologies used in this project.
 - Manages server state: fetching, caching, invalidation, and mutations
 - Paired with `@tanstack/react-query-devtools` for cache inspection in development
 - `QueryClient` configured in `src/lib/query-client.ts` (`staleTime: 60_000`, `gcTime: 300_000`, `retry: 1`)
-- Query keys organized via factories in `src/lib/query-keys.ts` (`planKeys`, `quoteKeys`, `profileKeys`), hierarchical by entity → id → filters
+- Query keys organized via factories in `src/lib/query-keys.ts` (`planKeys`, `quoteKeys`, `customerKeys`, `profileKeys`, `staffKeys`, `dashboardKeys`), hierarchical by entity → id → filters
 
 ---
 

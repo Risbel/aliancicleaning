@@ -294,6 +294,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      _dashboard_scope: { Args: never; Returns: string }
       _merge_customer_profiles: {
         Args: { p_source: string; p_target: string }
         Returns: {
@@ -405,6 +406,53 @@ export type Database = {
           full_name: string
           id: string
           is_staff: boolean
+        }[]
+      }
+      get_dashboard_kpis: {
+        Args: { p_from: string; p_prev_from: string; p_to: string }
+        Returns: {
+          converted: number
+          pending_open: number
+          prev_converted: number
+          prev_requests: number
+          prev_revenue: number
+          requests: number
+          revenue: number
+          unassigned: number
+        }[]
+      }
+      get_dashboard_pipeline: {
+        Args: never
+        Returns: {
+          status: string
+          total: number
+        }[]
+      }
+      get_dashboard_plan_mix: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          plan_id: string
+          plan_name: string
+          quotes: number
+          revenue: number
+        }[]
+      }
+      get_dashboard_revenue_series: {
+        Args: { p_bucket: string; p_from: string; p_to: string; p_tz: string }
+        Returns: {
+          bucket: string
+          jobs: number
+          revenue: number
+        }[]
+      }
+      get_dashboard_upcoming_jobs: {
+        Args: { p_limit?: number }
+        Returns: {
+          city: string
+          customer_name: string
+          desired_visit_date: string
+          id: string
+          price: number
         }[]
       }
       get_quote_by_confirmation_token: {

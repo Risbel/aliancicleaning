@@ -24,7 +24,6 @@ import {
 } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
 	DropdownMenu,
@@ -35,12 +34,14 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { StatCard } from '@/components/dashboard/StatCard';
 import { AddStaffDialog } from '@/components/dashboard/staff/AddStaffDialog';
 import { ChangeStaffRoleDialog } from '@/components/dashboard/staff/ChangeStaffRoleDialog';
 import { RemoveStaffDialog } from '@/components/dashboard/staff/RemoveStaffDialog';
 import { useAuth } from '@/hooks/auth/use-auth';
 import { useStaffMembers } from '@/hooks/queries/use-staff';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { formatCurrency } from '@/lib/format';
 import { STAFF_ROLES, getStaffRole } from '@/lib/staff-role';
 import { cn } from '@/lib/utils';
 import type { StaffMember, StaffRole } from '@/services/staff';
@@ -51,10 +52,6 @@ const ROLE_FILTER_TAGS: { value: RoleFilter; label: string }[] = [
 	{ value: 'all', label: 'All' },
 	...STAFF_ROLES.map((role) => ({ value: role.value, label: role.label })),
 ];
-
-function formatCurrency(value: number) {
-	return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
 
 function getCompletionRate(member: StaffMember) {
 	const closed = member.completed_quotes + member.cancelled_quotes + member.declined_quotes;
@@ -72,18 +69,6 @@ function SortableHeader({ column, label }: { column: Column<StaffMember, unknown
 			{label}
 			<HugeiconsIcon icon={ArrowUpDownIcon} className="size-4" />
 		</Button>
-	);
-}
-
-function StatCard({ label, value, hint }: { label: string; value: string; hint: string }) {
-	return (
-		<Card size="sm">
-			<CardHeader>
-				<CardDescription>{label}</CardDescription>
-				<CardTitle className="text-2xl font-bold">{value}</CardTitle>
-				<p className="text-xs text-muted-foreground">{hint}</p>
-			</CardHeader>
-		</Card>
 	);
 }
 

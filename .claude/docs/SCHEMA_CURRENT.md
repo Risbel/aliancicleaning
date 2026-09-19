@@ -121,6 +121,20 @@ All are `SECURITY DEFINER`, raise unless `is_admin()`, and are granted to `authe
 
 Internal helpers (execute revoked from all client roles): `_user_display_name(uuid)` (customer profile name → `raw_user_meta_data` `full_name` / `name` → email prefix) and `_admin_count()`.
 
+### Dashboard overview (migration `20260920000000_dashboard_overview.sql`)
+
+All are `STABLE SECURITY DEFINER` and granted to `authenticated` only. They call the internal `_dashboard_scope()` helper (execute revoked from all client roles), which raises unless `is_staff()` and returns `null` for admins (all quotes) or `auth.uid()` otherwise (only quotes where `assigned_to` = caller). Revenue is always `coalesce(final_price, estimated_price)`.
+
+| Function | Returns | Notes |
+|---|---|---|
+| `get_dashboard_kpis(p_from, p_to, p_prev_from timestamptz)` | one row: `revenue`, `prev_revenue`, `requests`, `prev_requests`, `converted`, `prev_converted`, `pending_open`, `unassigned` | Ranges are `[p_from, p_to)` and `[p_prev_from, p_from)`. Revenue by `desired_visit_date` of `completed` quotes; requests/converted by `created_at`. `pending_open` and `unassigned` are live counts |
+| `get_dashboard_revenue_series(p_from, p_to timestamptz, p_bucket text, p_tz text)` | `bucket date`, `revenue numeric`, `jobs bigint` | `p_bucket` in `day` / `week` / `month`; `p_tz` must be in `pg_timezone_names`. Uses `generate_series` so empty buckets return 0 |
+| `get_dashboard_pipeline()` | `status text`, `total bigint` | Fixed rows in order: `pending` (visit date not passed), `reviewed`, `quoted`, `accepted`, `expired` (pending past visit date) |
+| `get_dashboard_plan_mix(p_from, p_to timestamptz)` | `plan_id uuid`, `plan_name text`, `quotes bigint`, `revenue numeric` | Quotes created in range per plan; revenue from the `completed` ones. Plans with no quotes are omitted |
+| `get_dashboard_upcoming_jobs(p_limit int default 5)` | `id`, `customer_name`, `city`, `desired_visit_date`, `price` | `accepted` quotes with a future visit date, soonest first. Limit clamped to 1-20 |
+
+Indexes added (`if not exists`): `idx_quotes_created_at (created_at)`, `idx_quotes_status_date (status, desired_visit_date)`, `idx_quotes_assigned_to (assigned_to)`.
+
 ---
 
 ## Seed Data (applied)

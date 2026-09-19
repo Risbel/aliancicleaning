@@ -34,3 +34,13 @@ export const staffKeys = {
 	lists: () => [...staffKeys.all, 'list'] as const,
 	lookup: (email: string) => [...staffKeys.all, 'lookup', email] as const,
 };
+
+export const dashboardKeys = {
+	all: ['dashboard'] as const,
+	kpis: (filter: { range: string; timeZone: string }) => [...dashboardKeys.all, 'kpis', filter] as const,
+	revenueSeries: (filter: { range: string; timeZone: string }) =>
+		[...dashboardKeys.all, 'revenue-series', filter] as const,
+	pipeline: () => [...dashboardKeys.all, 'pipeline'] as const,
+	planMix: (filter: { range: string; timeZone: string }) => [...dashboardKeys.all, 'plan-mix', filter] as const,
+	upcomingJobs: (limit: number) => [...dashboardKeys.all, 'upcoming-jobs', limit] as const,
+};

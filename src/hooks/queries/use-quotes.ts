@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { customerKeys, quoteKeys } from '@/lib/query-keys';
+import { customerKeys, dashboardKeys, quoteKeys } from '@/lib/query-keys';
 import {
 	acceptQuoteByConfirmationToken,
 	createQuote,
@@ -49,6 +49,7 @@ export function useCreateQuote() {
 		mutationFn: (quote: TablesInsert<'quotes'>) => createQuote(quote),
 		onSuccess: (data) => {
 			queryClient.invalidateQueries({ queryKey: quoteKeys.lists() });
+			queryClient.invalidateQueries({ queryKey: dashboardKeys.all });
 			queryClient.invalidateQueries({ queryKey: customerKeys.lists() });
 			if (data.customer_id) {
 				queryClient.invalidateQueries({ queryKey: quoteKeys.listByCustomer(data.customer_id) });
@@ -80,6 +81,7 @@ export function useUpdateQuote() {
 		},
 		onSettled: (data) => {
 			queryClient.invalidateQueries({ queryKey: quoteKeys.lists() });
+			queryClient.invalidateQueries({ queryKey: dashboardKeys.all });
 			if (data) queryClient.invalidateQueries({ queryKey: quoteKeys.detail(data.id) });
 		},
 	});
@@ -92,6 +94,7 @@ export function useSendQuoteConfirmation() {
 		mutationFn: (quoteId: string) => sendQuoteConfirmation(quoteId),
 		onSuccess: (data) => {
 			queryClient.invalidateQueries({ queryKey: quoteKeys.lists() });
+			queryClient.invalidateQueries({ queryKey: dashboardKeys.all });
 			queryClient.invalidateQueries({ queryKey: quoteKeys.detail(data.quote.id) });
 		},
 	});
@@ -104,6 +107,7 @@ export function useDeleteQuote() {
 		mutationFn: (id: string) => deleteQuote(id),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: quoteKeys.lists() });
+			queryClient.invalidateQueries({ queryKey: dashboardKeys.all });
 		},
 	});
 }
