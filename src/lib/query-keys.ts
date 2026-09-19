@@ -28,3 +28,9 @@ export const profileKeys = {
 	staff: (userId: string) => [...profileKeys.all, 'staff', userId] as const,
 	staffList: () => [...profileKeys.all, 'staff-list'] as const,
 };
+
+export const staffKeys = {
+	all: ['staff'] as const,
+	lists: () => [...staffKeys.all, 'list'] as const,
+	lookup: (email: string) => [...staffKeys.all, 'lookup', email] as const,
+};

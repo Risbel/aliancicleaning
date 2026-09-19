@@ -59,7 +59,7 @@ import { QuoteDetailsDialog } from '@/components/dashboard/quotes/QuoteDetailsDi
 import { SendConfirmationDialog } from '@/components/dashboard/quotes/SendConfirmationDialog';
 import { useAuth } from '@/hooks/auth/use-auth';
 import { useCustomer } from '@/hooks/queries/use-customers';
-import { useStaffProfile } from '@/hooks/queries/use-profile';
+import { useStaffProfile, useStaffProfiles } from '@/hooks/queries/use-profile';
 import { useDeleteQuote, useQuotes, useUpdateQuote } from '@/hooks/queries/use-quotes';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { cn } from '@/lib/utils';
@@ -98,6 +98,7 @@ export default function DashboardQuotesPage() {
 	const search = searchParams.get('q') ?? '';
 	const customerId = searchParams.get('customer') ?? undefined;
 	const { data: filterCustomer } = useCustomer(customerId);
+	const assignedId = searchParams.get('assigned') ?? undefined;
 
 	const [searchInput, setSearchInput] = useState(search);
 	const [sorting, setSorting] = useState<SortingState>([]);
@@ -116,6 +117,8 @@ export default function DashboardQuotesPage() {
 	const { user } = useAuth();
 	const { data: staffProfile } = useStaffProfile(user?.id);
 	const isAdmin = staffProfile?.role === 'admin';
+	const { data: staffProfiles } = useStaffProfiles();
+	const filterAssignee = staffProfiles?.find((member) => member.id === assignedId);
 
 	const {
 		data: quotes,
@@ -124,7 +127,7 @@ export default function DashboardQuotesPage() {
 	} = useQuotes({
 		status,
 		search: search || undefined,
-		assignedTo: isAdmin ? undefined : user?.id,
+		assignedTo: isAdmin ? assignedId : user?.id,
 		customerId,
 	});
 
@@ -176,6 +179,13 @@ export default function DashboardQuotesPage() {
 	function clearCustomerFilter() {
 		setSearchParams((params) => {
 			params.delete('customer');
+			return params;
+		});
+	}
+
+	function clearAssigneeFilter() {
+		setSearchParams((params) => {
+			params.delete('assigned');
 			return params;
 		});
 	}
@@ -353,6 +363,18 @@ export default function DashboardQuotesPage() {
 						<Badge variant="outline" className="gap-1 pr-1">
 							{filterCustomer?.full_name ?? 'Loading...'}
 							<button type="button" onClick={clearCustomerFilter} aria-label="Clear client filter">
+								<HugeiconsIcon icon={Cancel01Icon} className="size-3.5" />
+							</button>
+						</Badge>
+					</div>
+				)}
+
+				{isAdmin && assignedId && (
+					<div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+						Assigned to:
+						<Badge variant="outline" className="gap-1 pr-1">
+							{filterAssignee?.full_name ?? 'Loading...'}
+							<button type="button" onClick={clearAssigneeFilter} aria-label="Clear assignee filter">
 								<HugeiconsIcon icon={Cancel01Icon} className="size-3.5" />
 							</button>
 						</Badge>

@@ -145,6 +145,8 @@ Status changes are free-form: staff can set any status at any time via the "Chan
 - **Assign** — admin-only, opens a modal to set `assigned_to` from the list of staff.
 - **Delete** — hard delete after a confirmation dialog.
 
+Admins can filter the list by assignee with `?assigned=<staff id>` (linked from **View quotes** on `/dashboard/staff`); a removable "Assigned to" chip shows the active filter. Non-admin staff always see only their own assigned quotes, regardless of this param.
+
 ---
 
 ## 6. Plans
@@ -177,7 +179,7 @@ Each plan is rendered as a card on the landing page showing:
 
 ## 7. Admin Dashboard
 
-Accessible to any staff member (`staff_profiles` row). `/dashboard/plans` is restricted to `admin`.
+Accessible to any staff member (`staff_profiles` row). `/dashboard/plans` and `/dashboard/staff` are restricted to `admin`.
 
 ### Routes
 
@@ -187,6 +189,7 @@ Accessible to any staff member (`staff_profiles` row). `/dashboard/plans` is res
 | `/dashboard/quotes` | Quotes list and management |
 | `/dashboard/clients` | List of all users with `role: client` |
 | `/dashboard/plans` | Manage cleaning plans (create, edit, delete) — admin only |
+| `/dashboard/staff` | Manage staff members, roles, and view per-member performance — admin only |
 
 ### `/dashboard` — Overview
 
@@ -203,12 +206,50 @@ Accessible to any staff member (`staff_profiles` row). `/dashboard/plans` is res
 - Admins can create, edit, and delete plans.
 - Changes reflect immediately on the landing page.
 
+### `/dashboard/staff` — Staff Management
+
+Admin-only. Lists every `staff_profiles` row with the member's email and last sign-in (read from `auth.users` through the admin-only `get_staff_members()` RPC).
+
+**Roles**
+
+| Role | Access |
+|---|---|
+| `admin` | Full access: sees all quotes, assigns quotes, manages plans and staff |
+| `manager` | Team lead label. Currently the same dashboard access as `staff` |
+| `staff` | Sees and works on the quotes assigned to them |
+
+**Actions**
+
+- **Add staff** — look up a registered user by their exact email (case-insensitive; no partial search, so the lookup cannot be used to browse users). The result shows the name, whether they are already staff, and whether their email is verified. Pick a role and add them. The user must have signed up on the site first. The staff `full_name` is taken from their customer profile, then their auth metadata, then the email prefix.
+- **Change role** — radio options for admin / manager / staff.
+- **View quotes** — opens `/dashboard/quotes?status=all&assigned=<id>`, filtered to that member.
+- **Remove** — deletes the `staff_profiles` row after a confirmation dialog. All quotes assigned to the member are unassigned first. The auth account and any customer profile are kept, so they can still sign in as a client.
+
+**Rules (enforced in the database functions)**
+
+- An admin cannot change their own role or remove themselves. The UI hides those actions on the current user's row.
+- At least one admin must always remain: the last admin cannot be demoted or removed.
+
+**Performance metrics** (per member, computed from quotes where `assigned_to` = member)
+
+| Metric | Definition |
+|---|---|
+| Open | Assigned quotes with status `pending`, `reviewed`, `quoted`, or `accepted` |
+| Completed | Assigned quotes with status `completed` |
+| Completion rate | `completed / (completed + cancelled + declined)`; shown as `-` when no assigned quote has closed |
+| Revenue | Sum of `final_price` (falling back to `estimated_price`) over completed quotes |
+| Last active | Last sign-in from `auth.users` |
+| Joined | `staff_profiles.created_at` (hidden column by default) |
+
+Summary cards at the top total Team members, Open assignments, Completed jobs, and Completed revenue across all members. The table supports role filter tags (All / Admin / Manager / Staff), client-side search by name or email, sorting, column visibility, and pagination.
+
 ### Navigation
 
 All `/dashboard/*` routes share `DashboardLayout`, a collapsible shadcn **Sidebar** (collapses to icons, `Ctrl/Cmd+B` toggles) with links to:
 - Overview (`/dashboard`)
 - Quotes (`/dashboard/quotes`)
 - Clients (`/dashboard/clients`)
+- Staff (`/dashboard/staff`) — shown only to admins
 - Plan Pricing (`/dashboard/plans`) — shown only to admins
 
 The sidebar footer has a "Back to site" link. From the public site, staff reach the dashboard through a single **Dashboard** item in the navbar `UserMenu` dropdown (which otherwise contains only My Quotes and Sign out).
@@ -227,6 +268,7 @@ The sidebar footer has a "Back to site" link. From the public site, staff reach 
 | `/dashboard/clients` | Authenticated (staff) | Client list |
 | `/dashboard/plans` | Authenticated (admin) | Plan management |
 | `/dashboard/quotes` | Authenticated (staff) | Quotes list and management |
+| `/dashboard/staff` | Authenticated (admin) | Staff management and performance |
 | `/confirmation/:token` | Public | Reservation confirmation page reached from the accepted-quote link |
 
 ---
@@ -247,10 +289,12 @@ Plan ────────────► displayed on Landing Page as Card
 1. A booking can only be created by an authenticated user with `role: client`.
 2. Any unauthenticated CTA click redirects to `/login` or `/signup` before continuing.
 3. After login/signup, the user is always redirected to the booking form.
-4. Only staff users can access `/dashboard` and its sub-routes; `/dashboard/plans` is admin-only.
+4. Only staff users can access `/dashboard` and its sub-routes; `/dashboard/plans` and `/dashboard/staff` are admin-only.
 5. Bookings in the dashboard are always sorted by nearest `scheduled_date` first.
 6. A plan with `is_promo: true` must display both the original price and the discounted price.
 7. Client contact information (email, phone, address) must be complete to ensure stable communication.
 8. A quote's `customer_email` can never be edited by staff — only `customer_phone`, `final_price`, `status`, and `assigned_to` are staff-editable.
 9. Only `admin` staff can assign a quote to a staff member; the assign action is invisible to non-admin staff, not merely disabled.
 10. A quote's `confirmation_token` is generated once, the first time its status becomes `accepted`, and never regenerated afterward.
+11. Only admins can add, re-role, or remove staff. An admin cannot change their own role or remove themselves, and the last admin can never be demoted or removed.
+12. Removing a staff member unassigns their quotes and keeps their auth account and customer profile.

@@ -107,6 +107,20 @@ Quote requests submitted through the public booking form.
 
 `SECURITY DEFINER`, returns `setof quotes` matching `confirmation_token = p_token`. The only public read path for a quote — used by the `/confirmation/:token` page so an unauthenticated client can view their accepted quote without a broad RLS policy exposing all quotes. Granted to `anon` and `authenticated`.
 
+### Staff management (migration `20260919000000_staff_management.sql`)
+
+All are `SECURITY DEFINER`, raise unless `is_admin()`, and are granted to `authenticated` only.
+
+| Function | Returns | Notes |
+|---|---|---|
+| `get_staff_members()` | table: `id`, `full_name`, `email`, `role`, `created_at`, `last_sign_in_at`, `total_assigned`, `open_quotes`, `completed_quotes`, `cancelled_quotes`, `declined_quotes`, `completed_revenue`, `last_assigned_at` | Joins `staff_profiles` with `auth.users` and a per-assignee aggregate over `quotes`. Open = `pending`/`reviewed`/`quoted`/`accepted`. Revenue = sum of `coalesce(final_price, estimated_price)` over completed quotes. `email`, `last_sign_in_at`, `last_assigned_at` can be null (generated types mark them non-null; `StaffMember` in `src/services/staff.ts` overrides this) |
+| `find_user_by_email(p_email text)` | table: `id`, `email`, `full_name`, `is_staff`, `email_confirmed` | Exact, case-insensitive match against `auth.users` only |
+| `add_staff_member(p_user_id uuid, p_role staff_role)` | `staff_profiles` | Raises if the user doesn't exist or is already staff |
+| `set_staff_role(p_user_id uuid, p_role staff_role)` | `staff_profiles` | Raises on own role or demoting the last admin |
+| `remove_staff_member(p_user_id uuid)` | `void` | Raises on self or the last admin. Sets `quotes.assigned_to = null` for the member, then deletes the row |
+
+Internal helpers (execute revoked from all client roles): `_user_display_name(uuid)` (customer profile name → `raw_user_meta_data` `full_name` / `name` → email prefix) and `_admin_count()`.
+
 ---
 
 ## Seed Data (applied)

@@ -269,6 +269,56 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _admin_count: { Args: never; Returns: number }
+      _claim_customer_profile: {
+        Args: { p_user_id: string }
+        Returns: {
+          address_line: string | null
+          city: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          full_name: string
+          id: string
+          phone: string | null
+          source: string
+          state: string | null
+          updated_at: string
+          user_id: string | null
+          zip_code: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "customer_profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      _merge_customer_profiles: {
+        Args: { p_source: string; p_target: string }
+        Returns: {
+          address_line: string | null
+          city: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          full_name: string
+          id: string
+          phone: string | null
+          source: string
+          state: string | null
+          updated_at: string
+          user_id: string | null
+          zip_code: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "customer_profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      _user_display_name: { Args: { p_user_id: string }; Returns: string }
       accept_quote_by_confirmation_token: {
         Args: { p_token: string }
         Returns: {
@@ -304,6 +354,24 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      add_staff_member: {
+        Args: {
+          p_role: Database["public"]["Enums"]["staff_role"]
+          p_user_id: string
+        }
+        Returns: {
+          created_at: string
+          full_name: string
+          id: string
+          role: Database["public"]["Enums"]["staff_role"]
+        }
+        SetofOptions: {
+          from: "*"
+          to: "staff_profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       claim_customer_profile: {
         Args: never
         Returns: {
@@ -329,6 +397,16 @@ export type Database = {
         }
       }
       current_customer_id: { Args: never; Returns: string }
+      find_user_by_email: {
+        Args: { p_email: string }
+        Returns: {
+          email: string
+          email_confirmed: boolean
+          full_name: string
+          id: string
+          is_staff: boolean
+        }[]
+      }
       get_quote_by_confirmation_token: {
         Args: { p_token: string }
         Returns: {
@@ -364,6 +442,24 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      get_staff_members: {
+        Args: never
+        Returns: {
+          cancelled_quotes: number
+          completed_quotes: number
+          completed_revenue: number
+          created_at: string
+          declined_quotes: number
+          email: string
+          full_name: string
+          id: string
+          last_assigned_at: string
+          last_sign_in_at: string
+          open_quotes: number
+          role: Database["public"]["Enums"]["staff_role"]
+          total_assigned: number
+        }[]
+      }
       is_admin: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
       merge_customer_profiles: {
@@ -386,6 +482,25 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "customer_profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      remove_staff_member: { Args: { p_user_id: string }; Returns: undefined }
+      set_staff_role: {
+        Args: {
+          p_role: Database["public"]["Enums"]["staff_role"]
+          p_user_id: string
+        }
+        Returns: {
+          created_at: string
+          full_name: string
+          id: string
+          role: Database["public"]["Enums"]["staff_role"]
+        }
+        SetofOptions: {
+          from: "*"
+          to: "staff_profiles"
           isOneToOne: true
           isSetofReturn: false
         }
