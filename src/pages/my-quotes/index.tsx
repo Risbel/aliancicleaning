@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import FloatingBubble from '@/components/decorative/FloatingBubble';
 import { useAuth } from '@/hooks/auth/use-auth';
 import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
+import { useCustomerProfile } from '@/hooks/queries/use-profile';
 import { useQuotesByCustomer } from '@/hooks/queries/use-quotes';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { cn } from '@/lib/utils';
@@ -78,7 +79,10 @@ export default function DashboardMyQuotesPage() {
 	});
 
 	const { user } = useAuth();
-	const { data: quotes, isLoading, isError } = useQuotesByCustomer(user?.id);
+	const { data: profile, isLoading: isProfileLoading, isError: isProfileError } = useCustomerProfile(user?.id);
+	const { data: quotes, isLoading: isQuotesLoading, isError: isQuotesError } = useQuotesByCustomer(profile?.id);
+	const isLoading = isProfileLoading || isQuotesLoading;
+	const isError = isProfileError || isQuotesError;
 	const goToBooking = useGoToBooking();
 	const navigate = useNavigate();
 
@@ -143,7 +147,7 @@ export default function DashboardMyQuotesPage() {
 						</div>
 					)}
 					{isError && <p className="text-sm text-destructive">Failed to load quotes.</p>}
-					{!isLoading && !isError && quotes?.length === 0 && (
+					{!isLoading && !isError && !quotes?.length && (
 						<Card className="items-start gap-3 px-6 py-8">
 							<p className="text-sm text-muted-foreground">No quotes yet. Book a cleaning to get started.</p>
 							<Button variant="gradient" size="sm" onClick={() => goToBooking()}>

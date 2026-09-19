@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { profileKeys } from '@/lib/query-keys';
 import {
+	claimCustomerProfile,
 	getCustomerProfile,
 	getStaffProfile,
 	getStaffProfiles,
@@ -27,7 +28,7 @@ export function useStaffProfiles() {
 export function useCustomerProfile(userId: string | undefined) {
 	return useQuery({
 		queryKey: profileKeys.customer(userId ?? ''),
-		queryFn: () => getCustomerProfile(userId!),
+		queryFn: async () => (await claimCustomerProfile()) ?? getCustomerProfile(userId!),
 		enabled: !!userId,
 	});
 }
@@ -49,7 +50,9 @@ export function useUpsertCustomerProfile() {
 	return useMutation({
 		mutationFn: (profile: TablesInsert<'customer_profiles'>) => upsertCustomerProfile(profile),
 		onSuccess: (data) => {
-			queryClient.invalidateQueries({ queryKey: profileKeys.customer(data.id) });
+			if (data.user_id) {
+				queryClient.invalidateQueries({ queryKey: profileKeys.customer(data.user_id) });
+			}
 		},
 	});
 }

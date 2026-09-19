@@ -89,39 +89,56 @@ export type Database = {
           address_line: string | null
           city: string | null
           created_at: string
-          email: string
+          created_by: string | null
+          email: string | null
           full_name: string
           id: string
           phone: string | null
+          source: string
           state: string | null
           updated_at: string
+          user_id: string | null
           zip_code: string | null
         }
         Insert: {
           address_line?: string | null
           city?: string | null
           created_at?: string
-          email: string
+          created_by?: string | null
+          email?: string | null
           full_name: string
-          id: string
+          id?: string
           phone?: string | null
+          source?: string
           state?: string | null
           updated_at?: string
+          user_id?: string | null
           zip_code?: string | null
         }
         Update: {
           address_line?: string | null
           city?: string | null
           created_at?: string
-          email?: string
+          created_by?: string | null
+          email?: string | null
           full_name?: string
           id?: string
           phone?: string | null
+          source?: string
           state?: string | null
           updated_at?: string
+          user_id?: string | null
           zip_code?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "customer_profiles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       quotes: {
         Row: {
@@ -133,7 +150,7 @@ export type Database = {
           city: string | null
           confirmation_token: string | null
           created_at: string
-          customer_email: string
+          customer_email: string | null
           customer_id: string | null
           customer_name: string
           customer_note: string | null
@@ -159,7 +176,7 @@ export type Database = {
           city?: string | null
           confirmation_token?: string | null
           created_at?: string
-          customer_email: string
+          customer_email?: string | null
           customer_id?: string | null
           customer_name: string
           customer_note?: string | null
@@ -185,7 +202,7 @@ export type Database = {
           city?: string | null
           confirmation_token?: string | null
           created_at?: string
-          customer_email?: string
+          customer_email?: string | null
           customer_id?: string | null
           customer_name?: string
           customer_note?: string | null
@@ -263,7 +280,7 @@ export type Database = {
           city: string | null
           confirmation_token: string | null
           created_at: string
-          customer_email: string
+          customer_email: string | null
           customer_id: string | null
           customer_name: string
           customer_note: string | null
@@ -287,6 +304,31 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      claim_customer_profile: {
+        Args: never
+        Returns: {
+          address_line: string | null
+          city: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          full_name: string
+          id: string
+          phone: string | null
+          source: string
+          state: string | null
+          updated_at: string
+          user_id: string | null
+          zip_code: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "customer_profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      current_customer_id: { Args: never; Returns: string }
       get_quote_by_confirmation_token: {
         Args: { p_token: string }
         Returns: {
@@ -298,7 +340,7 @@ export type Database = {
           city: string | null
           confirmation_token: string | null
           created_at: string
-          customer_email: string
+          customer_email: string | null
           customer_id: string | null
           customer_name: string
           customer_note: string | null
@@ -324,6 +366,30 @@ export type Database = {
       }
       is_admin: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
+      merge_customer_profiles: {
+        Args: { p_source: string; p_target: string }
+        Returns: {
+          address_line: string | null
+          city: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          full_name: string
+          id: string
+          phone: string | null
+          source: string
+          state: string | null
+          updated_at: string
+          user_id: string | null
+          zip_code: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "customer_profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       cleaning_type: "standard" | "deep" | "move_in_out"

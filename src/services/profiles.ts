@@ -2,7 +2,14 @@ import { supabase } from '@/lib/supabase/client';
 import type { Tables, TablesInsert, TablesUpdate } from '@/types/supabase';
 
 export async function getCustomerProfile(userId: string): Promise<Tables<'customer_profiles'> | null> {
-	const { data, error } = await supabase.from('customer_profiles').select('*').eq('id', userId).maybeSingle();
+	const { data, error } = await supabase.from('customer_profiles').select('*').eq('user_id', userId).maybeSingle();
+
+	if (error) throw error;
+	return data;
+}
+
+export async function claimCustomerProfile(): Promise<Tables<'customer_profiles'> | null> {
+	const { data, error } = await supabase.rpc('claim_customer_profile');
 
 	if (error) throw error;
 	return data;
@@ -22,7 +29,7 @@ export async function upsertCustomerProfile(
 ): Promise<Tables<'customer_profiles'>> {
 	const { data, error } = await supabase
 		.from('customer_profiles')
-		.upsert(profile, { onConflict: 'id' })
+		.upsert(profile, { onConflict: 'user_id' })
 		.select()
 		.single();
 
@@ -34,7 +41,12 @@ export async function updateCustomerProfile(
 	userId: string,
 	updates: TablesUpdate<'customer_profiles'>,
 ): Promise<Tables<'customer_profiles'>> {
-	const { data, error } = await supabase.from('customer_profiles').update(updates).eq('id', userId).select().single();
+	const { data, error } = await supabase
+		.from('customer_profiles')
+		.update(updates)
+		.eq('user_id', userId)
+		.select()
+		.single();
 
 	if (error) throw error;
 	return data;

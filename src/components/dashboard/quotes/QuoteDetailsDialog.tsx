@@ -49,7 +49,7 @@ function buildDetailsText(quote: Tables<'quotes'>, address: string) {
 	const lines = [
 		['Status', quote.status],
 		['Name', quote.customer_name],
-		['Email', quote.customer_email],
+		['Email', quote.customer_email ?? '-'],
 		['Phone', quote.customer_phone],
 		['Address', address || '-'],
 		['Zip code', quote.zip_code ?? '-'],
@@ -92,7 +92,8 @@ export function QuoteDetailsDialog({
 				<DialogHeader>
 					<DialogTitle>Quote details</DialogTitle>
 					<DialogDescription className="break-words">
-						{quote.customer_name} &middot; {quote.customer_email}
+						{quote.customer_name}
+						{quote.customer_email && <> &middot; {quote.customer_email}</>}
 					</DialogDescription>
 				</DialogHeader>
 
@@ -120,17 +121,19 @@ export function QuoteDetailsDialog({
 					/>
 					<DetailRow
 						label="Email"
-						value={quote.customer_email}
+						value={quote.customer_email ?? '-'}
 						actions={
-							<>
-								<CopyButton value={quote.customer_email} label="Email" />
-								<Button variant="ghost" size="icon-xs" asChild>
-									<a href={`mailto:${quote.customer_email}`}>
-										<HugeiconsIcon icon={Mail01Icon} className="size-4" />
-										<span className="sr-only">Email {quote.customer_name}</span>
-									</a>
-								</Button>
-							</>
+							quote.customer_email && (
+								<>
+									<CopyButton value={quote.customer_email} label="Email" />
+									<Button variant="ghost" size="icon-xs" asChild>
+										<a href={`mailto:${quote.customer_email}`}>
+											<HugeiconsIcon icon={Mail01Icon} className="size-4" />
+											<span className="sr-only">Email {quote.customer_name}</span>
+										</a>
+									</Button>
+								</>
+							)
 						}
 					/>
 					<DetailRow

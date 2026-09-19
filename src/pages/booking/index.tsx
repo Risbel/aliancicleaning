@@ -83,7 +83,7 @@ export default function BookingPage() {
 	useEffect(() => {
 		if (!profile) return;
 		form.setValue('fullName', profile.full_name);
-		form.setValue('email', profile.email);
+		if (profile.email) form.setValue('email', profile.email);
 		if (profile.phone) form.setValue('phone', profile.phone);
 		if (isRebooking) return;
 		if (profile.address_line) form.setValue('addressLine', profile.address_line);
@@ -139,8 +139,8 @@ export default function BookingPage() {
 		const desiredVisitDate = new Date(data.desiredDate);
 		desiredVisitDate.setHours(TIME_PREFERENCE_HOURS[data.timePreference], 0, 0, 0);
 
-		await upsertProfile.mutateAsync({
-			id: user.id,
+		const savedProfile = await upsertProfile.mutateAsync({
+			user_id: user.id,
 			full_name: data.fullName,
 			email: data.email,
 			phone: data.phone,
@@ -151,7 +151,7 @@ export default function BookingPage() {
 		});
 
 		await createQuote.mutateAsync({
-			customer_id: user.id,
+			customer_id: savedProfile.id,
 			customer_name: data.fullName,
 			customer_email: data.email,
 			customer_phone: data.phone,
