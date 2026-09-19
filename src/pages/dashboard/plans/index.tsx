@@ -1,13 +1,8 @@
-import { Link } from 'react-router-dom';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { ChevronLeftIcon } from '@hugeicons/core-free-icons';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { buttonVariants } from '@/components/ui/button-variants';
 import { PlanPricingForm } from '@/components/dashboard/plans/PlanPricingForm';
 import { useAllPlans } from '@/hooks/queries/use-plans';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { cn } from '@/lib/utils';
 
 export default function DashboardPlansPage() {
 	const { data: plans, isLoading, isError } = useAllPlans();
@@ -19,11 +14,7 @@ export default function DashboardPlansPage() {
 	});
 
 	return (
-		<div className="min-h-dvh bg-background px-6 py-10 lg:px-12">
-			<Link className={cn('mb-6 absolute top-2 left-2', buttonVariants({ variant: 'ghost', size: 'sm' }))} to="/">
-				<HugeiconsIcon icon={ChevronLeftIcon} className="size-5" />
-				Go Home
-			</Link>
+		<div className="px-6 py-8 lg:px-12">
 			<div className="mx-auto max-w-6xl">
 				<h1 className="mb-6 text-2xl font-bold text-foreground">Plan Pricing</h1>
 

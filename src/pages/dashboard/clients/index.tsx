@@ -1,11 +1,10 @@
 import { useMemo, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDebouncedCallback } from 'use-debounce';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
 	ArrowUpDownIcon,
 	ChevronDownIcon,
-	ChevronLeftIcon,
 	GitMergeIcon,
 	ListChecks,
 	MoreHorizontalIcon,
@@ -25,7 +24,6 @@ import {
 } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { buttonVariants } from '@/components/ui/button-variants';
 import { Input } from '@/components/ui/input';
 import {
 	DropdownMenu,
@@ -213,11 +211,7 @@ export default function DashboardClientsPage() {
 	});
 
 	return (
-		<div className="min-h-dvh bg-background px-6 py-10 lg:px-12">
-			<Link className={cn('mb-6 absolute top-2 left-2', buttonVariants({ variant: 'ghost', size: 'sm' }))} to="/">
-				<HugeiconsIcon icon={ChevronLeftIcon} className="size-5" />
-				Go Home
-			</Link>
+		<div className="px-6 py-8 lg:px-12">
 			<div className="mx-auto max-w-6xl">
 				<div className="mb-6 flex items-center justify-between gap-4">
 					<h1 className="text-2xl font-bold text-foreground">Clients</h1>

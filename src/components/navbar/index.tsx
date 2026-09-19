@@ -15,7 +15,7 @@ import { useAuth } from '@/hooks/auth/use-auth';
 import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
 import { useStaffProfile } from '@/hooks/queries/use-profile';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { CoinsDollarIcon, ListChecks, LogOut, UserMultipleIcon } from '@hugeicons/core-free-icons';
+import { DashboardSquare01Icon, ListChecks, LogOut } from '@hugeicons/core-free-icons';
 
 const navLinks = [
 	{ label: 'Home', href: '#home' },
@@ -33,7 +33,6 @@ function UserMenu() {
 	const { user, signOut } = useAuth();
 	const navigate = useNavigate();
 	const { data: staffProfile } = useStaffProfile(user?.id);
-	const isAdmin = staffProfile?.role === 'admin';
 
 	if (!user) {
 		return (
@@ -71,22 +70,8 @@ function UserMenu() {
 				</DropdownMenuItem>
 				{staffProfile && (
 					<DropdownMenuItem asChild className="justify-between rounded-sm cursor-pointer">
-						<Link to="/dashboard/quotes">
-							Manage Quotes <HugeiconsIcon icon={ListChecks} />
-						</Link>
-					</DropdownMenuItem>
-				)}
-				{staffProfile && (
-					<DropdownMenuItem asChild className="justify-between rounded-sm cursor-pointer">
-						<Link to="/dashboard/clients">
-							Clients <HugeiconsIcon icon={UserMultipleIcon} />
-						</Link>
-					</DropdownMenuItem>
-				)}
-				{isAdmin && (
-					<DropdownMenuItem asChild className="justify-between rounded-sm cursor-pointer">
-						<Link to="/dashboard/plans">
-							Plan Pricing <HugeiconsIcon icon={CoinsDollarIcon} />
+						<Link to="/dashboard">
+							Dashboard <HugeiconsIcon icon={DashboardSquare01Icon} />
 						</Link>
 					</DropdownMenuItem>
 				)}

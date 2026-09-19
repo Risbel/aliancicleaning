@@ -169,20 +169,20 @@ Each plan is rendered as a card on the landing page showing:
 
 ## 7. Admin Dashboard
 
-Accessible only to admin users.
+Accessible to any staff member (`staff_profiles` row). `/dashboard/plans` is restricted to `admin`.
 
 ### Routes
 
 | Route | Description |
 |---|---|
-| `/dashboard` | List of all bookings, sorted by upcoming date (soonest first) |
+| `/dashboard` | Overview (placeholder text for now; charts planned) |
+| `/dashboard/quotes` | Quotes list and management |
 | `/dashboard/clients` | List of all users with `role: client` |
-| `/dashboard/plans` | Manage cleaning plans (create, edit, delete) |
+| `/dashboard/plans` | Manage cleaning plans (create, edit, delete) — admin only |
 
-### `/dashboard` — Bookings List
+### `/dashboard` — Overview
 
-- Displays all bookings ordered ascending by `scheduled_date` (nearest first).
-- Shows key info: client name, service address, date, time, plan, and status.
+- Currently renders only placeholder text. Charts and metrics are planned but not implemented.
 
 ### `/dashboard/clients` — Client List
 
@@ -196,10 +196,13 @@ Accessible only to admin users.
 
 ### Navigation
 
-A persistent **Navbar** inside the dashboard provides links to:
-- Bookings (`/dashboard`)
+All `/dashboard/*` routes share `DashboardLayout`, a collapsible shadcn **Sidebar** (collapses to icons, `Ctrl/Cmd+B` toggles) with links to:
+- Overview (`/dashboard`)
+- Quotes (`/dashboard/quotes`)
 - Clients (`/dashboard/clients`)
-- Plans (`/dashboard/plans`)
+- Plan Pricing (`/dashboard/plans`) — shown only to admins
+
+The sidebar footer has a "Back to site" link. From the public site, staff reach the dashboard through a single **Dashboard** item in the navbar `UserMenu` dropdown (which otherwise contains only My Quotes and Sign out).
 
 ---
 
@@ -211,8 +214,8 @@ A persistent **Navbar** inside the dashboard provides links to:
 | `/login` | Public | User login |
 | `/signup` | Public | User registration |
 | `/booking` | Authenticated (client) | Booking form |
-| `/dashboard` | Authenticated (admin) | Bookings list |
-| `/dashboard/clients` | Authenticated (admin) | Client list |
+| `/dashboard` | Authenticated (staff) | Dashboard overview (placeholder) |
+| `/dashboard/clients` | Authenticated (staff) | Client list |
 | `/dashboard/plans` | Authenticated (admin) | Plan management |
 | `/dashboard/quotes` | Authenticated (staff) | Quotes list and management |
 | `/confirmation/:token` | Public | Reservation confirmation page reached from the accepted-quote link |
@@ -235,7 +238,7 @@ Plan ────────────► displayed on Landing Page as Card
 1. A booking can only be created by an authenticated user with `role: client`.
 2. Any unauthenticated CTA click redirects to `/login` or `/signup` before continuing.
 3. After login/signup, the user is always redirected to the booking form.
-4. Only admin users can access `/dashboard` and its sub-routes.
+4. Only staff users can access `/dashboard` and its sub-routes; `/dashboard/plans` is admin-only.
 5. Bookings in the dashboard are always sorted by nearest `scheduled_date` first.
 6. A plan with `is_promo: true` must display both the original price and the discounted price.
 7. Client contact information (email, phone, address) must be complete to ensure stable communication.

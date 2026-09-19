@@ -12,6 +12,7 @@ src/
 ├── components/
 │   ├── ui/              shadcn/ui primitives (button, card, avatar, dropdown-menu, carousel...)
 │   ├── <feature>/       One folder per landing-page section (hero, navbar, footer, about, services, why-us, reviews)
+│   ├── dashboard/       DashboardLayout + DashboardSidebar, plus per-page subfolders (quotes/, clients/, plans/) for dialogs and forms
 │   └── decorative/      Purely visual, non-semantic components (FloatingBubble, WaveDivider)
 ├── contexts/            React context providers (auth-context.tsx)
 ├── data/                Static JSON content (services.json)
@@ -51,6 +52,8 @@ src/
 | New landing-page section | `src/components/<section-name>/index.tsx` |
 | New shadcn/ui primitive | `src/components/ui/` (via shadcn CLI) |
 | New Supabase table integration | `src/services/<resource>.ts` + `src/hooks/queries/use-<resource>.ts` |
-| New route/page | Not yet established — no router is set up yet (see Pending Work in `CLAUDE.md`) |
+| New route/page | `src/pages/<route>/index.tsx`, registered in `src/App.tsx` |
+| New dashboard page | `src/pages/dashboard/<name>/index.tsx`, added as a nested route under `/dashboard` in `src/App.tsx` and as an item in `navItems` in `src/components/dashboard/DashboardSidebar.tsx` |
+| Shadcn CLI note | `components.json` aliases use `@/...`; decline overwrites of existing customized primitives |
 | New auth-related hook | `src/hooks/auth/` |
 | New static content data | `src/data/` |

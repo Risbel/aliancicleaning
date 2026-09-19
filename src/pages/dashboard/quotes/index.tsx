@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useDebouncedCallback } from 'use-debounce';
 import { format } from 'date-fns';
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -7,7 +7,6 @@ import {
 	ArrowUpDownIcon,
 	Cancel01Icon,
 	ChevronDownIcon,
-	ChevronLeftIcon,
 	EyeIcon,
 	InformationCircleIcon,
 	LoaderCircle,
@@ -67,7 +66,6 @@ import { cn } from '@/lib/utils';
 import { QUOTE_FILTER_TAGS, QUOTE_STATUS_BADGE_VARIANT, type QuoteStatus } from '@/lib/quote-status';
 import type { QuoteStatusFilter, QuoteWithPlan } from '@/services/quotes';
 import type { Tables, TablesUpdate } from '@/types/supabase';
-import { buttonVariants } from '@/components/ui/button-variants';
 
 function displayStatus(quote: Tables<'quotes'>): QuoteStatusFilter {
 	if (quote.status === 'pending' && new Date(quote.desired_visit_date) < new Date()) return 'expired';
@@ -331,11 +329,7 @@ export default function DashboardQuotesPage() {
 	});
 
 	return (
-		<div className="min-h-dvh bg-background px-6 py-10 lg:px-12">
-			<Link className={cn('mb-6 absolute top-2 left-2', buttonVariants({ variant: 'ghost', size: 'sm' }))} to="/">
-				<HugeiconsIcon icon={ChevronLeftIcon} className="size-5" />
-				Go Home
-			</Link>
+		<div className="px-6 py-8 lg:px-12">
 			<div className="mx-auto max-w-6xl">
 				<h1 className="mb-6 text-2xl font-bold text-foreground">Quotes</h1>
 
