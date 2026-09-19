@@ -282,6 +282,7 @@ export default function DashboardQuotesPage() {
 									</DropdownMenuItem>
 									<DropdownMenuItem
 										disabled={
+											!quote.customer_email ||
 											quote.final_price == null ||
 											quote.status === 'accepted' ||
 											quote.status === 'quoted' ||
