@@ -5,6 +5,7 @@ import {
 	CoinsDollarIcon,
 	DashboardSquare01Icon,
 	ListChecks,
+	StarIcon,
 	UserGroupIcon,
 	UserMultipleIcon,
 } from '@hugeicons/core-free-icons';
@@ -29,6 +30,7 @@ const navItems = [
 	{ label: 'Quotes', href: '/dashboard/quotes', icon: ListChecks, adminOnly: false },
 	{ label: 'Clients', href: '/dashboard/clients', icon: UserMultipleIcon, adminOnly: false },
 	{ label: 'Staff', href: '/dashboard/staff', icon: UserGroupIcon, adminOnly: true },
+	{ label: 'Reviews', href: '/dashboard/reviews', icon: StarIcon, adminOnly: true },
 	{ label: 'Plan Pricing', href: '/dashboard/plans', icon: CoinsDollarIcon, adminOnly: true },
 ];
 

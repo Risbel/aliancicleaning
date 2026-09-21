@@ -243,6 +243,62 @@ export type Database = {
           },
         ]
       }
+      reviews: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          info: string | null
+          is_published: boolean
+          name: string
+          quote: string
+          rating: number
+          review_url: string | null
+          reviewed_at: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          info?: string | null
+          is_published?: boolean
+          name: string
+          quote: string
+          rating?: number
+          review_url?: string | null
+          reviewed_at?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          info?: string | null
+          is_published?: boolean
+          name?: string
+          quote?: string
+          rating?: number
+          review_url?: string | null
+          reviewed_at?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       staff_profiles: {
         Row: {
           created_at: string

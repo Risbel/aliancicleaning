@@ -35,6 +35,12 @@ export const staffKeys = {
 	lookup: (email: string) => [...staffKeys.all, 'lookup', email] as const,
 };
 
+export const reviewKeys = {
+	all: ['reviews'] as const,
+	lists: () => [...reviewKeys.all, 'list'] as const,
+	adminList: () => [...reviewKeys.all, 'admin-list'] as const,
+};
+
 export const dashboardKeys = {
 	all: ['dashboard'] as const,
 	kpis: (filter: { range: string; timeZone: string }) => [...dashboardKeys.all, 'kpis', filter] as const,

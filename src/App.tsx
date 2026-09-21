@@ -13,6 +13,7 @@ import DashboardMyQuotesPage from '@/pages/my-quotes';
 import DashboardPlansPage from '@/pages/dashboard/plans';
 import DashboardClientsPage from '@/pages/dashboard/clients';
 import DashboardStaffPage from '@/pages/dashboard/staff';
+import DashboardReviewsPage from '@/pages/dashboard/reviews';
 import ConfirmationPage from '@/pages/confirmation';
 import PrivacyPage from '@/pages/privacy';
 import TermsPage from '@/pages/terms';
@@ -55,6 +56,14 @@ export default function App() {
 					element={
 						<RequireAdmin>
 							<DashboardStaffPage />
+						</RequireAdmin>
+					}
+				/>
+				<Route
+					path="reviews"
+					element={
+						<RequireAdmin>
+							<DashboardReviewsPage />
 						</RequireAdmin>
 					}
 				/>
