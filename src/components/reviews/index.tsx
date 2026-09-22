@@ -159,7 +159,7 @@ export default function ReviewsSection() {
 					</Reveal>
 				)}
 
-				<Reveal delay={0.25} className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+				<Reveal delay={0.25} className="mt-10 flex items-center justify-center gap-3">
 					<Button variant="default" asChild>
 						<a href={GOOGLE_WRITE_REVIEW_URL} target="_blank" rel="noopener noreferrer">
 							<HugeiconsIcon icon={GoogleIcon} className="size-5" strokeWidth={1.5} />

@@ -1,10 +1,17 @@
-# Email Sending — Resend + Supabase Edge Function
+# Email Sending — Resend + Supabase Edge Functions
 
-How the quote confirmation email works and how to operate it.
+How the project's emails work and how to operate them. Two independent senders, both Resend:
+
+| Function | Trigger |
+|----------|---------|
+| `send-quote-confirmation` | Staff clicks Send on a quote in the dashboard |
+| `send-auth-email` | Supabase Auth needs to send any auth email (signup confirm, password reset, ...) |
 
 ---
 
-## What it does
+## Quote confirmation
+
+### What it does
 
 When a staff member clicks **Send** on a quote in the dashboard, the app calls a Supabase Edge Function that:
 
@@ -14,7 +21,7 @@ When a staff member clicks **Send** on a quote in the dashboard, the app calls a
 
 If the email fails, the quote update still persists and the dialog shows the confirmation link to share manually.
 
-## Files
+### Files
 
 | File | Role |
 |------|------|
@@ -26,7 +33,7 @@ If the email fails, the quote update still persists and the dialog shows the con
 | `src/hooks/queries/use-quotes.ts` | `useSendQuoteConfirmation()` mutation |
 | `src/components/dashboard/quotes/SendConfirmationDialog.tsx` | Dashboard UI that triggers the send |
 
-## Previewing the template locally
+### Previewing the template locally
 
 ```sh
 pnpm email:dev
@@ -34,23 +41,81 @@ pnpm email:dev
 
 Starts the React Email preview server at `localhost:3000`, rendering the templates in `supabase/functions/send-quote-confirmation/_templates/` with their default (sample) props. Edits hot-reload.
 
+## Auth emails
+
+### What it does
+
+Supabase Auth normally sends its own auth emails from its built-in mailer with unbranded default templates. The **Send Email Hook** overrides that: instead of sending, Supabase Auth POSTs the user and a token to `send-auth-email`, which renders a branded React Email template and sends it through Resend.
+
+The hook is all-or-nothing — once registered it intercepts **every** auth email type, so the function handles all of them:
+
+| `email_action_type` | Template | Subject |
+|---------------------|----------|---------|
+| `signup` (and any unknown type) | `confirm-signup` | Confirm your email for Alianci Cleaning |
+| `recovery` | `reset-password` | Reset your Alianci Cleaning password |
+| `invite` | `confirm-signup` (invite copy) | You have been invited to Alianci Cleaning |
+| `magiclink` | `confirm-signup` (sign-in copy) | Your Alianci Cleaning sign-in link |
+| `email_change`, `email_change_current`, `email_change_new` | `confirm-signup` (change copy) | Confirm your new email address |
+| `reauthentication` | `verification-code` | Your Alianci Cleaning verification code |
+
+Only `signup` is reachable from the app today (`supabase.auth.signUp` in `src/services/auth.ts`); the rest are covered so no auth email is ever silently dropped if a flow is added later.
+
+Action links point at `{SUPABASE_URL}/auth/v1/verify?token={token_hash}&type={type}&redirect_to={redirect_to}`, which is Supabase's own verify endpoint — it consumes the token and then redirects the user to the app.
+
+### Files
+
+| File | Role |
+|------|------|
+| `supabase/functions/send-auth-email/index.ts` | Webhook signature check, type routing, template render + send |
+| `supabase/functions/send-auth-email/brand.tsx` | Shared shell: gradient header, logo, Tailwind theme, button, fallback link. Lives outside `_templates/` so the preview server does not try to render it as an email |
+| `supabase/functions/send-auth-email/_templates/*.tsx` | The three templates |
+| `supabase/functions/send-auth-email/deno.json` | Import map + JSX options for the deploy bundler |
+
+### Previewing the templates locally
+
+```sh
+pnpm email:dev:auth
+```
+
+Same preview server as the quote template, pointed at `supabase/functions/send-auth-email/_templates/`. Run one at a time — both scripts use port 3000.
+
+### Registering the hook
+
+Dashboard only — the Send Email Hook is not exposed by the Supabase CLI.
+
+1. **Authentication → Hooks → Send Email hook → Enable**, type **HTTPS**, URL `https://xhpkmvznulvrydytqnun.supabase.co/functions/v1/send-auth-email`.
+2. Copy the generated secret (format `v1,whsec_...`) and store it as a Supabase secret:
+   ```sh
+   pnpm dlx supabase secrets set SEND_EMAIL_HOOK_SECRET='v1,whsec_...'
+   ```
+   The function strips the `v1,` prefix itself before verifying.
+3. The function must be deployed with `--no-verify-jwt` (see below) — Auth calls it with a webhook signature, not a JWT, so leaving JWT verification on makes every auth email fail with a 401 before the function runs.
+
+**Rate limit:** Supabase's default auth email rate limit (30/hour on the built-in mailer) still applies to the hook. Raise it under **Authentication → Rate Limits** once the hook is live, since Resend's own limits are what actually matter now.
+
+**To roll back:** disable the hook in the dashboard. Supabase Auth immediately resumes sending its own default emails — no redeploy needed.
+
 ## Secrets (Supabase, not in the repo)
 
-Set with `pnpm dlx supabase secrets set NAME=value`. The function reads them at runtime, so changing a secret does not require a redeploy.
+Set with `pnpm dlx supabase secrets set NAME=value`. Functions read them at runtime, so changing a secret does not require a redeploy.
 
-| Secret | Value |
-|--------|-------|
-| `RESEND_API_KEY` | API key from the Resend dashboard (set) |
-| `SITE_URL` | `https://aliancicleaning.com` (set) — base URL for confirmation links |
-| `EMAIL_FROM` | `Alianci Cleaning <no-reply@aliancicleaning.com>` (set) |
+| Secret | Value | Used by |
+|--------|-------|---------|
+| `RESEND_API_KEY` | API key from the Resend dashboard (set) | both |
+| `SITE_URL` | `https://aliancicleaning.com` (set) — base URL for confirmation links and email logo | both |
+| `EMAIL_FROM` | `Alianci Cleaning <no-reply@aliancicleaning.com>` (set) | both |
+| `SEND_EMAIL_HOOK_SECRET` | `v1,whsec_...` generated by the dashboard when the Send Email hook is created | `send-auth-email` |
 
-## Deploying the function
+`SUPABASE_URL` is injected automatically by the platform — do not set it.
+
+## Deploying the functions
 
 ```sh
 pnpm dlx supabase functions deploy send-quote-confirmation
+pnpm dlx supabase functions deploy send-auth-email --no-verify-jwt
 ```
 
-Requires `pnpm dlx supabase login` and `pnpm dlx supabase link --project-ref xhpkmvznulvrydytqnun` (already done on this machine).
+Requires `pnpm dlx supabase login` and `pnpm dlx supabase link --project-ref xhpkmvznulvrydytqnun` (already done on this machine). The `--no-verify-jwt` flag is **required** on every `send-auth-email` deploy, not just the first.
 
 ## Go-live checklist (done)
 
