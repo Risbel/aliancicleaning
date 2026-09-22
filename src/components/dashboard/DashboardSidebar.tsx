@@ -31,7 +31,7 @@ const navItems = [
 	{ label: 'Clients', href: '/dashboard/clients', icon: UserMultipleIcon, adminOnly: false },
 	{ label: 'Staff', href: '/dashboard/staff', icon: UserGroupIcon, adminOnly: true },
 	{ label: 'Reviews', href: '/dashboard/reviews', icon: StarIcon, adminOnly: true },
-	{ label: 'Plan Pricing', href: '/dashboard/plans', icon: CoinsDollarIcon, adminOnly: true },
+	{ label: 'Plans', href: '/dashboard/plans', icon: CoinsDollarIcon, adminOnly: true },
 ];
 
 export function DashboardSidebar() {

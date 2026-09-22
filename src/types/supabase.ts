@@ -43,42 +43,57 @@ export type Database = {
         Row: {
           base_price: number
           created_at: string
+          cta_label: string
           description: string | null
+          features: string[]
           id: string
+          image_bg: string | null
           is_active: boolean
+          is_popular: boolean
           name: string
           pet_fee: number
           price_per_bathroom: number
           price_per_bedroom: number
           price_per_sqft: number
+          sort_order: number
           type: Database["public"]["Enums"]["cleaning_type"]
           updated_at: string
         }
         Insert: {
           base_price?: number
           created_at?: string
+          cta_label?: string
           description?: string | null
+          features?: string[]
           id?: string
+          image_bg?: string | null
           is_active?: boolean
+          is_popular?: boolean
           name: string
           pet_fee?: number
           price_per_bathroom?: number
           price_per_bedroom?: number
           price_per_sqft?: number
+          sort_order?: number
           type: Database["public"]["Enums"]["cleaning_type"]
           updated_at?: string
         }
         Update: {
           base_price?: number
           created_at?: string
+          cta_label?: string
           description?: string | null
+          features?: string[]
           id?: string
+          image_bg?: string | null
           is_active?: boolean
+          is_popular?: boolean
           name?: string
           pet_fee?: number
           price_per_bathroom?: number
           price_per_bedroom?: number
           price_per_sqft?: number
+          sort_order?: number
           type?: Database["public"]["Enums"]["cleaning_type"]
           updated_at?: string
         }
