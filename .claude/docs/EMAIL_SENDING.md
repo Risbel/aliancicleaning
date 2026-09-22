@@ -58,9 +58,27 @@ The hook is all-or-nothing — once registered it intercepts **every** auth emai
 | `email_change`, `email_change_current`, `email_change_new` | `confirm-signup` (change copy) | Confirm your new email address |
 | `reauthentication` | `verification-code` | Your Alianci Cleaning verification code |
 
-Only `signup` is reachable from the app today (`supabase.auth.signUp` in `src/services/auth.ts`); the rest are covered so no auth email is ever silently dropped if a flow is added later.
+`signup` and `recovery` are reachable from the app today (`supabase.auth.signUp` and `supabase.auth.resetPasswordForEmail` in `src/services/auth.ts`); the rest are covered so no auth email is ever silently dropped if a flow is added later.
 
 Action links point at `{SUPABASE_URL}/auth/v1/verify?token={token_hash}&type={type}&redirect_to={redirect_to}`, which is Supabase's own verify endpoint — it consumes the token and then redirects the user to the app.
+
+### Password reset flow
+
+| Step | Where |
+|------|-------|
+| User clicks **Forgot password?** on the password row of the login form | `src/pages/login/index.tsx` |
+| Requests the email; always shows a neutral "check your inbox" state so the page cannot be used to probe which addresses are registered | `src/pages/forgot-password/index.tsx` |
+| `resetPasswordForEmail(email, { redirectTo: '{origin}/reset-password' })` triggers the `recovery` email | `src/services/auth.ts` |
+| Verify endpoint consumes the token and redirects to `/reset-password` with the recovery session in the URL hash | Supabase |
+| Page waits for `loading` to clear (`getSession()` internally awaits Supabase's URL parsing, so this is what guarantees the hash was consumed), then shows the form, or the expired state when the hash carries `error=` or no session exists | `src/pages/reset-password/index.tsx` |
+| `updateUser({ password })`, then a success state — the user is already signed in at this point, since the recovery link authenticates them | `src/services/auth.ts` |
+
+**Redirect URLs must be allowlisted.** The verify endpoint only honours `redirect_to` when the URL matches the allowlist in **Authentication → URL Configuration**; otherwise it silently falls back to Site URL and the user lands on the homepage holding a recovery session with no way to use it. Both entries are needed:
+
+```
+http://localhost:5173/reset-password
+https://www.aliancicleaning.com/reset-password
+```
 
 ### Files
 

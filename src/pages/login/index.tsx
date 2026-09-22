@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthLayout } from '@/components/auth/AuthLayout';
 import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
+import { PasswordInput } from '@/components/auth/PasswordInput';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -64,9 +65,17 @@ export default function LoginPage() {
 						name="password"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Password</FormLabel>
+								<div className="flex items-center justify-between gap-2">
+									<FormLabel>Password</FormLabel>
+									<Link
+										to="/forgot-password"
+										className="text-sm text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+									>
+										Forgot password?
+									</Link>
+								</div>
 								<FormControl>
-									<Input type="password" autoComplete="current-password" placeholder="••••••••" {...field} />
+									<PasswordInput autoComplete="current-password" placeholder="••••••••" {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>

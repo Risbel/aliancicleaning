@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthLayout } from '@/components/auth/AuthLayout';
 import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
+import { PasswordInput } from '@/components/auth/PasswordInput';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -66,7 +67,7 @@ export default function SignupPage() {
 							<FormItem>
 								<FormLabel>Password</FormLabel>
 								<FormControl>
-									<Input type="password" autoComplete="new-password" placeholder="••••••••" {...field} />
+									<PasswordInput autoComplete="new-password" placeholder="••••••••" {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -80,7 +81,7 @@ export default function SignupPage() {
 							<FormItem>
 								<FormLabel>Confirm password</FormLabel>
 								<FormControl>
-									<Input type="password" autoComplete="new-password" placeholder="••••••••" {...field} />
+									<PasswordInput autoComplete="new-password" placeholder="••••••••" {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>

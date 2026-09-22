@@ -6,6 +6,8 @@ import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import LandingPage from '@/pages/landing';
 import LoginPage from '@/pages/login';
 import SignupPage from '@/pages/signup';
+import ForgotPasswordPage from '@/pages/forgot-password';
+import ResetPasswordPage from '@/pages/reset-password';
 import BookingPage from '@/pages/booking';
 import DashboardHomePage from '@/pages/dashboard';
 import DashboardQuotesPage from '@/pages/dashboard/quotes';
@@ -24,6 +26,8 @@ export default function App() {
 			<Route path="/" element={<LandingPage />} />
 			<Route path="/login" element={<LoginPage />} />
 			<Route path="/signup" element={<SignupPage />} />
+			<Route path="/forgot-password" element={<ForgotPasswordPage />} />
+			<Route path="/reset-password" element={<ResetPasswordPage />} />
 			<Route
 				path="/booking"
 				element={
