@@ -32,15 +32,24 @@ function formatPrice(quote: QuoteWithPlan) {
 function buildRebookUrl(quote: QuoteWithPlan) {
 	const params = new URLSearchParams({
 		planId: quote.plan_id,
-		bedrooms: String(quote.bedrooms),
-		bathrooms: String(quote.bathrooms),
-		squareFootage: String(quote.square_footage),
-		hasPets: String(quote.has_pets),
 		addressLine: quote.address_line,
 	});
 	if (quote.city) params.set('city', quote.city);
 	if (quote.state) params.set('state', quote.state);
 	if (quote.zip_code) params.set('zipCode', quote.zip_code);
+
+	if (quote.service_description) {
+		params.set('serviceDescription', quote.service_description);
+		return `/booking?${params.toString()}`;
+	}
+
+	if (quote.bedrooms != null && quote.bathrooms != null && quote.square_footage != null) {
+		params.set('bedrooms', String(quote.bedrooms));
+		params.set('bathrooms', String(quote.bathrooms));
+		params.set('squareFootage', String(quote.square_footage));
+		params.set('hasPets', String(quote.has_pets));
+	}
+
 	return `/booking?${params.toString()}`;
 }
 

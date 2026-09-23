@@ -2,12 +2,18 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { Tick02Icon } from '@hugeicons/core-free-icons';
 import { cn } from '@/lib/utils';
 
-const STEP_LABELS = ['Plan & Home', 'Address & Date', 'Contact & Review'];
+export const BOOKING_STEP_LABELS = ['Plan & Home', 'Address & Date', 'Contact & Review'];
+export const CUSTOM_BOOKING_STEP_LABELS = ['Service & Photos', 'Address & Date', 'Contact & Review'];
 
-export function StepIndicator({ currentStep }: { currentStep: number }) {
+interface StepIndicatorProps {
+	currentStep: number;
+	labels?: string[];
+}
+
+export function StepIndicator({ currentStep, labels = BOOKING_STEP_LABELS }: StepIndicatorProps) {
 	return (
 		<ol className="flex items-center gap-3">
-			{STEP_LABELS.map((label, index) => {
+			{labels.map((label, index) => {
 				const step = index + 1;
 				const isActive = step === currentStep;
 				const isDone = step < currentStep;
@@ -32,7 +38,7 @@ export function StepIndicator({ currentStep }: { currentStep: number }) {
 						>
 							{label}
 						</span>
-						{step < STEP_LABELS.length && <span className="h-px w-6 bg-border sm:w-10" />}
+						{step < labels.length && <span className="h-px w-6 bg-border sm:w-10" />}
 					</li>
 				);
 			})}

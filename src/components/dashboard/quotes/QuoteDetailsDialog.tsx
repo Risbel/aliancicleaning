@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { QuotePhotoGallery } from '@/components/dashboard/quotes/QuotePhotoGallery';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { QUOTE_STATUS_BADGE_VARIANT } from '@/lib/quote-status';
 import type { Tables } from '@/types/supabase';
@@ -54,10 +55,11 @@ function buildDetailsText(quote: Tables<'quotes'>, address: string) {
 		['Address', address || '-'],
 		['Zip code', quote.zip_code ?? '-'],
 		['Desired visit', format(new Date(quote.desired_visit_date), 'M/d/yyyy h:mm a')],
-		['Bedrooms', quote.bedrooms],
-		['Bathrooms', quote.bathrooms],
-		['Square footage', quote.square_footage],
+		['Bedrooms', quote.bedrooms ?? '-'],
+		['Bathrooms', quote.bathrooms ?? '-'],
+		['Square footage', quote.square_footage ?? '-'],
 		['Has pets', quote.has_pets ? 'Yes' : 'No'],
+		['Service description', quote.service_description ?? '-'],
 		['Estimated price', quote.estimated_price != null ? `$${quote.estimated_price.toFixed(2)}` : '-'],
 		['Final price', quote.final_price != null ? `$${quote.final_price.toFixed(2)}` : '-'],
 		['Customer note', quote.customer_note ?? '-'],
@@ -203,9 +205,9 @@ export function QuoteDetailsDialog({
 					/>
 					<DetailRow label="Zip code" value={quote.zip_code ?? '-'} />
 					<DetailRow label="Desired visit" value={format(new Date(quote.desired_visit_date), 'M/d/yyyy h:mm a')} />
-					<DetailRow label="Bedrooms" value={quote.bedrooms} />
-					<DetailRow label="Bathrooms" value={quote.bathrooms} />
-					<DetailRow label="Square footage" value={quote.square_footage} />
+					<DetailRow label="Bedrooms" value={quote.bedrooms ?? '-'} />
+					<DetailRow label="Bathrooms" value={quote.bathrooms ?? '-'} />
+					<DetailRow label="Square footage" value={quote.square_footage ?? '-'} />
 					<DetailRow label="Has pets" value={quote.has_pets ? 'Yes' : 'No'} />
 					<DetailRow
 						label="Estimated price"
@@ -215,6 +217,15 @@ export function QuoteDetailsDialog({
 					<DetailRow label="Customer note" value={quote.customer_note ?? '-'} />
 					<DetailRow label="Admin notes" value={quote.admin_notes ?? '-'} />
 					<DetailRow label="Created" value={format(new Date(quote.created_at), 'M/d/yyyy h:mm a')} />
+
+					{quote.service_description && (
+						<div className="mt-3 flex flex-col gap-1 border-t border-input pt-3">
+							<span className="text-xs font-medium uppercase text-muted-foreground">Service description</span>
+							<p className="whitespace-pre-wrap text-foreground">{quote.service_description}</p>
+						</div>
+					)}
+
+					<QuotePhotoGallery quoteId={quote.id} />
 				</div>
 			</DialogContent>
 		</Dialog>

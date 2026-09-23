@@ -93,6 +93,16 @@ A `Booking` is created when an authenticated client submits the booking form. It
 
 A `Quote` is created when a visitor submits the public quote/booking form, before it becomes a confirmed service. Staff can also create quotes on a client's behalf (e.g. taken over the phone) via the **New quote** action on `/dashboard/clients`, for both manual clients and account holders. Staff manage the quote lifecycle from `/dashboard/quotes`.
 
+### Custom quotes ("Other" plan)
+
+A client whose job is not covered by the three priced plans picks **Other / Custom Service** in the booking form, or arrives straight there from the "Need something else?" banner under the Services section (`/booking?plan=other`).
+
+- Step 1 swaps the home details (bedrooms, bathrooms, square footage, pets) for a **service description** (required, at least 20 characters) and an **optional photo picker** (up to 10). Steps 2 and 3 are unchanged.
+- Photos are compressed in the browser to **10 KB or less** each (`browser-image-compression`, WebP, 1280px then 640px). They are held in memory during the wizard and uploaded only after the quote row exists, so an abandoned form leaves nothing behind. If the upload fails the quote still stands and the client is told we will follow up.
+- The quote is stored with `bedrooms`, `bathrooms`, `square_footage` and `estimated_price` all null — there is no auto-estimate to compute. Staff read the description and photos in the quote details dialog, then set `final_price` and send the confirmation as usual.
+- Files live in the private `quote-photos` storage bucket; `quote_photos` rows hold their paths. Staff and the owning customer read them through short-lived signed URLs.
+- **Book Again** on a custom quote in `/my-quotes` returns to step 1 with the plan, address and service description prefilled (a normal rebook still jumps straight to step 2, since its step 1 has nothing to review). Photos are not carried over — the client re-attaches whatever is relevant to the new job.
+
 ### Staff-created quotes
 
 - Linked to the client via `customer_id`; contact snapshot (`customer_name`, `customer_email`, `customer_phone`) is taken from the client record. `customer_email` is `null` for manual clients without an email.
@@ -110,9 +120,10 @@ A `Quote` is created when a visitor submits the public quote/booking form, befor
 | `customer_name` / `customer_email` / `customer_phone` | String | Contact info. Email is never editable by staff once submitted. |
 | `address_line`, `city`, `state`, `zip_code` | String | Service address |
 | `plan_id` | FK → `cleaning_plans` | Selected cleaning plan |
-| `bedrooms`, `bathrooms`, `square_footage`, `has_pets` | — | Inputs used to compute `estimated_price` |
+| `bedrooms`, `bathrooms`, `square_footage`, `has_pets` | — | Inputs used to compute `estimated_price`. Null on custom quotes |
+| `service_description` | Text | What the client asked for on a custom quote. Null otherwise |
 | `desired_visit_date` | Timestamp | Client's requested date |
-| `estimated_price` | Decimal | Auto-calculated at submission time from the plan's pricing formula. Read-only reference for staff. |
+| `estimated_price` | Decimal | Auto-calculated at submission time from the plan's pricing formula. Read-only reference for staff. Null on custom quotes. |
 | `final_price` | Decimal | Set/adjusted by staff — the actual quoted price once reviewed |
 | `status` | Enum | See Statuses below |
 | `assigned_to` | FK → `staff_profiles` | The staff member responsible for the quote |

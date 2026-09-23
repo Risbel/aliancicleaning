@@ -11,6 +11,7 @@ export const quoteKeys = {
 	byFilter: (filter: { status: string; search?: string; customerId?: string }) =>
 		[...quoteKeys.lists(), 'staff', filter] as const,
 	detail: (id: string) => [...quoteKeys.all, 'detail', id] as const,
+	photos: (quoteId: string) => [...quoteKeys.detail(quoteId), 'photos'] as const,
 	byConfirmationToken: (token: string) => [...quoteKeys.all, 'confirmation', token] as const,
 };
 

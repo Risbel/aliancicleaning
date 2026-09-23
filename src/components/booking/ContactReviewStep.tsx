@@ -9,10 +9,12 @@ import { Textarea } from '../ui/textarea';
 interface ContactReviewStepProps {
 	form: UseFormReturn<BookingValues>;
 	plan: Tables<'cleaning_plans'> | undefined;
-	estimatedPrice: number;
+	estimatedPrice: number | null;
+	isCustom: boolean;
+	photoCount: number;
 }
 
-export function ContactReviewStep({ form, plan, estimatedPrice }: ContactReviewStepProps) {
+export function ContactReviewStep({ form, plan, estimatedPrice, isCustom, photoCount }: ContactReviewStepProps) {
 	const values = form.watch();
 
 	return (
@@ -76,10 +78,17 @@ export function ContactReviewStep({ form, plan, estimatedPrice }: ContactReviewS
 			<div className="flex flex-col gap-1.5 rounded-2xl bg-muted px-4 py-3 text-sm">
 				<p className="font-medium text-foreground">Request summary</p>
 				<SummaryRow label="Plan" value={plan?.name ?? '—'} />
-				<SummaryRow
-					label="Home"
-					value={`${values.bedrooms} bed · ${values.bathrooms} bath · ${values.squareFootage} sqft${values.hasPets ? ' · has pets' : ''}`}
-				/>
+				{isCustom ? (
+					<>
+						<SummaryRow label="Service" value={summarize(values.serviceDescription)} />
+						<SummaryRow label="Photos" value={photoCount > 0 ? `${photoCount} attached` : 'None'} />
+					</>
+				) : (
+					<SummaryRow
+						label="Home"
+						value={`${values.bedrooms} bed · ${values.bathrooms} bath · ${values.squareFootage} sqft${values.hasPets ? ' · has pets' : ''}`}
+					/>
+				)}
 				<SummaryRow
 					label="Address"
 					value={[values.addressLine, values.city, values.state].filter(Boolean).join(', ')}
@@ -88,10 +97,19 @@ export function ContactReviewStep({ form, plan, estimatedPrice }: ContactReviewS
 					label="Date"
 					value={values.desiredDate ? `${format(values.desiredDate, 'PPP')} (${values.timePreference})` : '—'}
 				/>
-				<SummaryRow label="Estimated price" value={`$${estimatedPrice.toFixed(2)}`} />
+				<SummaryRow
+					label={estimatedPrice != null ? 'Estimated price' : 'Price'}
+					value={estimatedPrice != null ? `$${estimatedPrice.toFixed(2)}` : 'Pending review'}
+				/>
 			</div>
 		</div>
 	);
+}
+
+function summarize(description: string | undefined) {
+	const text = description?.trim();
+	if (!text) return '—';
+	return text.length > 70 ? `${text.slice(0, 70)}…` : text;
 }
 
 function SummaryRow({ label, value }: { label: string; value: string }) {

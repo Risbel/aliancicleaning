@@ -1,5 +1,6 @@
 import FloatingBubble from '@/components/decorative/FloatingBubble';
 import services from '@/data/services.json';
+import CustomServiceBanner from './CustomServiceBanner';
 import ServiceCard from './ServiceCard';
 import { AnimatedHeading, Reveal, StaggerContainer, StaggerItem } from '@/components/motion/Reveal';
 
@@ -69,8 +70,8 @@ export default function ServicesSection() {
 
 					<Reveal delay={0.2}>
 						<p className="mt-4 max-w-lg text-base leading-relaxed text-[#1a2e3f]/70">
-							We offer cleaning that is 100% safe for pets and the environment. Choose the ideal service to keep your home
-							shining responsibly.
+							We offer cleaning that is 100% safe for pets and the environment. Choose the ideal service to keep your
+							home shining responsibly.
 						</p>
 					</Reveal>
 				</div>
@@ -82,6 +83,8 @@ export default function ServicesSection() {
 						</StaggerItem>
 					))}
 				</StaggerContainer>
+
+				<CustomServiceBanner />
 			</div>
 		</section>
 	);

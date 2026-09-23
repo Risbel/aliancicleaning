@@ -155,13 +155,45 @@ export type Database = {
           },
         ]
       }
+      quote_photos: {
+        Row: {
+          file_name: string | null
+          id: string
+          quote_id: string
+          storage_path: string
+          uploaded_at: string
+        }
+        Insert: {
+          file_name?: string | null
+          id?: string
+          quote_id: string
+          storage_path: string
+          uploaded_at?: string
+        }
+        Update: {
+          file_name?: string | null
+          id?: string
+          quote_id?: string
+          storage_path?: string
+          uploaded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_photos_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quotes: {
         Row: {
           address_line: string
           admin_notes: string | null
           assigned_to: string | null
-          bathrooms: number
-          bedrooms: number
+          bathrooms: number | null
+          bedrooms: number | null
           city: string | null
           confirmation_token: string | null
           created_at: string
@@ -176,7 +208,8 @@ export type Database = {
           has_pets: boolean
           id: string
           plan_id: string
-          square_footage: number
+          service_description: string | null
+          square_footage: number | null
           state: string | null
           status: Database["public"]["Enums"]["quote_status"]
           updated_at: string
@@ -186,8 +219,8 @@ export type Database = {
           address_line: string
           admin_notes?: string | null
           assigned_to?: string | null
-          bathrooms: number
-          bedrooms: number
+          bathrooms?: number | null
+          bedrooms?: number | null
           city?: string | null
           confirmation_token?: string | null
           created_at?: string
@@ -202,7 +235,8 @@ export type Database = {
           has_pets?: boolean
           id?: string
           plan_id: string
-          square_footage: number
+          service_description?: string | null
+          square_footage?: number | null
           state?: string | null
           status?: Database["public"]["Enums"]["quote_status"]
           updated_at?: string
@@ -212,8 +246,8 @@ export type Database = {
           address_line?: string
           admin_notes?: string | null
           assigned_to?: string | null
-          bathrooms?: number
-          bedrooms?: number
+          bathrooms?: number | null
+          bedrooms?: number | null
           city?: string | null
           confirmation_token?: string | null
           created_at?: string
@@ -228,7 +262,8 @@ export type Database = {
           has_pets?: boolean
           id?: string
           plan_id?: string
-          square_footage?: number
+          service_description?: string | null
+          square_footage?: number | null
           state?: string | null
           status?: Database["public"]["Enums"]["quote_status"]
           updated_at?: string
@@ -397,8 +432,8 @@ export type Database = {
           address_line: string
           admin_notes: string | null
           assigned_to: string | null
-          bathrooms: number
-          bedrooms: number
+          bathrooms: number | null
+          bedrooms: number | null
           city: string | null
           confirmation_token: string | null
           created_at: string
@@ -413,7 +448,8 @@ export type Database = {
           has_pets: boolean
           id: string
           plan_id: string
-          square_footage: number
+          service_description: string | null
+          square_footage: number | null
           state: string | null
           status: Database["public"]["Enums"]["quote_status"]
           updated_at: string
@@ -532,8 +568,8 @@ export type Database = {
           address_line: string
           admin_notes: string | null
           assigned_to: string | null
-          bathrooms: number
-          bedrooms: number
+          bathrooms: number | null
+          bedrooms: number | null
           city: string | null
           confirmation_token: string | null
           created_at: string
@@ -548,7 +584,8 @@ export type Database = {
           has_pets: boolean
           id: string
           plan_id: string
-          square_footage: number
+          service_description: string | null
+          square_footage: number | null
           state: string | null
           status: Database["public"]["Enums"]["quote_status"]
           updated_at: string
@@ -626,7 +663,7 @@ export type Database = {
       }
     }
     Enums: {
-      cleaning_type: "standard" | "deep" | "move_in_out"
+      cleaning_type: "standard" | "deep" | "move_in_out" | "other"
       quote_status:
         | "pending"
         | "reviewed"
@@ -766,7 +803,7 @@ export const Constants = {
   },
   public: {
     Enums: {
-      cleaning_type: ["standard", "deep", "move_in_out"],
+      cleaning_type: ["standard", "deep", "move_in_out", "other"],
       quote_status: [
         "pending",
         "reviewed",

@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import { AddressAndDateStep } from '@/components/booking/AddressAndDateStep';
 import { BookingSummary } from '@/components/booking/BookingSummary';
 import { ContactReviewStep } from '@/components/booking/ContactReviewStep';
 import { PlanAndDetailsStep } from '@/components/booking/PlanAndDetailsStep';
-import { StepIndicator } from '@/components/booking/StepIndicator';
+import { BOOKING_STEP_LABELS, CUSTOM_BOOKING_STEP_LABELS, StepIndicator } from '@/components/booking/StepIndicator';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
@@ -17,8 +18,16 @@ import { usePlans } from '@/hooks/queries/use-plans';
 import { useCreateQuote } from '@/hooks/queries/use-quotes';
 import { calculateEstimatedPrice } from '@/lib/booking/estimate';
 import {
+	createPendingPhoto,
+	MAX_PHOTOS,
+	PhotoCompressionError,
+	type PendingQuotePhoto,
+} from '@/lib/booking/photo-compression';
+import { uploadQuotePhotos } from '@/services/quote-photos';
+import {
 	bookingSchema,
-	bookingStepFields,
+	CUSTOM_PLAN_TYPE,
+	getBookingStepFields,
 	TIME_PREFERENCE_HOURS,
 	TOTAL_BOOKING_STEPS,
 	type BookingValues,
@@ -40,8 +49,11 @@ export default function BookingPage() {
 		city: searchParams.get('city'),
 		state: searchParams.get('state'),
 		zipCode: searchParams.get('zipCode'),
+		serviceDescription: searchParams.get('serviceDescription'),
 	};
 	const isRebooking = rebookParams.bedrooms != null;
+	const isCustomRebooking = rebookParams.serviceDescription != null;
+	const hasRebookedAddress = isRebooking || isCustomRebooking;
 	const { user } = useAuth();
 	const { data: plans } = usePlans();
 	const { data: profile } = useCustomerProfile(user?.id);
@@ -56,6 +68,10 @@ export default function BookingPage() {
 	});
 
 	const [step, setStep] = useState(() => (isRebooking ? 2 : 1));
+	const [photos, setPhotos] = useState<PendingQuotePhoto[]>([]);
+	const [isCompressing, setIsCompressing] = useState(false);
+	const photosRef = useRef(photos);
+	photosRef.current = photos;
 
 	const defaultPlan = useMemo(
 		() => plans?.find((plan) => plan.id === rebookParams.planId || plan.type === planType),
@@ -66,6 +82,8 @@ export default function BookingPage() {
 		resolver: zodResolver(bookingSchema),
 		defaultValues: {
 			planId: defaultPlan?.id || '',
+			isCustom: false,
+			serviceDescription: '',
 			bedrooms: 1,
 			bathrooms: 1,
 			hasPets: false,
@@ -85,15 +103,16 @@ export default function BookingPage() {
 		form.setValue('fullName', profile.full_name);
 		if (profile.email) form.setValue('email', profile.email);
 		if (profile.phone) form.setValue('phone', profile.phone);
-		if (isRebooking) return;
+		if (hasRebookedAddress) return;
 		if (profile.address_line) form.setValue('addressLine', profile.address_line);
 		if (profile.city) form.setValue('city', profile.city);
 		if (profile.state) form.setValue('state', profile.state);
 		if (profile.zip_code) form.setValue('zipCode', profile.zip_code);
-	}, [profile, form, isRebooking]);
+	}, [profile, form, hasRebookedAddress]);
 
 	useEffect(() => {
-		if (!isRebooking) return;
+		if (rebookParams.serviceDescription) form.setValue('serviceDescription', rebookParams.serviceDescription);
+		if (!hasRebookedAddress) return;
 		if (rebookParams.bedrooms) form.setValue('bedrooms', Number(rebookParams.bedrooms));
 		if (rebookParams.bathrooms) form.setValue('bathrooms', Number(rebookParams.bathrooms));
 		if (rebookParams.squareFootage) form.setValue('squareFootage', Number(rebookParams.squareFootage));
@@ -114,17 +133,68 @@ export default function BookingPage() {
 
 	const values = form.watch();
 	const selectedPlan = plans?.find((plan) => plan.id === values.planId);
-	const estimatedPrice = selectedPlan
-		? calculateEstimatedPrice(selectedPlan, {
-				bedrooms: Number(values.bedrooms) || 0,
-				bathrooms: Number(values.bathrooms) || 0,
-				squareFootage: Number(values.squareFootage) || 0,
-				hasPets: values.hasPets,
-			})
-		: 0;
+	const isCustom = selectedPlan?.type === CUSTOM_PLAN_TYPE;
+
+	useEffect(() => {
+		form.setValue('isCustom', isCustom);
+	}, [isCustom, form]);
+
+	useEffect(() => {
+		if (isCustom || !photos.length) return;
+		photos.forEach((photo) => URL.revokeObjectURL(photo.previewUrl));
+		setPhotos([]);
+	}, [isCustom, photos]);
+
+	useEffect(() => {
+		return () => {
+			photosRef.current.forEach((photo) => URL.revokeObjectURL(photo.previewUrl));
+		};
+	}, []);
+
+	const estimatedPrice = !selectedPlan
+		? 0
+		: isCustom
+			? null
+			: calculateEstimatedPrice(selectedPlan, {
+					bedrooms: Number(values.bedrooms) || 0,
+					bathrooms: Number(values.bathrooms) || 0,
+					squareFootage: Number(values.squareFootage) || 0,
+					hasPets: values.hasPets,
+				});
+
+	async function handleAddPhotos(files: File[]) {
+		const remaining = MAX_PHOTOS - photos.length;
+		if (remaining <= 0) return;
+
+		const selected = files.slice(0, remaining);
+		if (files.length > remaining) toast.info(`You can attach up to ${MAX_PHOTOS} photos.`);
+
+		setIsCompressing(true);
+		const results = await Promise.allSettled(selected.map(createPendingPhoto));
+		setIsCompressing(false);
+
+		const added: PendingQuotePhoto[] = [];
+		for (const result of results) {
+			if (result.status === 'fulfilled') {
+				added.push(result.value);
+				continue;
+			}
+			toast.error(
+				result.reason instanceof PhotoCompressionError ? result.reason.message : 'Could not process one of the photos.',
+			);
+		}
+
+		if (added.length) setPhotos((current) => [...current, ...added]);
+	}
+
+	function handleRemovePhoto(id: string) {
+		const photo = photos.find((item) => item.id === id);
+		if (photo) URL.revokeObjectURL(photo.previewUrl);
+		setPhotos((current) => current.filter((item) => item.id !== id));
+	}
 
 	async function handleNext() {
-		const fields = bookingStepFields[step as keyof typeof bookingStepFields];
+		const fields = getBookingStepFields(step, isCustom);
 		const valid = await form.trigger(fields);
 		if (valid) setStep((current) => current + 1);
 	}
@@ -150,7 +220,7 @@ export default function BookingPage() {
 			zip_code: data.zipCode || null,
 		});
 
-		await createQuote.mutateAsync({
+		const quote = await createQuote.mutateAsync({
 			customer_id: savedProfile.id,
 			customer_name: data.fullName,
 			customer_email: data.email,
@@ -159,15 +229,24 @@ export default function BookingPage() {
 			city: data.city || null,
 			state: data.state || null,
 			zip_code: data.zipCode || null,
-			bedrooms: data.bedrooms,
-			bathrooms: data.bathrooms,
-			square_footage: data.squareFootage,
-			has_pets: data.hasPets,
+			bedrooms: isCustom ? null : (data.bedrooms ?? null),
+			bathrooms: isCustom ? null : (data.bathrooms ?? null),
+			square_footage: isCustom ? null : (data.squareFootage ?? null),
+			has_pets: isCustom ? false : data.hasPets,
 			plan_id: selectedPlan.id,
 			desired_visit_date: desiredVisitDate.toISOString(),
 			estimated_price: estimatedPrice,
+			service_description: isCustom ? (data.serviceDescription?.trim() ?? null) : null,
 			customer_note: data.customer_note || null,
 		});
+
+		if (photos.length) {
+			try {
+				await uploadQuotePhotos(quote.id, photos);
+			} catch {
+				toast.error('Your request was sent, but we could not attach the photos. We will follow up by phone.');
+			}
+		}
 
 		navigate('/my-quotes');
 	}
@@ -193,7 +272,7 @@ export default function BookingPage() {
 
 					<Card>
 						<CardContent className="flex flex-col gap-6">
-							<StepIndicator currentStep={step} />
+							<StepIndicator currentStep={step} labels={isCustom ? CUSTOM_BOOKING_STEP_LABELS : BOOKING_STEP_LABELS} />
 
 							<Form {...form}>
 								<form
@@ -203,9 +282,27 @@ export default function BookingPage() {
 										if (event.key === 'Enter' && step < TOTAL_BOOKING_STEPS) event.preventDefault();
 									}}
 								>
-									{step === 1 && <PlanAndDetailsStep form={form} plans={plans ?? []} />}
+									{step === 1 && (
+										<PlanAndDetailsStep
+											form={form}
+											plans={plans ?? []}
+											isCustom={isCustom}
+											photos={photos}
+											isCompressing={isCompressing}
+											onAddFiles={handleAddPhotos}
+											onRemovePhoto={handleRemovePhoto}
+										/>
+									)}
 									{step === 2 && <AddressAndDateStep form={form} />}
-									{step === 3 && <ContactReviewStep form={form} plan={selectedPlan} estimatedPrice={estimatedPrice} />}
+									{step === 3 && (
+										<ContactReviewStep
+											form={form}
+											plan={selectedPlan}
+											estimatedPrice={estimatedPrice}
+											isCustom={isCustom}
+											photoCount={photos.length}
+										/>
+									)}
 
 									<BookingSummary planName={selectedPlan?.name} estimatedPrice={estimatedPrice} />
 
@@ -219,7 +316,13 @@ export default function BookingPage() {
 										)}
 
 										{step < TOTAL_BOOKING_STEPS ? (
-											<Button key="continue" type="button" variant="gradient" onClick={handleNext}>
+											<Button
+												key="continue"
+												type="button"
+												variant="gradient"
+												onClick={handleNext}
+												disabled={isCompressing}
+											>
 												Continue
 											</Button>
 										) : (
