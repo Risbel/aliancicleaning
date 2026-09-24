@@ -4,7 +4,6 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/comp
 import { Input } from '@/components/ui/input';
 import type { BookingValues } from '@/lib/validation/booking-schema';
 import type { Tables } from '@/types/supabase';
-import { Textarea } from '../ui/textarea';
 
 interface ContactReviewStepProps {
 	form: UseFormReturn<BookingValues>;
@@ -61,34 +60,17 @@ export function ContactReviewStep({ form, plan, estimatedPrice, isCustom, photoC
 				)}
 			/>
 
-			<FormField
-				control={form.control}
-				name="customer_note"
-				render={({ field }) => (
-					<FormItem>
-						<FormLabel>Note</FormLabel>
-						<FormControl>
-							<Textarea placeholder="Additional notes, clarifications, or comments." {...field} />
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-
 			<div className="flex flex-col gap-1.5 rounded-2xl bg-muted px-4 py-3 text-sm">
 				<p className="font-medium text-foreground">Request summary</p>
 				<SummaryRow label="Plan" value={plan?.name ?? '—'} />
-				{isCustom ? (
-					<>
-						<SummaryRow label="Service" value={summarize(values.serviceDescription)} />
-						<SummaryRow label="Photos" value={photoCount > 0 ? `${photoCount} attached` : 'None'} />
-					</>
-				) : (
+				{!isCustom && (
 					<SummaryRow
 						label="Home"
 						value={`${values.bedrooms} bed · ${values.bathrooms} bath · ${values.squareFootage} sqft${values.hasPets ? ' · has pets' : ''}`}
 					/>
 				)}
+				{values.customer_note?.trim() && <SummaryRow label="Note" value={summarize(values.customer_note)} />}
+				{photoCount > 0 && <SummaryRow label="Photos" value={`${photoCount} attached`} />}
 				<SummaryRow
 					label="Address"
 					value={[values.addressLine, values.city, values.state].filter(Boolean).join(', ')}
@@ -106,8 +88,8 @@ export function ContactReviewStep({ form, plan, estimatedPrice, isCustom, photoC
 	);
 }
 
-function summarize(description: string | undefined) {
-	const text = description?.trim();
+function summarize(note: string | undefined) {
+	const text = note?.trim();
 	if (!text) return '—';
 	return text.length > 70 ? `${text.slice(0, 70)}…` : text;
 }

@@ -38,10 +38,7 @@ function buildRebookUrl(quote: QuoteWithPlan) {
 	if (quote.state) params.set('state', quote.state);
 	if (quote.zip_code) params.set('zipCode', quote.zip_code);
 
-	if (quote.service_description) {
-		params.set('serviceDescription', quote.service_description);
-		return `/booking?${params.toString()}`;
-	}
+	if (quote.customer_note) params.set('customerNote', quote.customer_note);
 
 	if (quote.bedrooms != null && quote.bathrooms != null && quote.square_footage != null) {
 		params.set('bedrooms', String(quote.bedrooms));

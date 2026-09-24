@@ -27,13 +27,54 @@ export function getTimePreferenceForHour(hour: number): TimePreference {
 	return TIME_PREFERENCES.find((preference) => TIME_SLOT_HOURS[preference].includes(hour)) ?? 'morning';
 }
 
-export const MIN_SERVICE_DESCRIPTION_LENGTH = 20;
+export const MIN_CUSTOM_NOTE_LENGTH = 20;
+
+type ConditionalField = 'customer_note' | 'bedrooms' | 'bathrooms' | 'squareFootage';
+
+export const CONDITIONAL_BOOKING_FIELDS: ConditionalField[] = [
+	'customer_note',
+	'bedrooms',
+	'bathrooms',
+	'squareFootage',
+];
+
+interface ConditionalValues {
+	isCustom: boolean;
+	customer_note?: string;
+	bedrooms?: number;
+	bathrooms?: number;
+	squareFootage?: number;
+}
+
+interface BookingIssue {
+	path: ConditionalField;
+	message: string;
+}
+
+export function getConditionalBookingIssues(values: ConditionalValues): BookingIssue[] {
+	if (values.isCustom) {
+		if ((values.customer_note?.trim().length ?? 0) < MIN_CUSTOM_NOTE_LENGTH) {
+			return [
+				{
+					path: 'customer_note',
+					message: `Tell us a bit more about what you need (at least ${MIN_CUSTOM_NOTE_LENGTH} characters)`,
+				},
+			];
+		}
+		return [];
+	}
+
+	const issues: BookingIssue[] = [];
+	if (values.bedrooms == null) issues.push({ path: 'bedrooms', message: 'Bedrooms is required' });
+	if (values.bathrooms == null) issues.push({ path: 'bathrooms', message: 'Bathrooms is required' });
+	if (values.squareFootage == null) issues.push({ path: 'squareFootage', message: 'Square footage is required' });
+	return issues;
+}
 
 export const bookingSchema = z
 	.object({
 		planId: z.string().min(1, 'Select a cleaning plan'),
 		isCustom: z.boolean(),
-		serviceDescription: z.string().optional(),
 		bedrooms: z.coerce.number().int('Must be a whole number').min(0, 'Must be 0 or more').optional(),
 		bathrooms: z.coerce.number().min(0, 'Must be 0 or more').optional(),
 		squareFootage: z.coerce.number().int('Must be a whole number').positive('Must be greater than 0').optional(),
@@ -51,37 +92,20 @@ export const bookingSchema = z
 		customer_note: z.string().optional(),
 	})
 	.superRefine((values, ctx) => {
-		if (values.isCustom) {
-			if ((values.serviceDescription?.trim().length ?? 0) < MIN_SERVICE_DESCRIPTION_LENGTH) {
-				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
-					path: ['serviceDescription'],
-					message: `Tell us a bit more about what you need (at least ${MIN_SERVICE_DESCRIPTION_LENGTH} characters)`,
-				});
-			}
-			return;
-		}
-
-		if (values.bedrooms == null) {
-			ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['bedrooms'], message: 'Bedrooms is required' });
-		}
-		if (values.bathrooms == null) {
-			ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['bathrooms'], message: 'Bathrooms is required' });
-		}
-		if (values.squareFootage == null) {
-			ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['squareFootage'], message: 'Square footage is required' });
+		for (const issue of getConditionalBookingIssues(values)) {
+			ctx.addIssue({ code: z.ZodIssueCode.custom, path: [issue.path], message: issue.message });
 		}
 	});
 
 export type BookingValues = z.infer<typeof bookingSchema>;
 
 const BOOKING_STEP_FIELDS = {
-	1: ['planId', 'bedrooms', 'bathrooms', 'squareFootage', 'hasPets'],
+	1: ['planId', 'bedrooms', 'bathrooms', 'squareFootage', 'hasPets', 'customer_note'],
 	2: ['addressLine', 'city', 'state', 'zipCode', 'desiredDate', 'timePreference', 'visitHour'],
 	3: ['fullName', 'email', 'phone'],
 } satisfies Record<number, (keyof BookingValues)[]>;
 
-const CUSTOM_FIRST_STEP_FIELDS = ['planId', 'serviceDescription'] satisfies (keyof BookingValues)[];
+const CUSTOM_FIRST_STEP_FIELDS = ['planId', 'customer_note'] satisfies (keyof BookingValues)[];
 
 export function getBookingStepFields(step: number, isCustom: boolean): (keyof BookingValues)[] {
 	if (isCustom && step === 1) return [...CUSTOM_FIRST_STEP_FIELDS];
@@ -89,3 +113,11 @@ export function getBookingStepFields(step: number, isCustom: boolean): (keyof Bo
 }
 
 export const TOTAL_BOOKING_STEPS = Object.keys(BOOKING_STEP_FIELDS).length;
+
+export function findFirstInvalidBookingStep(invalidFields: string[], isCustom: boolean): number | null {
+	for (let step = 1; step <= TOTAL_BOOKING_STEPS; step += 1) {
+		const fields = getBookingStepFields(step, isCustom) as string[];
+		if (invalidFields.some((field) => fields.includes(field))) return step;
+	}
+	return null;
+}

@@ -208,7 +208,6 @@ export type Database = {
           has_pets: boolean
           id: string
           plan_id: string
-          service_description: string | null
           square_footage: number | null
           state: string | null
           status: Database["public"]["Enums"]["quote_status"]
@@ -235,7 +234,6 @@ export type Database = {
           has_pets?: boolean
           id?: string
           plan_id: string
-          service_description?: string | null
           square_footage?: number | null
           state?: string | null
           status?: Database["public"]["Enums"]["quote_status"]
@@ -262,7 +260,6 @@ export type Database = {
           has_pets?: boolean
           id?: string
           plan_id?: string
-          service_description?: string | null
           square_footage?: number | null
           state?: string | null
           status?: Database["public"]["Enums"]["quote_status"]
@@ -448,7 +445,6 @@ export type Database = {
           has_pets: boolean
           id: string
           plan_id: string
-          service_description: string | null
           square_footage: number | null
           state: string | null
           status: Database["public"]["Enums"]["quote_status"]
@@ -584,7 +580,6 @@ export type Database = {
           has_pets: boolean
           id: string
           plan_id: string
-          service_description: string | null
           square_footage: number | null
           state: string | null
           status: Database["public"]["Enums"]["quote_status"]

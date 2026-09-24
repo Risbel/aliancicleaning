@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldErrors } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AddressAndDateStep } from '@/components/booking/AddressAndDateStep';
@@ -26,8 +26,11 @@ import {
 import { uploadQuotePhotos } from '@/services/quote-photos';
 import {
 	bookingSchema,
+	CONDITIONAL_BOOKING_FIELDS,
 	CUSTOM_PLAN_TYPE,
+	findFirstInvalidBookingStep,
 	getBookingStepFields,
+	getConditionalBookingIssues,
 	TIME_PREFERENCE_HOURS,
 	TOTAL_BOOKING_STEPS,
 	type BookingValues,
@@ -49,11 +52,10 @@ export default function BookingPage() {
 		city: searchParams.get('city'),
 		state: searchParams.get('state'),
 		zipCode: searchParams.get('zipCode'),
-		serviceDescription: searchParams.get('serviceDescription'),
+		customerNote: searchParams.get('customerNote'),
 	};
 	const isRebooking = rebookParams.bedrooms != null;
-	const isCustomRebooking = rebookParams.serviceDescription != null;
-	const hasRebookedAddress = isRebooking || isCustomRebooking;
+	const hasRebookedAddress = rebookParams.addressLine != null;
 	const { user } = useAuth();
 	const { data: plans } = usePlans();
 	const { data: profile } = useCustomerProfile(user?.id);
@@ -83,7 +85,6 @@ export default function BookingPage() {
 		defaultValues: {
 			planId: defaultPlan?.id || '',
 			isCustom: false,
-			serviceDescription: '',
 			bedrooms: 1,
 			bathrooms: 1,
 			hasPets: false,
@@ -111,7 +112,7 @@ export default function BookingPage() {
 	}, [profile, form, hasRebookedAddress]);
 
 	useEffect(() => {
-		if (rebookParams.serviceDescription) form.setValue('serviceDescription', rebookParams.serviceDescription);
+		if (rebookParams.customerNote) form.setValue('customer_note', rebookParams.customerNote);
 		if (!hasRebookedAddress) return;
 		if (rebookParams.bedrooms) form.setValue('bedrooms', Number(rebookParams.bedrooms));
 		if (rebookParams.bathrooms) form.setValue('bathrooms', Number(rebookParams.bathrooms));
@@ -132,6 +133,7 @@ export default function BookingPage() {
 	}, [defaultPlan, form]);
 
 	const values = form.watch();
+	const { errors } = form.formState;
 	const selectedPlan = plans?.find((plan) => plan.id === values.planId);
 	const isCustom = selectedPlan?.type === CUSTOM_PLAN_TYPE;
 
@@ -140,16 +142,18 @@ export default function BookingPage() {
 	}, [isCustom, form]);
 
 	useEffect(() => {
-		if (isCustom || !photos.length) return;
-		photos.forEach((photo) => URL.revokeObjectURL(photo.previewUrl));
-		setPhotos([]);
-	}, [isCustom, photos]);
-
-	useEffect(() => {
 		return () => {
 			photosRef.current.forEach((photo) => URL.revokeObjectURL(photo.previewUrl));
 		};
 	}, []);
+
+	useEffect(() => {
+		const invalid = new Set(getConditionalBookingIssues(form.getValues()).map((issue) => issue.path));
+		const resolved = CONDITIONAL_BOOKING_FIELDS.filter(
+			(field) => !invalid.has(field) && errors[field]?.type === 'manual',
+		);
+		if (resolved.length) form.clearErrors(resolved);
+	}, [errors, form, values.isCustom, values.customer_note, values.bedrooms, values.bathrooms, values.squareFootage]);
 
 	const estimatedPrice = !selectedPlan
 		? 0
@@ -196,7 +200,22 @@ export default function BookingPage() {
 	async function handleNext() {
 		const fields = getBookingStepFields(step, isCustom);
 		const valid = await form.trigger(fields);
-		if (valid) setStep((current) => current + 1);
+
+		const issues = getConditionalBookingIssues(form.getValues()).filter((issue) =>
+			(fields as string[]).includes(issue.path),
+		);
+		for (const issue of issues) {
+			form.setError(issue.path, { type: 'manual', message: issue.message });
+		}
+
+		if (valid && !issues.length) setStep((current) => current + 1);
+	}
+
+	function handleInvalid(errors: FieldErrors<BookingValues>) {
+		const targetStep = findFirstInvalidBookingStep(Object.keys(errors), isCustom);
+		if (targetStep == null || targetStep === step) return;
+		setStep(targetStep);
+		toast.error('Please review the highlighted field before submitting.');
 	}
 
 	function handleBack() {
@@ -236,8 +255,7 @@ export default function BookingPage() {
 			plan_id: selectedPlan.id,
 			desired_visit_date: desiredVisitDate.toISOString(),
 			estimated_price: estimatedPrice,
-			service_description: isCustom ? (data.serviceDescription?.trim() ?? null) : null,
-			customer_note: data.customer_note || null,
+			customer_note: data.customer_note?.trim() || null,
 		});
 
 		if (photos.length) {
@@ -276,7 +294,7 @@ export default function BookingPage() {
 
 							<Form {...form}>
 								<form
-									onSubmit={form.handleSubmit(onSubmit)}
+									onSubmit={form.handleSubmit(onSubmit, handleInvalid)}
 									className="flex flex-col gap-6"
 									onKeyDown={(event) => {
 										if (event.key === 'Enter' && step < TOTAL_BOOKING_STEPS) event.preventDefault();

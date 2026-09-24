@@ -97,11 +97,11 @@ A `Quote` is created when a visitor submits the public quote/booking form, befor
 
 A client whose job is not covered by the three priced plans picks **Other / Custom Service** in the booking form, or arrives straight there from the "Need something else?" banner under the Services section (`/booking?plan=other`).
 
-- Step 1 swaps the home details (bedrooms, bathrooms, square footage, pets) for a **service description** (required, at least 20 characters) and an **optional photo picker** (up to 10). Steps 2 and 3 are unchanged.
+- Step 1 swaps the home details (bedrooms, bathrooms, square footage, pets) for a **service description** — the same `customer_note` field every plan collects, but required here and at least 20 characters. Steps 2 and 3 are unchanged.
 - Photos are compressed in the browser to **10 KB or less** each (`browser-image-compression`, WebP, 1280px then 640px). They are held in memory during the wizard and uploaded only after the quote row exists, so an abandoned form leaves nothing behind. If the upload fails the quote still stands and the client is told we will follow up.
-- The quote is stored with `bedrooms`, `bathrooms`, `square_footage` and `estimated_price` all null — there is no auto-estimate to compute. Staff read the description and photos in the quote details dialog, then set `final_price` and send the confirmation as usual.
+- The quote is stored with `bedrooms`, `bathrooms`, `square_footage` and `estimated_price` all null — there is no auto-estimate to compute. Staff read the note and photos in the quote details dialog, then set `final_price` and send the confirmation as usual.
 - Files live in the private `quote-photos` storage bucket; `quote_photos` rows hold their paths. Staff and the owning customer read them through short-lived signed URLs.
-- **Book Again** on a custom quote in `/my-quotes` returns to step 1 with the plan, address and service description prefilled (a normal rebook still jumps straight to step 2, since its step 1 has nothing to review). Photos are not carried over — the client re-attaches whatever is relevant to the new job.
+- **Book Again** on a custom quote in `/my-quotes` returns to step 1 with the plan, address and note prefilled (a normal rebook carries its note too, but still jumps straight to step 2). Photos are not carried over — the client re-attaches whatever is relevant to the new job.
 
 ### Staff-created quotes
 
@@ -121,7 +121,7 @@ A client whose job is not covered by the three priced plans picks **Other / Cust
 | `address_line`, `city`, `state`, `zip_code` | String | Service address |
 | `plan_id` | FK → `cleaning_plans` | Selected cleaning plan |
 | `bedrooms`, `bathrooms`, `square_footage`, `has_pets` | — | Inputs used to compute `estimated_price`. Null on custom quotes |
-| `service_description` | Text | What the client asked for on a custom quote. Null otherwise |
+| `customer_note` | Text | What the client asked for or wants us to know. Required (20+ characters) on custom quotes, optional on priced plans |
 | `desired_visit_date` | Timestamp | Client's requested date |
 | `estimated_price` | Decimal | Auto-calculated at submission time from the plan's pricing formula. Read-only reference for staff. Null on custom quotes. |
 | `final_price` | Decimal | Set/adjusted by staff — the actual quoted price once reviewed |
