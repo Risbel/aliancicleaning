@@ -122,7 +122,8 @@ A client whose job is not covered by the three priced plans picks **Other / Cust
 | `plan_id` | FK → `cleaning_plans` | Selected cleaning plan |
 | `bedrooms`, `bathrooms`, `square_footage`, `has_pets` | — | Inputs used to compute `estimated_price`. Null on custom quotes |
 | `customer_note` | Text | What the client asked for or wants us to know. Required (20+ characters) on custom quotes, optional on priced plans |
-| `desired_visit_date` | Timestamp | Client's requested date |
+| `desired_visit_date` | Timestamp | Client's requested date, including the start hour |
+| `duration_minutes` | Integer | How long the visit occupies, set by staff in the Edit dialog. Null means the calendar falls back to a duration estimated from the plan type and home size |
 | `estimated_price` | Decimal | Auto-calculated at submission time from the plan's pricing formula. Read-only reference for staff. Null on custom quotes. |
 | `final_price` | Decimal | Set/adjusted by staff — the actual quoted price once reviewed |
 | `status` | Enum | See Statuses below |
@@ -150,11 +151,31 @@ Status changes are free-form: staff can set any status at any time via the "Chan
 
 ### Dashboard Actions (`/dashboard/quotes`)
 
-- **Edit** — opens a modal to update `customer_phone` and `final_price` only. Email is shown but not editable.
+- **Edit** — opens a modal to update `customer_phone`, `final_price`, the visit date, the exact start hour, `duration_minutes` and `admin_notes`. Email is shown but not editable. Leaving Duration on "Estimated" stores null, so the block keeps tracking the estimate.
 - **Change status** — a row action (dropdown submenu) that sets `status` directly via radio options; the update is applied optimistically with a loading indicator until the mutation settles, and rolls back on failure. Setting status to `accepted` for the first time generates `confirmation_token` and opens a dialog with the confirmation link to copy/share.
 - **Send confirmation** — a dedicated row action, disabled until `final_price` is set. Marks the quote `accepted` and generates `confirmation_token` if not already set, then opens a dialog summarizing the desired visit date, address, estimated price, and final price alongside the `/confirmation/:token` link — since email dispatch isn't implemented, staff copy/send this manually. Can be re-run on an already-accepted quote to re-share the link.
 - **Assign** — admin-only, opens a modal to set `assigned_to` from the list of staff.
 - **Delete** — hard delete after a confirmation dialog.
+
+### Calendar view (`/dashboard/quotes?view=calendar`)
+
+A segmented **List / Calendar** toggle sits in the page toolbar. The calendar answers the planning questions the table cannot: what a day actually looks like hour by hour, what time is still free, and whether a staff member is double-booked.
+
+| Param | Values | Default |
+|---|---|---|
+| `view` | `list` / `calendar` | `list` — so every existing deep link opens the table unchanged |
+| `cal` | `month` / `week` / `day` | `week` |
+| `date` | `yyyy-MM-dd` anchor | today |
+
+- **Hours shown** are 8:00-21:00, matching the slots a client can book (`TIME_SLOT_HOURS`). Jobs outside the window are clamped to the edge with a squared-off corner.
+- **Duration**: each block spans `duration_minutes`, or a duration estimated from the plan type plus bedrooms, bathrooms and square footage when it is null (`src/lib/quote-duration.ts`). A "(est.)" suffix marks the estimated ones in Day view.
+- **Statuses drawn**: by default `pending`, `reviewed`, `quoted`, `accepted` and `completed`. Unconfirmed statuses render dashed and translucent; `accepted` and `completed` render solid, so committed work is distinguishable at a glance. The status tag row filters the calendar as it filters the table — its default chip reads **Scheduled**, and **Expired** is hidden (the calendar is already a date filter). Picking **All** also draws `declined` and `cancelled`.
+- **Month** shows up to 3 chips per day plus "+N more" and a load bar (busy minutes over the 13-hour window). Clicking a day opens Day view.
+- **Week** shows 7 columns with a per-day "3h booked" subheader and a live "now" line on today. Below `md` it collapses to the anchor day with a day strip to move between days.
+- **Day** adds an availability rail: booked / free / job totals, the **open slots** between jobs (gaps of 2h or more emphasised), and any **conflicts** — two jobs overlapping that are assigned to the same staff member. Conflicting blocks also get a red ring. Overlapping jobs share the column width rather than hiding each other.
+- Blocks show the client name, the time range and the **assigned staff member** (or "Unassigned"); month chips show the time and client only. Hovering a block opens a **hover card** (`src/components/ui/hover-card.tsx`, built on the `radix-ui` HoverCard already in the project) with the status, date, time range, duration, assignee, plan, address, phone, price and the first lines of the customer note.
+- Clicking a block opens the quote details dialog (which also lists **Assigned to**); the `⋯` menu on a block is the same `QuoteRowActions` component the table rows use, so status changes, assignment, confirmations and deletion behave identically in both views.
+- Non-admin staff see only their own assigned quotes here, exactly as in the list.
 
 Admins can filter the list by assignee with `?assigned=<staff id>` (linked from **View quotes** on `/dashboard/staff`); a removable "Assigned to" chip shows the active filter. Non-admin staff always see only their own assigned quotes, regardless of this param.
 

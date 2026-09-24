@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { customerKeys, dashboardKeys, quoteKeys } from '@/lib/query-keys';
 import {
 	acceptQuoteByConfirmationToken,
@@ -8,8 +8,10 @@ import {
 	getQuoteByConfirmationToken,
 	getQuotes,
 	getQuotesByCustomer,
+	getQuotesInRange,
 	sendQuoteConfirmation,
 	updateQuote,
+	type QuoteStatus,
 	type QuoteStatusFilter,
 } from '@/services/quotes';
 import type { Tables, TablesInsert, TablesUpdate } from '@/types/supabase';
@@ -19,10 +21,29 @@ export function useQuotes(filter: {
 	search?: string;
 	assignedTo?: string;
 	customerId?: string;
+	enabled?: boolean;
+}) {
+	const { enabled = true, ...rest } = filter;
+
+	return useQuery({
+		queryKey: quoteKeys.byFilter(rest),
+		queryFn: () => getQuotes(rest),
+		enabled,
+	});
+}
+
+export function useQuotesCalendar(filter: {
+	from: string;
+	to: string;
+	statuses: QuoteStatus[];
+	search?: string;
+	assignedTo?: string;
+	customerId?: string;
 }) {
 	return useQuery({
-		queryKey: quoteKeys.byFilter(filter),
-		queryFn: () => getQuotes(filter),
+		queryKey: quoteKeys.calendar(filter),
+		queryFn: () => getQuotesInRange(filter),
+		placeholderData: keepPreviousData,
 	});
 }
 

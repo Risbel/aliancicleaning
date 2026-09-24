@@ -90,6 +90,7 @@ Quote requests submitted through the public booking form.
 | `has_pets`           | `boolean`      | NOT NULL, DEFAULT `false`           |
 | `plan_id`            | `uuid`         | NOT NULL, FK → `cleaning_plans(id)` |
 | `desired_visit_date` | `timestamptz`  | NOT NULL                            |
+| `duration_minutes`   | `integer`      | CHECK `> 0 and <= 720` — null means fall back to the duration estimated from the plan type and home size |
 | `estimated_price`    | `numeric`      |                                     |
 | `final_price`        | `numeric`      |                                     |
 | `status`             | `quote_status` | NOT NULL, DEFAULT `'pending'`       |
@@ -167,6 +168,8 @@ All are `STABLE SECURITY DEFINER` and granted to `authenticated` only. They call
 | `get_dashboard_upcoming_jobs(p_limit int default 5)` | `id`, `customer_name`, `city`, `desired_visit_date`, `price` | `accepted` quotes with a future visit date, soonest first. Limit clamped to 1-20 |
 
 Indexes added (`if not exists`): `idx_quotes_created_at (created_at)`, `idx_quotes_status_date (status, desired_visit_date)`, `idx_quotes_assigned_to (assigned_to)`.
+
+Migration `20260925000000_quote_duration.sql` adds `quotes.duration_minutes` and `idx_quotes_visit_date (desired_visit_date)`, which backs the dashboard calendar range queries.
 
 ---
 

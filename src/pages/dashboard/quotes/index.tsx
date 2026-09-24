@@ -5,17 +5,12 @@ import { format } from 'date-fns';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
 	ArrowUpDownIcon,
+	Calendar03Icon,
 	Cancel01Icon,
 	ChevronDownIcon,
-	EyeIcon,
 	InformationCircleIcon,
+	LeftToRightListBulletIcon,
 	LoaderCircle,
-	MoreHorizontalIcon,
-	Pen,
-	RadioButtonFreeIcons,
-	Send,
-	Trash,
-	UserCheck,
 } from '@hugeicons/core-free-icons';
 import {
 	flexRender,
@@ -46,8 +41,6 @@ import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
 	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -56,14 +49,23 @@ import { AssignQuoteDialog } from '@/components/dashboard/quotes/AssignQuoteDial
 import { ChangeQuoteStatusDialog } from '@/components/dashboard/quotes/ChangeQuoteStatusDialog';
 import { EditQuoteDialog } from '@/components/dashboard/quotes/EditQuoteDialog';
 import { QuoteDetailsDialog } from '@/components/dashboard/quotes/QuoteDetailsDialog';
+import { QuoteRowActions, type QuoteActions } from '@/components/dashboard/quotes/QuoteRowActions';
 import { SendConfirmationDialog } from '@/components/dashboard/quotes/SendConfirmationDialog';
 import { useAuth } from '@/hooks/auth/use-auth';
 import { useCustomer } from '@/hooks/queries/use-customers';
 import { useStaffProfile, useStaffProfiles } from '@/hooks/queries/use-profile';
 import { useDeleteQuote, useQuotes, useUpdateQuote } from '@/hooks/queries/use-quotes';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { QuotesCalendar } from '@/components/dashboard/quotes/calendar/QuotesCalendar';
 import { cn } from '@/lib/utils';
-import { QUOTE_FILTER_TAGS, QUOTE_STATUS_BADGE_VARIANT, type QuoteStatus } from '@/lib/quote-status';
+import { formatCalendarAnchor, parseCalendarAnchor, parseCalendarMode, type CalendarMode } from '@/lib/calendar';
+import {
+	QUOTE_CALENDAR_STATUSES,
+	QUOTE_FILTER_TAGS,
+	QUOTE_STATUS_BADGE_VARIANT,
+	QUOTE_STATUSES,
+	type QuoteStatus,
+} from '@/lib/quote-status';
 import type { QuoteStatusFilter, QuoteWithPlan } from '@/services/quotes';
 import type { Tables, TablesUpdate } from '@/types/supabase';
 
@@ -94,7 +96,18 @@ export default function DashboardQuotesPage() {
 	});
 
 	const [searchParams, setSearchParams] = useSearchParams();
-	const status = (searchParams.get('status') as QuoteStatusFilter) || 'pending';
+	const view = searchParams.get('view') === 'calendar' ? 'calendar' : 'list';
+	const isCalendar = view === 'calendar';
+	const statusParam = searchParams.get('status') as QuoteStatusFilter | null;
+	const status = statusParam || 'pending';
+	const calendarMode = parseCalendarMode(searchParams.get('cal'));
+	const calendarAnchor = parseCalendarAnchor(searchParams.get('date'));
+	const calendarStatuses = useMemo<QuoteStatus[]>(() => {
+		if (!statusParam || statusParam === 'pending') return QUOTE_CALENDAR_STATUSES;
+		if (statusParam === 'all') return QUOTE_STATUSES.map((option) => option.value);
+		if (statusParam === 'expired') return ['pending'];
+		return [statusParam];
+	}, [statusParam]);
 	const search = searchParams.get('q') ?? '';
 	const customerId = searchParams.get('customer') ?? undefined;
 	const { data: filterCustomer } = useCustomer(customerId);
@@ -129,6 +142,7 @@ export default function DashboardQuotesPage() {
 		search: search || undefined,
 		assignedTo: isAdmin ? assignedId : user?.id,
 		customerId,
+		enabled: !isCalendar,
 	});
 
 	const [editingQuote, setEditingQuote] = useState<Tables<'quotes'> | null>(null);
@@ -176,6 +190,33 @@ export default function DashboardQuotesPage() {
 		});
 	}
 
+	function setView(nextView: 'list' | 'calendar') {
+		setSearchParams((params) => {
+			if (nextView === 'list') {
+				params.delete('view');
+				params.delete('cal');
+				params.delete('date');
+			} else {
+				params.set('view', 'calendar');
+			}
+			return params;
+		});
+	}
+
+	function setCalendarMode(nextMode: CalendarMode) {
+		setSearchParams((params) => {
+			params.set('cal', nextMode);
+			return params;
+		});
+	}
+
+	function setCalendarAnchor(nextAnchor: Date) {
+		setSearchParams((params) => {
+			params.set('date', formatCalendarAnchor(nextAnchor));
+			return params;
+		});
+	}
+
 	function clearCustomerFilter() {
 		setSearchParams((params) => {
 			params.delete('customer');
@@ -202,6 +243,19 @@ export default function DashboardQuotesPage() {
 		setSearchInput(value);
 		debouncedSetSearch(value);
 	}
+
+	const quoteActions = useMemo<QuoteActions>(
+		() => ({
+			isAdmin,
+			onView: setViewingQuote,
+			onEdit: setEditingQuote,
+			onChangeStatus: setChangingStatusQuote,
+			onAssign: setAssigningQuote,
+			onSendConfirmation: setConfirmationQuote,
+			onDelete: setDeletingQuote,
+		}),
+		[isAdmin],
+	);
 
 	const columns = useMemo<ColumnDef<QuoteWithPlan>[]>(
 		() => [
@@ -269,62 +323,14 @@ export default function DashboardQuotesPage() {
 				id: 'actions',
 				enableHiding: false,
 				header: () => <div className="text-right">Actions</div>,
-				cell: ({ row }) => {
-					const quote = row.original;
-					return (
-						<div className="text-right">
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<Button variant="ghost" size="icon-sm">
-										<HugeiconsIcon icon={MoreHorizontalIcon} className="size-4" />
-										<span className="sr-only">Open menu</span>
-									</Button>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent align="end">
-									<DropdownMenuItem className="justify-between" onClick={() => setViewingQuote(quote)}>
-										View details <HugeiconsIcon icon={EyeIcon} className="size-4" />
-									</DropdownMenuItem>
-									<DropdownMenuItem className="justify-between" onClick={() => setEditingQuote(quote)}>
-										Edit <HugeiconsIcon icon={Pen} className="size-4" />
-									</DropdownMenuItem>
-									<DropdownMenuItem className="justify-between" onClick={() => setChangingStatusQuote(quote)}>
-										Change status <HugeiconsIcon icon={RadioButtonFreeIcons} className="size-4" />
-									</DropdownMenuItem>
-									<DropdownMenuItem
-										disabled={
-											!quote.customer_email ||
-											quote.final_price == null ||
-											quote.status === 'accepted' ||
-											quote.status === 'quoted' ||
-											quote.status === 'completed' ||
-											quote.status === 'cancelled'
-										}
-										onClick={() => setConfirmationQuote(quote)}
-										className="justify-between"
-									>
-										Send confirmation <HugeiconsIcon icon={Send} className="size-4" />
-									</DropdownMenuItem>
-									{isAdmin && (
-										<DropdownMenuItem className="justify-between" onClick={() => setAssigningQuote(quote)}>
-											Assign <HugeiconsIcon icon={UserCheck} className="size-4" />
-										</DropdownMenuItem>
-									)}
-									<DropdownMenuSeparator />
-									<DropdownMenuItem
-										className="justify-between"
-										variant="destructive"
-										onClick={() => setDeletingQuote(quote)}
-									>
-										Delete <HugeiconsIcon icon={Trash} className="size-4" />
-									</DropdownMenuItem>
-								</DropdownMenuContent>
-							</DropdownMenu>
-						</div>
-					);
-				},
+				cell: ({ row }) => (
+					<div className="text-right">
+						<QuoteRowActions quote={row.original} actions={quoteActions} />
+					</div>
+				),
 			},
 		],
-		[isAdmin, updateQuote.isPending, updateQuote.variables],
+		[quoteActions, updateQuote.isPending, updateQuote.variables],
 	);
 
 	const table = useReactTable({
@@ -341,17 +347,17 @@ export default function DashboardQuotesPage() {
 
 	return (
 		<div className="px-6 py-8 lg:px-12">
-			<div className="mx-auto max-w-6xl">
+			<div className={cn('mx-auto', isCalendar ? 'max-w-[1600px]' : 'max-w-6xl')}>
 				<h1 className="mb-6 text-2xl font-bold text-foreground">Quotes</h1>
 
 				<div className="mb-4 flex flex-wrap gap-2">
-					{QUOTE_FILTER_TAGS.map((tag) => (
+					{QUOTE_FILTER_TAGS.filter((tag) => !isCalendar || tag.value !== 'expired').map((tag) => (
 						<button key={tag.value} type="button" onClick={() => setStatus(tag.value)}>
 							<Badge
 								variant={status === tag.value ? QUOTE_STATUS_BADGE_VARIANT[tag.value] : 'outline'}
 								className={cn(status === tag.value && 'ring-2 ring-ring/30')}
 							>
-								{tag.label}
+								{isCalendar && tag.value === 'pending' ? 'Scheduled' : tag.label}
 							</Badge>
 						</button>
 					))}
@@ -393,47 +399,86 @@ export default function DashboardQuotesPage() {
 						placeholder="Search by name or email"
 						className="max-w-sm"
 					/>
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button variant="outline" className="ml-auto">
-								Columns <HugeiconsIcon icon={ChevronDownIcon} className="size-4" />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
-							{table
-								.getAllColumns()
-								.filter((column) => column.getCanHide())
-								.map((column) => (
-									<DropdownMenuCheckboxItem
-										key={column.id}
-										className="capitalize"
-										checked={column.getIsVisible()}
-										onCheckedChange={(value) => column.toggleVisibility(!!value)}
-									>
-										{column.id.replace(/_/g, ' ')}
-									</DropdownMenuCheckboxItem>
-								))}
-						</DropdownMenuContent>
-					</DropdownMenu>
+					<div className="ml-auto flex items-center gap-1 rounded-4xl border border-input p-1">
+						<Button
+							variant={isCalendar ? 'ghost' : 'default'}
+							size="sm"
+							className={cn('h-7 gap-2', isCalendar && 'text-muted-foreground')}
+							onClick={() => setView('list')}
+						>
+							<HugeiconsIcon icon={LeftToRightListBulletIcon} className="size-4" />
+							List
+						</Button>
+						<Button
+							variant={isCalendar ? 'default' : 'ghost'}
+							size="sm"
+							className={cn('h-7 gap-2', !isCalendar && 'text-muted-foreground')}
+							onClick={() => setView('calendar')}
+						>
+							<HugeiconsIcon icon={Calendar03Icon} className="size-4" />
+							Calendar
+						</Button>
+					</div>
+
+					{!isCalendar && (
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button variant="outline">
+									Columns <HugeiconsIcon icon={ChevronDownIcon} className="size-4" />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end">
+								{table
+									.getAllColumns()
+									.filter((column) => column.getCanHide())
+									.map((column) => (
+										<DropdownMenuCheckboxItem
+											key={column.id}
+											className="capitalize"
+											checked={column.getIsVisible()}
+											onCheckedChange={(value) => column.toggleVisibility(!!value)}
+										>
+											{column.id.replace(/_/g, ' ')}
+										</DropdownMenuCheckboxItem>
+									))}
+							</DropdownMenuContent>
+						</DropdownMenu>
+					)}
 				</div>
 
-				<Alert className="mb-6" variant={'warning'}>
-					<HugeiconsIcon icon={InformationCircleIcon} />
-					<AlertTitle>How to move a quote forward</AlertTitle>
-					<AlertDescription>
-						Edit the quote to set its final price, then send the confirmation link — this marks the quote as
-						&quot;quoted&quot;. The client accepts automatically when they open the link, which sets the quote to
-						&quot;accepted&quot; and locks its status.
-					</AlertDescription>
-				</Alert>
+				{!isCalendar && (
+					<Alert className="mb-6" variant={'warning'}>
+						<HugeiconsIcon icon={InformationCircleIcon} />
+						<AlertTitle>How to move a quote forward</AlertTitle>
+						<AlertDescription>
+							Edit the quote to set its final price, then send the confirmation link — this marks the quote as
+							&quot;quoted&quot;. The client accepts automatically when they open the link, which sets the quote to
+							&quot;accepted&quot; and locks its status.
+						</AlertDescription>
+					</Alert>
+				)}
 
-				{isLoading && <p className="text-sm text-muted-foreground">Loading quotes...</p>}
-				{isError && <p className="text-sm text-destructive">Failed to load quotes.</p>}
-				{!isLoading && !isError && quotes?.length === 0 && (
+				{isCalendar && (
+					<QuotesCalendar
+						mode={calendarMode}
+						anchor={calendarAnchor}
+						statuses={calendarStatuses}
+						search={search || undefined}
+						assignedTo={isAdmin ? assignedId : user?.id}
+						customerId={customerId}
+						onModeChange={setCalendarMode}
+						onAnchorChange={setCalendarAnchor}
+						actions={quoteActions}
+					/>
+				)}
+
+				{!isCalendar && isLoading && <p className="text-sm text-muted-foreground">Loading quotes...</p>}
+				{!isCalendar && isError && <p className="text-sm text-destructive">Failed to load quotes.</p>}
+				{!isCalendar && !isLoading && !isError && quotes?.length === 0 && (
 					<p className="text-sm text-muted-foreground">No quotes found.</p>
 				)}
 
-				{!isLoading && !isError && quotes && quotes.length > 0 && (
+				{!isCalendar && !isLoading && !isError && quotes && quotes.length > 0 && (
 					<>
 						<div className="rounded-lg border border-input">
 							<Table>

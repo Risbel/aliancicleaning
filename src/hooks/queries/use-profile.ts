@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { profileKeys } from '@/lib/query-keys';
 import {
@@ -23,6 +24,12 @@ export function useStaffProfiles() {
 		queryKey: profileKeys.staffList(),
 		queryFn: () => getStaffProfiles(),
 	});
+}
+
+export function useStaffNames() {
+	const { data } = useStaffProfiles();
+
+	return useMemo(() => new Map((data ?? []).map((member) => [member.id, member.full_name])), [data]);
 }
 
 export function useCustomerProfile(userId: string | undefined) {

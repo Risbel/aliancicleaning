@@ -203,11 +203,13 @@ export type Database = {
           customer_note: string | null
           customer_phone: string
           desired_visit_date: string
+          duration_minutes: number | null
           estimated_price: number | null
           final_price: number | null
           has_pets: boolean
           id: string
           plan_id: string
+          service_description: string | null
           square_footage: number | null
           state: string | null
           status: Database["public"]["Enums"]["quote_status"]
@@ -229,11 +231,13 @@ export type Database = {
           customer_note?: string | null
           customer_phone: string
           desired_visit_date: string
+          duration_minutes?: number | null
           estimated_price?: number | null
           final_price?: number | null
           has_pets?: boolean
           id?: string
           plan_id: string
+          service_description?: string | null
           square_footage?: number | null
           state?: string | null
           status?: Database["public"]["Enums"]["quote_status"]
@@ -255,11 +259,13 @@ export type Database = {
           customer_note?: string | null
           customer_phone?: string
           desired_visit_date?: string
+          duration_minutes?: number | null
           estimated_price?: number | null
           final_price?: number | null
           has_pets?: boolean
           id?: string
           plan_id?: string
+          service_description?: string | null
           square_footage?: number | null
           state?: string | null
           status?: Database["public"]["Enums"]["quote_status"]
@@ -440,11 +446,13 @@ export type Database = {
           customer_note: string | null
           customer_phone: string
           desired_visit_date: string
+          duration_minutes: number | null
           estimated_price: number | null
           final_price: number | null
           has_pets: boolean
           id: string
           plan_id: string
+          service_description: string | null
           square_footage: number | null
           state: string | null
           status: Database["public"]["Enums"]["quote_status"]
@@ -575,11 +583,13 @@ export type Database = {
           customer_note: string | null
           customer_phone: string
           desired_visit_date: string
+          duration_minutes: number | null
           estimated_price: number | null
           final_price: number | null
           has_pets: boolean
           id: string
           plan_id: string
+          service_description: string | null
           square_footage: number | null
           state: string | null
           status: Database["public"]["Enums"]["quote_status"]

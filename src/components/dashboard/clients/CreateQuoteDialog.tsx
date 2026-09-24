@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { DateField } from '@/components/forms/DateField';
 import { TimePreferenceField } from '@/components/forms/TimePreferenceField';
+import { VisitHourField } from '@/components/forms/VisitHourField';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,7 +25,7 @@ import { useUpdateCustomer } from '@/hooks/queries/use-customers';
 import { usePlans } from '@/hooks/queries/use-plans';
 import { useCreateQuote } from '@/hooks/queries/use-quotes';
 import { calculateEstimatedPrice } from '@/lib/booking/estimate';
-import { TIME_PREFERENCE_HOURS, TIME_SLOT_HOURS } from '@/lib/validation/booking-schema';
+import { TIME_PREFERENCE_HOURS } from '@/lib/validation/booking-schema';
 import { staffQuoteSchema, type StaffQuoteValues } from '@/lib/validation/staff-quote-schema';
 import type { Tables } from '@/types/supabase';
 
@@ -71,7 +72,6 @@ export function CreateQuoteDialog({
 				hasPets: values.hasPets,
 			})
 		: 0;
-	const availableHours = values.timePreference ? TIME_SLOT_HOURS[values.timePreference] : [];
 
 	async function onSubmit(data: StaffQuoteValues) {
 		if (!selectedPlan) return;
@@ -191,7 +191,14 @@ export function CreateQuoteDialog({
 									<FormItem>
 										<FormLabel>Square footage</FormLabel>
 										<FormControl>
-											<Input type="number" min={1} step={1} placeholder="e.g. 1200" {...field} value={field.value ?? ''} />
+											<Input
+												type="number"
+												min={1}
+												step={1}
+												placeholder="e.g. 1200"
+												{...field}
+												value={field.value ?? ''}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -275,34 +282,7 @@ export function CreateQuoteDialog({
 
 							<TimePreferenceField control={form.control} name="timePreference" />
 
-							<FormField
-								control={form.control}
-								name="visitHour"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="w-fit">Specific hour</FormLabel>
-										<Select
-											value={field.value !== undefined ? String(field.value) : ''}
-											onValueChange={(value) => field.onChange(Number(value))}
-											disabled={!values.timePreference}
-										>
-											<FormControl>
-												<SelectTrigger className="w-full">
-													<SelectValue placeholder="Select an hour" />
-												</SelectTrigger>
-											</FormControl>
-											<SelectContent>
-												{availableHours.map((hour) => (
-													<SelectItem key={hour} value={String(hour)}>
-														{`${String(hour).padStart(2, '0')}:00`}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
+							<VisitHourField control={form.control} name="visitHour" timePreference={values.timePreference} />
 						</div>
 
 						<Separator />

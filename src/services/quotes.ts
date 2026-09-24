@@ -2,10 +2,12 @@ import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase/client';
 import type { Database, Tables, TablesInsert, TablesUpdate } from '@/types/supabase';
 
-export type QuoteStatusFilter = 'all' | 'expired' | Database['public']['Enums']['quote_status'];
+export type QuoteStatus = Database['public']['Enums']['quote_status'];
+
+export type QuoteStatusFilter = 'all' | 'expired' | QuoteStatus;
 
 export type QuoteWithPlan = Tables<'quotes'> & {
-	cleaning_plans: Pick<Tables<'cleaning_plans'>, 'name'> | null;
+	cleaning_plans: Pick<Tables<'cleaning_plans'>, 'name' | 'type'> | null;
 };
 
 export async function getQuotes(filter: {
@@ -14,7 +16,7 @@ export async function getQuotes(filter: {
 	assignedTo?: string;
 	customerId?: string;
 }): Promise<QuoteWithPlan[]> {
-	let query = supabase.from('quotes').select('*, cleaning_plans(name)').order('created_at', { ascending: false });
+	let query = supabase.from('quotes').select('*, cleaning_plans(name, type)').order('created_at', { ascending: false });
 	const now = new Date().toISOString();
 
 	if (filter.status === 'pending') {
@@ -38,10 +40,39 @@ export async function getQuotes(filter: {
 	return data;
 }
 
+export async function getQuotesInRange(filter: {
+	from: string;
+	to: string;
+	statuses: QuoteStatus[];
+	search?: string;
+	assignedTo?: string;
+	customerId?: string;
+}): Promise<QuoteWithPlan[]> {
+	let query = supabase
+		.from('quotes')
+		.select('*, cleaning_plans(name, type)')
+		.gte('desired_visit_date', filter.from)
+		.lt('desired_visit_date', filter.to)
+		.in('status', filter.statuses)
+		.order('desired_visit_date', { ascending: true });
+
+	if (filter.assignedTo) query = query.eq('assigned_to', filter.assignedTo);
+	if (filter.customerId) query = query.eq('customer_id', filter.customerId);
+
+	if (filter.search) {
+		const term = filter.search.replace(/[,%]/g, '');
+		if (term) query = query.or(`customer_name.ilike.%${term}%,customer_email.ilike.%${term}%`);
+	}
+
+	const { data, error } = await query;
+	if (error) throw error;
+	return data;
+}
+
 export async function getQuotesByCustomer(customerId: string): Promise<QuoteWithPlan[]> {
 	const { data, error } = await supabase
 		.from('quotes')
-		.select('*, cleaning_plans(name)')
+		.select('*, cleaning_plans(name, type)')
 		.eq('customer_id', customerId)
 		.order('created_at', { ascending: false });
 

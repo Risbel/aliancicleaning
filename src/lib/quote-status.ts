@@ -1,10 +1,10 @@
-import type { Database, Tables } from '@/types/supabase';
-import type { QuoteStatusFilter } from '@/services/quotes';
+import type { Tables } from '@/types/supabase';
+import type { QuoteStatus, QuoteStatusFilter } from '@/services/quotes';
 import type { badgeVariants } from '@/components/ui/badge-variants';
 import type { VariantProps } from 'class-variance-authority';
 
 type BadgeVariant = VariantProps<typeof badgeVariants>['variant'];
-export type QuoteStatus = Database['public']['Enums']['quote_status'];
+export type { QuoteStatus };
 
 export function getQuoteStatusFilter(
 	quote: Pick<Tables<'quotes'>, 'status' | 'desired_visit_date'>,
@@ -71,6 +71,10 @@ export const QUOTE_FILTER_TAGS: { value: QuoteStatusFilter; label: string }[] = 
 	{ value: 'completed', label: 'Completed' },
 	{ value: 'cancelled', label: 'Cancelled' },
 ];
+
+export const QUOTE_CALENDAR_STATUSES: QuoteStatus[] = ['pending', 'reviewed', 'quoted', 'accepted', 'completed'];
+
+export const QUOTE_CONFIRMED_STATUSES: QuoteStatus[] = ['accepted', 'completed'];
 
 export const QUOTE_STATUS_BADGE_VARIANT: Record<QuoteStatusFilter, BadgeVariant> = {
 	all: 'default',

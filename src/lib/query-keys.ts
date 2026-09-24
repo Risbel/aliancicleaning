@@ -8,8 +8,16 @@ export const quoteKeys = {
 	all: ['quotes'] as const,
 	lists: () => [...quoteKeys.all, 'list'] as const,
 	listByCustomer: (customerId: string) => [...quoteKeys.lists(), { customerId }] as const,
-	byFilter: (filter: { status: string; search?: string; customerId?: string }) =>
+	byFilter: (filter: { status: string; search?: string; assignedTo?: string; customerId?: string }) =>
 		[...quoteKeys.lists(), 'staff', filter] as const,
+	calendar: (filter: {
+		from: string;
+		to: string;
+		statuses: readonly string[];
+		search?: string;
+		assignedTo?: string;
+		customerId?: string;
+	}) => [...quoteKeys.lists(), 'calendar', filter] as const,
 	detail: (id: string) => [...quoteKeys.all, 'detail', id] as const,
 	photos: (quoteId: string) => [...quoteKeys.detail(quoteId), 'photos'] as const,
 	byConfirmationToken: (token: string) => [...quoteKeys.all, 'confirmation', token] as const,

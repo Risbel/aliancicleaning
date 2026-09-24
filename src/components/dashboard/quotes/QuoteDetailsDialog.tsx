@@ -7,7 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { QuotePhotoGallery } from '@/components/dashboard/quotes/QuotePhotoGallery';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useAllPlans } from '@/hooks/queries/use-plans';
+import { useStaffNames } from '@/hooks/queries/use-profile';
+import { formatQuoteVisitRange } from '@/lib/quote-duration';
 import { QUOTE_STATUS_BADGE_VARIANT } from '@/lib/quote-status';
+import type { Database } from '@/types/supabase';
 import type { Tables } from '@/types/supabase';
 import type { ReactNode } from 'react';
 
@@ -46,7 +50,12 @@ function DetailRow({ label, value, actions }: { label: string; value: ReactNode;
 	);
 }
 
-function buildDetailsText(quote: Tables<'quotes'>, address: string) {
+function buildDetailsText(
+	quote: Tables<'quotes'>,
+	address: string,
+	planType: Database['public']['Enums']['cleaning_type'] | null,
+	assigneeName: string,
+) {
 	const lines = [
 		['Status', quote.status],
 		['Name', quote.customer_name],
@@ -54,7 +63,8 @@ function buildDetailsText(quote: Tables<'quotes'>, address: string) {
 		['Phone', quote.customer_phone],
 		['Address', address || '-'],
 		['Zip code', quote.zip_code ?? '-'],
-		['Desired visit', format(new Date(quote.desired_visit_date), 'M/d/yyyy h:mm a')],
+		['Desired visit', formatQuoteVisitRange(quote, planType)],
+		['Assigned to', assigneeName],
 		['Bedrooms', quote.bedrooms ?? '-'],
 		['Bathrooms', quote.bathrooms ?? '-'],
 		['Square footage', quote.square_footage ?? '-'],
@@ -75,6 +85,10 @@ export function QuoteDetailsDialog({
 	quote: Tables<'quotes'>;
 	onOpenChange: (open: boolean) => void;
 }) {
+	const { data: plans } = useAllPlans();
+	const planType = plans?.find((plan) => plan.id === quote.plan_id)?.type ?? null;
+	const staffNames = useStaffNames();
+	const assigneeName = (quote.assigned_to ? staffNames.get(quote.assigned_to) : null) ?? 'Unassigned';
 	const address = [quote.address_line, quote.city, quote.state, quote.zip_code].filter(Boolean).join(', ');
 	const mapsUrl = address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}` : null;
 	const confirmationUrl = quote.confirmation_token
@@ -104,7 +118,7 @@ export function QuoteDetailsDialog({
 						<Button
 							variant="outline"
 							size="sm"
-							onClick={() => copyToClipboard(buildDetailsText(quote, address), 'Quote details')}
+							onClick={() => copyToClipboard(buildDetailsText(quote, address, planType, assigneeName), 'Quote details')}
 						>
 							<HugeiconsIcon icon={Copy01Icon} className="size-4" />
 							Copy all
@@ -156,13 +170,18 @@ export function QuoteDetailsDialog({
 						label="Address"
 						value={address || '-'}
 						actions={
-							mapsUrl && (
-								<Button variant="ghost" size="icon-xs" asChild>
-									<a href={mapsUrl} target="_blank" rel="noopener noreferrer">
-										<HugeiconsIcon icon={GoogleMapsIcon} className="size-4" />
-										<span className="sr-only">Open address in Google Maps</span>
-									</a>
-								</Button>
+							address && (
+								<>
+									<CopyButton value={address} label="Address" />
+									{mapsUrl && (
+										<Button variant="ghost" size="icon-xs" asChild>
+											<a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+												<HugeiconsIcon icon={GoogleMapsIcon} className="size-4" />
+												<span className="sr-only">Open address in Google Maps</span>
+											</a>
+										</Button>
+									)}
+								</>
 							)
 						}
 					/>
@@ -203,7 +222,8 @@ export function QuoteDetailsDialog({
 						}
 					/>
 					<DetailRow label="Zip code" value={quote.zip_code ?? '-'} />
-					<DetailRow label="Desired visit" value={format(new Date(quote.desired_visit_date), 'M/d/yyyy h:mm a')} />
+					<DetailRow label="Desired visit" value={formatQuoteVisitRange(quote, planType)} />
+					<DetailRow label="Assigned to" value={assigneeName} />
 					<DetailRow label="Bedrooms" value={quote.bedrooms ?? '-'} />
 					<DetailRow label="Bathrooms" value={quote.bathrooms ?? '-'} />
 					<DetailRow label="Square footage" value={quote.square_footage ?? '-'} />

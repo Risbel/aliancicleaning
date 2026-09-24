@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import {
@@ -12,14 +12,20 @@ import {
 import { Button } from '@/components/ui/button';
 import { DateField } from '@/components/forms/DateField';
 import { TimePreferenceField } from '@/components/forms/TimePreferenceField';
+import { VisitHourField } from '@/components/forms/VisitHourField';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useAllPlans } from '@/hooks/queries/use-plans';
 import { useUpdateQuote } from '@/hooks/queries/use-quotes';
-import { TIME_PREFERENCE_HOURS, getTimePreferenceForHour } from '@/lib/validation/booking-schema';
+import { QUOTE_DURATION_OPTIONS, estimateQuoteDurationMinutes, formatDurationMinutes } from '@/lib/quote-duration';
+import { TIME_PREFERENCE_HOURS, TIME_SLOT_HOURS, getTimePreferenceForHour } from '@/lib/validation/booking-schema';
 import { quoteEditSchema, type QuoteEditValues } from '@/lib/validation/quote-edit-schema';
 import type { Tables } from '@/types/supabase';
+
+const ESTIMATE_OPTION = 'estimate';
 
 function toDefaultValues(quote: Tables<'quotes'>): QuoteEditValues {
 	const desiredVisit = new Date(quote.desired_visit_date);
@@ -28,6 +34,8 @@ function toDefaultValues(quote: Tables<'quotes'>): QuoteEditValues {
 		finalPrice: quote.final_price ?? undefined,
 		desiredVisitDate: desiredVisit,
 		timePreference: getTimePreferenceForHour(desiredVisit.getHours()),
+		visitHour: desiredVisit.getHours(),
+		durationMinutes: quote.duration_minutes ?? undefined,
 		adminNotes: quote.admin_notes ?? '',
 	};
 }
@@ -40,19 +48,33 @@ export function EditQuoteDialog({
 	onOpenChange: (open: boolean) => void;
 }) {
 	const updateQuote = useUpdateQuote();
+	const { data: plans } = useAllPlans();
+	const planType = plans?.find((plan) => plan.id === quote.plan_id)?.type ?? null;
+	const estimatedDuration = estimateQuoteDurationMinutes(quote, planType);
 
 	const form = useForm<QuoteEditValues>({
 		resolver: zodResolver(quoteEditSchema),
 		defaultValues: toDefaultValues(quote),
 	});
 
+	const timePreference = form.watch('timePreference');
+	const previousTimePreference = useRef(timePreference);
+
 	useEffect(() => {
-		form.reset(toDefaultValues(quote));
+		const defaults = toDefaultValues(quote);
+		previousTimePreference.current = defaults.timePreference;
+		form.reset(defaults);
 	}, [quote, form]);
+
+	useEffect(() => {
+		if (previousTimePreference.current === timePreference) return;
+		previousTimePreference.current = timePreference;
+		form.setValue('visitHour', TIME_SLOT_HOURS[timePreference][0]);
+	}, [timePreference, form]);
 
 	async function onSubmit(values: QuoteEditValues) {
 		const desiredVisitDate = new Date(values.desiredVisitDate);
-		desiredVisitDate.setHours(TIME_PREFERENCE_HOURS[values.timePreference], 0, 0, 0);
+		desiredVisitDate.setHours(values.visitHour ?? TIME_PREFERENCE_HOURS[values.timePreference], 0, 0, 0);
 
 		await updateQuote.mutateAsync({
 			id: quote.id,
@@ -60,6 +82,7 @@ export function EditQuoteDialog({
 				customer_phone: values.customerPhone,
 				final_price: values.finalPrice ?? null,
 				desired_visit_date: desiredVisitDate.toISOString(),
+				duration_minutes: values.durationMinutes ?? null,
 				admin_notes: values.adminNotes || null,
 			},
 		});
@@ -105,6 +128,39 @@ export function EditQuoteDialog({
 							<DateField control={form.control} name="desiredVisitDate" label="Desired visit date" />
 
 							<TimePreferenceField control={form.control} name="timePreference" />
+
+							<VisitHourField control={form.control} name="visitHour" timePreference={timePreference} />
+
+							<FormField
+								control={form.control}
+								name="durationMinutes"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel className="w-fit">Duration</FormLabel>
+										<Select
+											value={field.value != null ? String(field.value) : ESTIMATE_OPTION}
+											onValueChange={(value) => field.onChange(value === ESTIMATE_OPTION ? undefined : Number(value))}
+										>
+											<FormControl>
+												<SelectTrigger className="w-full">
+													<SelectValue />
+												</SelectTrigger>
+											</FormControl>
+											<SelectContent>
+												<SelectItem value={ESTIMATE_OPTION}>
+													Estimated &middot; {formatDurationMinutes(estimatedDuration)}
+												</SelectItem>
+												{QUOTE_DURATION_OPTIONS.map((minutes) => (
+													<SelectItem key={minutes} value={String(minutes)}>
+														{formatDurationMinutes(minutes)}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 						</div>
 
 						<FormField
