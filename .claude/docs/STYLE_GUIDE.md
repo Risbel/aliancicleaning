@@ -16,6 +16,21 @@ Custom tokens defined in `src/index.css` via `@theme inline`:
 | `white-smoke` | `#f2f2f2` | App background |
 | `honeydew` | `#cde2d7` | Soft green accent |
 | `mint-leaf` | `#5bb286` | Green accent, success states |
+| `mint-cream` | `#eff7f2` | Very light brand-green section background (About) |
+| `mint-deep` | `#2f7d57` | Green text on light green/mint backgrounds (AA contrast) |
+
+Warm accent: amber (`#f59e0b` / `amber-400`) is the single complementary warm color (review stars, Punctuality icon). Avoid off-palette hues like purple.
+
+### Section background rhythm (landing)
+
+| Section | Background | Bottom transition |
+|---------|-----------|-------------------|
+| Hero | Deep blue brand gradient | `WaveDivider fill="#ffffff"` |
+| Why Us | White + `why-us-bg.png` leaves | `WaveDivider fill="#eff7f2" fillBack="#cde2d7"` |
+| About | `from-mint-cream to-honeydew` | `WaveDivider fill="#f2f2f2" fillBack="#ffffff"` |
+| Services | `white-smoke` | none (flows into Reviews) |
+| Reviews | `from-white-smoke to-pale-sky/60` | `WaveDivider fill="#0f1a24"` |
+| Service Area Map / Footer | `#0f1a24` | — |
 
 Semantic aliases in `:root`:
 

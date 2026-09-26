@@ -32,7 +32,7 @@ export default function AboutSection() {
 	}, [api]);
 
 	return (
-		<section id="about" className="relative bg-white-smoke pb-52 pt-16">
+		<section id="about" className="relative bg-linear-to-b from-mint-cream to-honeydew pb-48 pt-16">
 			<div className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-16">
 				<StaggerContainer className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-16">
 					{/* Carousel — left on desktop, bottom on mobile */}
@@ -55,7 +55,7 @@ export default function AboutSection() {
 					<div className="order-1 lg:order-2 lg:flex-1 flex flex-col justify-center">
 						<StaggerItem
 							variant="right"
-							className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-mint-leaf/30 bg-mint-leaf/10 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-mint-leaf"
+							className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-mint-leaf/30 bg-mint-leaf/10 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-mint-deep"
 						>
 							<span className="size-1.5 rounded-full bg-mint-leaf shadow-xs shadow-mint-leaf/60" />
 							ECO-FRIENDLY
@@ -89,7 +89,7 @@ export default function AboutSection() {
 												<path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
 											</svg>
 										</span>
-										✓ {label}
+										{label}
 									</StaggerItem>
 								</li>
 							))}
@@ -99,14 +99,14 @@ export default function AboutSection() {
 							<Button variant="gradient" size="lg" onClick={() => goToBooking()}>
 								Book Now !
 							</Button>
-							<Button variant="outline" size="lg" asChild className="rounded-4xl cursor-pointer text-black shadow">
+							<Button variant="outline" size="lg" asChild className="rounded-4xl cursor-pointer bg-white/60 text-[#1a2e3f] shadow">
 								<a href="#services">More info</a>
 							</Button>
 						</StaggerItem>
 					</div>
 				</StaggerContainer>
 			</div>
-			<WaveDivider fill="#ccfbf1" fillBack="#99f6e4" />
+			<WaveDivider fill="#f2f2f2" fillBack="#ffffff" />
 		</section>
 	);
 }

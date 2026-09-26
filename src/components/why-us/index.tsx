@@ -1,6 +1,7 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import { SparklesIcon, Clock01Icon, SearchFocusIcon, Leaf01Icon } from '@hugeicons/core-free-icons';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import WaveDivider from '@/components/decorative/WaveDivider';
 import { AnimatedHeading, Reveal, StaggerContainer, StaggerItem } from '@/components/motion/Reveal';
 
 const capabilities = [
@@ -8,19 +9,19 @@ const capabilities = [
 		title: 'Professionalism',
 		description: 'Our highly trained team delivers deep cleaning solutions and consistently flawless results.',
 		icon: SparklesIcon,
-		accent: '#2aaaf4',
+		accent: '#54a8d0',
 	},
 	{
 		title: 'Punctuality',
 		description: 'We value your schedule, ensuring timely arrivals that never disrupt your daily routine.',
 		icon: Clock01Icon,
-		accent: '#fdc90d',
+		accent: '#f59e0b',
 	},
 	{
 		title: 'Attention to Detail',
 		description: 'We meticulously treat every room, ensuring that every corner of your home is perfect.',
 		icon: SearchFocusIcon,
-		accent: '#cb22ff',
+		accent: '#156390',
 	},
 	{
 		title: 'Eco & Pet Friendly',
@@ -32,7 +33,7 @@ const capabilities = [
 
 export default function WhyUsSection() {
 	return (
-		<section id="why-us" className="bg-linear-to-b from-teal-100 to-teal-200 px-6 pt-16 pb-24 lg:px-12 xl:px-16">
+		<section id="why-us" className="relative bg-[linear-gradient(to_bottom,#e8f8f6,#cde2d7)] md:bg-[linear-gradient(to_bottom,#e8f8f6,transparent_30%),url('/why-us-bg.png'),linear-gradient(to_bottom,#e8f8f6,#cde2d7)] md:[background-blend-mode:normal,multiply,normal] bg-cover bg-center bg-no-repeat px-6 pt-16 pb-52 lg:px-12 xl:px-16">
 			<div className="mx-auto max-w-7xl">
 				<div className="mb-14 flex flex-col items-center text-center">
 					<Reveal className="mb-5 inline-flex items-center gap-2 rounded-full border border-baltic-blue/20 bg-baltic-blue/8 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-baltic-blue">
@@ -55,7 +56,7 @@ export default function WhyUsSection() {
 				<StaggerContainer className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
 					{capabilities.map((cap) => (
 						<StaggerItem key={cap.title} hoverLift className="h-full">
-							<Card className="h-full gap-2 hover:shadow-lg transition-shadow duration-300">
+							<Card className="bg-white/70 backdrop-blur-sm h-full gap-2 hover:shadow-xl transition-shadow duration-300">
 							<div className="flex items-center justify-center">
 								<div
 									className="mb-4 flex h-20 w-20 items-center justify-center rounded-full"
@@ -77,6 +78,7 @@ export default function WhyUsSection() {
 					))}
 				</StaggerContainer>
 			</div>
+			<WaveDivider fill="#eff7f2" fillBack="#cde2d7" />
 		</section>
 	);
 }

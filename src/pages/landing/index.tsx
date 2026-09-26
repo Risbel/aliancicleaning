@@ -15,8 +15,8 @@ export default function LandingPage() {
 			<Navbar />
 			<main className="relative">
 				<HeroSection />
-				<AboutSection />
 				<CapabilitiesSection />
+				<AboutSection />
 				<ServicesSection />
 				<ReviewsSection />
 				<ServiceAreaMapSection />

@@ -58,7 +58,7 @@ export default function ServicesSection() {
 
 			<div className="relative z-10 mx-auto max-w-7xl">
 				<div className="mb-14 flex flex-col items-center text-center">
-					<Reveal className="mb-5 inline-flex items-center gap-2 rounded-full border border-mint-leaf/25 bg-mint-leaf/8 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-mint-leaf">
+					<Reveal className="mb-5 inline-flex items-center gap-2 rounded-full border border-mint-leaf/25 bg-mint-leaf/8 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-mint-deep">
 						<span className="size-1.5 rounded-full bg-mint-leaf shadow-sm shadow-mint-leaf/60" />
 						Cleaning Services
 					</Reveal>

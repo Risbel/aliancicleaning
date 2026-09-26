@@ -5,6 +5,7 @@ import { ArrowUpRight01Icon, GoogleIcon, StarIcon } from '@hugeicons/core-free-i
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import WaveDivider from '@/components/decorative/WaveDivider';
 import {
 	Carousel,
 	CarouselContent,
@@ -127,7 +128,7 @@ export default function ReviewsSection() {
 	const { data: reviews, isLoading } = usePublishedReviews();
 
 	return (
-		<section id="reviews" className="relative bg-white-smoke pb-24">
+		<section id="reviews" className="relative bg-linear-to-b from-white-smoke to-pale-sky/60 pb-52">
 			<div className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-16">
 				<div className="flex flex-col items-center text-center">
 					<Reveal className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-baltic-blue/30 bg-baltic-blue/10 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-baltic-blue">
@@ -175,6 +176,7 @@ export default function ReviewsSection() {
 					</Button>
 				</Reveal>
 			</div>
+			<WaveDivider fill="#0f1a24" />
 		</section>
 	);
 }

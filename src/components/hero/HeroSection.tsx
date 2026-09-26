@@ -17,16 +17,6 @@ export default function HeroSection() {
 					from { transform: translateY(0px) scale(1); }
 					to   { transform: translateY(-18px) scale(1.04); }
 				}
-				@keyframes logo-float {
-					0%, 100% { transform: translateY(0px); }
-					50%       { transform: translateY(-12px); }
-				}
-				@keyframes ring-spin {
-					to { transform: rotate(360deg); }
-				}
-				@keyframes ring-spin-reverse {
-					to { transform: rotate(-360deg); }
-				}
 				@keyframes orbit-dot-pulse {
 					0%, 100% { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
 					50%       { opacity: 0.5; transform: translate(-50%, -50%) scale(0.7); }
@@ -110,10 +100,30 @@ export default function HeroSection() {
 					animationDelay="0.4s"
 					animationDuration="9s"
 				/>
+				<FloatingBubble
+					size={340}
+					color="#ffffff"
+					variant="outline"
+					opacity={0.12}
+					top="-90px"
+					right="-110px"
+					animationDelay="0.6s"
+					animationDuration="10s"
+				/>
+				<FloatingBubble
+					size={180}
+					color="#5bb286"
+					variant="filled"
+					opacity={0.14}
+					bottom="8%"
+					right="-50px"
+					animationDelay="2.4s"
+					animationDuration="8s"
+				/>
 
 				{/* Content grid */}
-				<div className="relative z-10 mx-auto flex min-h-dvh max-w-7xl flex-col items-center px-6 pb-24 pt-24 lg:flex-row lg:gap-12 lg:pb-40 lg:px-12 xl:px-16">
-					{/* Left: text */}
+				<div className="relative z-10 mx-auto flex min-h-dvh max-w-7xl flex-col items-center px-6 pb-24 pt-24 lg:flex-row-reverse lg:gap-12 lg:pb-40 lg:px-12 xl:px-16">
+					{/* Right: text */}
 					<StaggerContainer onMount className="flex flex-1 flex-col justify-center">
 						<StaggerItem className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-white/80 backdrop-blur-sm">
 							<span className="size-1.5 rounded-full bg-mint-leaf shadow-xs shadow-mint-leaf/60" />
@@ -177,70 +187,35 @@ export default function HeroSection() {
 						</StaggerContainer>
 					</StaggerContainer>
 
-					{/* Right: logo circle */}
+					{/* Left: portrait */}
 					<motion.div
-						initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.8 }}
-						animate={{ opacity: 1, scale: 1 }}
-						transition={{ type: 'spring', stiffness: 200, damping: 22, delay: 0.4 }}
-						className="mt-12 flex shrink-0 items-center justify-center lg:mt-0 lg:w-105 xl:w-120"
+						initial={reduced ? { opacity: 0 } : { opacity: 0, y: 40 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ type: 'spring', stiffness: 160, damping: 22, delay: 0.4 }}
+						className="relative hidden shrink-0 lg:-mb-40 lg:block lg:w-105 lg:self-end xl:w-115"
 					>
-						<div className="relative" style={{ animation: 'logo-float 5s ease-in-out infinite' }}>
-							{/* Outer glow ring */}
-							<div
-								className="absolute inset-0 rounded-full"
-								style={{
-									background: 'conic-gradient(from 0deg, #5bb286, #54a8d0, #cbe0ea, #5bb286)',
-									padding: '3px',
-									borderRadius: '50%',
-									filter: 'blur(0px)',
-									boxShadow:
-										'0 0 0 8px rgba(84,168,208,0.2), 0 0 0 16px rgba(21,99,144,0.12), 0 20px 60px rgba(21,99,144,0.4)',
-									animation: reduced ? undefined : 'ring-spin-reverse 18s linear infinite',
-								}}
-							/>
+						<div
+							className="absolute left-1/2 top-[50%] aspect-square w-full -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/30 backdrop-blur-sm"
+							style={{
+								background:
+									'linear-gradient(150deg, rgba(255,255,255,0.4) 0%, rgba(203,224,234,0.25) 45%, rgba(91,178,134,0.55) 100%)',
+								boxShadow: '0 30px 80px rgba(8,42,66,0.35), inset 0 0 60px rgba(255,255,255,0.15)',
+							}}
+						/>
 
-							{/* Gradient border ring */}
-							<div
-								className="relative flex items-center justify-center overflow-hidden rounded-full"
-								style={{ width: 320, height: 320, padding: '4px' }}
-							>
-								<div
-									className="absolute inset-0 rounded-full"
-									style={{
-										background: 'conic-gradient(from 0deg, #5bb286, #54a8d0, #ffffff, #cde2d7, #5bb286)',
-										animation: reduced ? undefined : 'ring-spin 6s linear infinite',
-									}}
-								/>
+						<div className="absolute left-[12%] top-[40%] size-2.5 rounded-full bg-mint-leaf shadow-md shadow-mint-leaf/50" />
 
-								{/* White inner ring */}
-								<div
-									className="relative flex items-center justify-center rounded-full bg-white/15 backdrop-blur-sm"
-									style={{ width: 312 - 8, height: 312 - 8, padding: '6px' }}
-								>
-									<div
-										className="flex items-center justify-center overflow-hidden rounded-full bg-white"
-										style={{ width: 288, height: 288 }}
-									>
-										<img
-											src="/logo_webp.webp"
-											alt="Alianci Cleaning"
-											className="h-full w-full object-cover"
-											loading="eager"
-										/>
-									</div>
-								</div>
-							</div>
-
-							{/* Sparkle dots */}
-							<div className="absolute -top-2 -right-2 size-4 rounded-full bg-mint-leaf shadow-lg shadow-mint-leaf/50" />
-							<div className="absolute -bottom-1 -left-3 size-3 rounded-full bg-fresh-sky shadow-md shadow-fresh-sky/50" />
-							<div className="absolute top-1/4 -left-4 size-2 rounded-full bg-white/70" />
-						</div>
+						<img
+							src="/yansi.png"
+							alt="Alianci Cleaning owner"
+							className="relative z-10 w-full drop-shadow-[0_20px_30px_rgba(8,42,66,0.35)]"
+							loading="eager"
+						/>
 					</motion.div>
 				</div>
 
 				{/* Wave bottom divider */}
-				<WaveDivider fill="#f2f2f2" />
+				<WaveDivider fill="#e8f8f6" className="z-20" />
 			</section>
 		</>
 	);
