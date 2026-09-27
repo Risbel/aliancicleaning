@@ -1,88 +1,98 @@
-import { Route, Routes } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { RequireAdmin } from '@/components/auth/RequireAdmin';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { RequireStaff } from '@/components/auth/RequireStaff';
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
+import { PageSpinner } from '@/components/PageSpinner';
 import LandingPage from '@/pages/landing';
-import LoginPage from '@/pages/login';
-import SignupPage from '@/pages/signup';
-import ForgotPasswordPage from '@/pages/forgot-password';
-import ResetPasswordPage from '@/pages/reset-password';
-import BookingPage from '@/pages/booking';
-import DashboardHomePage from '@/pages/dashboard';
-import DashboardQuotesPage from '@/pages/dashboard/quotes';
-import DashboardMyQuotesPage from '@/pages/my-quotes';
-import DashboardPlansPage from '@/pages/dashboard/plans';
-import DashboardClientsPage from '@/pages/dashboard/clients';
-import DashboardStaffPage from '@/pages/dashboard/staff';
-import DashboardReviewsPage from '@/pages/dashboard/reviews';
-import ConfirmationPage from '@/pages/confirmation';
-import PrivacyPage from '@/pages/privacy';
-import TermsPage from '@/pages/terms';
+
+const DashboardLayout = lazy(() =>
+	import('@/components/dashboard/DashboardLayout').then((module) => ({ default: module.DashboardLayout })),
+);
+const LoginPage = lazy(() => import('@/pages/login'));
+const SignupPage = lazy(() => import('@/pages/signup'));
+const ForgotPasswordPage = lazy(() => import('@/pages/forgot-password'));
+const ResetPasswordPage = lazy(() => import('@/pages/reset-password'));
+const BookingPage = lazy(() => import('@/pages/booking'));
+const DashboardHomePage = lazy(() => import('@/pages/dashboard'));
+const DashboardQuotesPage = lazy(() => import('@/pages/dashboard/quotes'));
+const DashboardMyQuotesPage = lazy(() => import('@/pages/my-quotes'));
+const DashboardPlansPage = lazy(() => import('@/pages/dashboard/plans'));
+const DashboardClientsPage = lazy(() => import('@/pages/dashboard/clients'));
+const DashboardStaffPage = lazy(() => import('@/pages/dashboard/staff'));
+const DashboardReviewsPage = lazy(() => import('@/pages/dashboard/reviews'));
+const ConfirmationPage = lazy(() => import('@/pages/confirmation'));
+const PrivacyPage = lazy(() => import('@/pages/privacy'));
+const TermsPage = lazy(() => import('@/pages/terms'));
+const NotFoundPage = lazy(() => import('@/pages/not-found'));
 
 export default function App() {
 	return (
-		<Routes>
-			<Route path="/" element={<LandingPage />} />
-			<Route path="/login" element={<LoginPage />} />
-			<Route path="/signup" element={<SignupPage />} />
-			<Route path="/forgot-password" element={<ForgotPasswordPage />} />
-			<Route path="/reset-password" element={<ResetPasswordPage />} />
-			<Route
-				path="/booking"
-				element={
-					<RequireAuth>
-						<BookingPage />
-					</RequireAuth>
-				}
-			/>
-			<Route
-				path="/dashboard"
-				element={
-					<RequireStaff>
-						<DashboardLayout />
-					</RequireStaff>
-				}
-			>
-				<Route index element={<DashboardHomePage />} />
-				<Route path="quotes" element={<DashboardQuotesPage />} />
-				<Route path="clients" element={<DashboardClientsPage />} />
+		<Suspense fallback={<PageSpinner />}>
+			<Routes>
+				<Route path="/" element={<LandingPage />} />
+				<Route path="/login" element={<LoginPage />} />
+				<Route path="/signup" element={<SignupPage />} />
+				<Route path="/forgot-password" element={<ForgotPasswordPage />} />
+				<Route path="/reset-password" element={<ResetPasswordPage />} />
 				<Route
-					path="plans"
+					path="/booking"
 					element={
-						<RequireAdmin>
-							<DashboardPlansPage />
-						</RequireAdmin>
+						<RequireAuth>
+							<BookingPage />
+						</RequireAuth>
 					}
 				/>
 				<Route
-					path="staff"
+					path="/dashboard"
 					element={
-						<RequireAdmin>
-							<DashboardStaffPage />
-						</RequireAdmin>
+						<RequireStaff>
+							<DashboardLayout />
+						</RequireStaff>
 					}
-				/>
+				>
+					<Route index element={<DashboardHomePage />} />
+					<Route path="quotes" element={<DashboardQuotesPage />} />
+					<Route path="clients" element={<DashboardClientsPage />} />
+					<Route
+						path="plans"
+						element={
+							<RequireAdmin>
+								<DashboardPlansPage />
+							</RequireAdmin>
+						}
+					/>
+					<Route
+						path="staff"
+						element={
+							<RequireAdmin>
+								<DashboardStaffPage />
+							</RequireAdmin>
+						}
+					/>
+					<Route
+						path="reviews"
+						element={
+							<RequireAdmin>
+								<DashboardReviewsPage />
+							</RequireAdmin>
+						}
+					/>
+					<Route path="*" element={<Navigate to="/dashboard" replace />} />
+				</Route>
 				<Route
-					path="reviews"
+					path="/my-quotes"
 					element={
-						<RequireAdmin>
-							<DashboardReviewsPage />
-						</RequireAdmin>
+						<RequireAuth>
+							<DashboardMyQuotesPage />
+						</RequireAuth>
 					}
 				/>
-			</Route>
-			<Route
-				path="/my-quotes"
-				element={
-					<RequireAuth>
-						<DashboardMyQuotesPage />
-					</RequireAuth>
-				}
-			/>
-			<Route path="/confirmation/:token" element={<ConfirmationPage />} />
-			<Route path="/privacy" element={<PrivacyPage />} />
-			<Route path="/terms" element={<TermsPage />} />
-		</Routes>
+				<Route path="/confirmation/:token" element={<ConfirmationPage />} />
+				<Route path="/privacy" element={<PrivacyPage />} />
+				<Route path="/terms" element={<TermsPage />} />
+				<Route path="*" element={<NotFoundPage />} />
+			</Routes>
+		</Suspense>
 	);
 }

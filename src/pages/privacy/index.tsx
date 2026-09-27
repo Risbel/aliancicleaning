@@ -15,7 +15,7 @@ export default function PrivacyPage() {
 			<main className="relative bg-white-smoke pt-32 pb-24">
 				<div className="mx-auto max-w-3xl px-6 lg:px-12 xl:px-16">
 					<h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Privacy Policy</h1>
-					<p className="mt-2 text-sm text-foreground/60">Last updated: September 15, 2026</p>
+					<p className="mt-2 text-sm text-foreground/60">Last updated: September 27, 2026</p>
 
 					<p className="mt-8 text-sm leading-relaxed text-foreground/80">
 						This Privacy Policy is a general template describing how Alianci Cleaning Services ("Alianci
@@ -28,8 +28,8 @@ export default function PrivacyPage() {
 					<p className="mt-3 text-sm leading-relaxed text-foreground/80">
 						When you create an account, request a quote, or book a cleaning service, we may collect your
 						name, email address, phone number, service address, and details about the requested cleaning
-						(plan selected, bedrooms/bathrooms, square footage, preferred date, and any notes you
-						provide). If you sign in with Google, we receive your name and email address from Google to
+						(plan selected, bedrooms/bathrooms, square footage, preferred date, any notes you provide,
+						and any photos you choose to attach). If you sign in with Google, we receive your name and email address from Google to
 						create and access your account.
 					</p>
 
@@ -40,12 +40,32 @@ export default function PrivacyPage() {
 						to inquiries. We do not sell your personal information to third parties.
 					</p>
 
+					<h2 className="mt-10 text-xl font-semibold tracking-tight text-foreground">Photos you upload</h2>
+					<p className="mt-3 text-sm leading-relaxed text-foreground/80">
+						Attaching photos to a quote request is optional. Photos are compressed on your device before
+						upload and are used only to understand the job and prepare your quote. They are stored
+						privately and can only be viewed by you and our staff; they are never made public or shared
+						with third parties other than our storage provider. Please avoid including people, documents,
+						or other sensitive information in your photos. You can ask us to delete your photos at any
+						time using the contact details below.
+					</p>
+
+					<h2 className="mt-10 text-xl font-semibold tracking-tight text-foreground">Emails we send</h2>
+					<p className="mt-3 text-sm leading-relaxed text-foreground/80">
+						We send transactional emails needed to run your account and your service: account
+						confirmation, password reset and verification code emails, and quote confirmations with a
+						link to view your confirmed service. We do not send marketing emails or share your email
+						address with advertisers. If we ever offer promotional emails, we will only send them with
+						your consent and every message will include a way to unsubscribe.
+					</p>
+
 					<h2 className="mt-10 text-xl font-semibold tracking-tight text-foreground">Service providers</h2>
 					<p className="mt-3 text-sm leading-relaxed text-foreground/80">
 						We use third-party providers to operate this site: Supabase for account authentication and
 						data storage, Google for optional sign-in, and Resend for sending transactional emails such
 						as quote confirmations. These providers process data on our behalf and only to the extent
-						necessary to provide their service to us.
+						necessary to provide their service to us. The service area map on our home page loads map
+						images from OpenStreetMap, which receives your IP address when the map is displayed.
 					</p>
 
 					<h2 className="mt-10 text-xl font-semibold tracking-tight text-foreground">Data retention</h2>

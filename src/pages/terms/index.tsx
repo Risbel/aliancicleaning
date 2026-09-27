@@ -15,7 +15,7 @@ export default function TermsPage() {
 			<main className="relative bg-white-smoke pt-32 pb-24">
 				<div className="mx-auto max-w-3xl px-6 lg:px-12 xl:px-16">
 					<h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Terms of Service</h1>
-					<p className="mt-2 text-sm text-foreground/60">Last updated: September 15, 2026</p>
+					<p className="mt-2 text-sm text-foreground/60">Last updated: September 27, 2026</p>
 
 					<p className="mt-8 text-sm leading-relaxed text-foreground/80">
 						These Terms of Service are a general template governing use of this website and the booking
@@ -36,6 +36,23 @@ export default function TermsPage() {
 						selected, bedrooms/bathrooms, square footage, pets, etc.). The final price may be adjusted
 						by our staff after reviewing your request, and a booking is only confirmed once you accept a
 						final quote.
+					</p>
+
+					<h2 className="mt-10 text-xl font-semibold tracking-tight text-foreground">Photos you upload</h2>
+					<p className="mt-3 text-sm leading-relaxed text-foreground/80">
+						You may attach photos of the property to a quote request. By uploading photos, you confirm
+						that you have the right to share them, that they show only the property to be cleaned, and
+						that they do not include other people or anyone else's personal information. You allow us to
+						use these photos only to evaluate your request and prepare your quote. See our Privacy Policy
+						for how photos are stored and how to request their deletion.
+					</p>
+
+					<h2 className="mt-10 text-xl font-semibold tracking-tight text-foreground">Service emails</h2>
+					<p className="mt-3 text-sm leading-relaxed text-foreground/80">
+						By creating an account or requesting a quote, you agree to receive emails related to your
+						account and your service, such as account confirmations, password resets, and quote
+						confirmations. These emails are required to provide the service and are not marketing
+						messages.
 					</p>
 
 					<h2 className="mt-10 text-xl font-semibold tracking-tight text-foreground">Cancellations and changes</h2>

@@ -9,8 +9,8 @@ export default defineConfig({
     chunkSplitPlugin({
       strategy: 'default',
       customSplitting: {
-        'react-vendor': [/node_modules[\\/]react/, /node_modules[\\/]react-dom/],
-        'router': [/node_modules[\\/]react-router-dom/],
+        'react-vendor': [/node_modules[\\/](react|react-dom|scheduler)[\\/]/],
+        'router': [/node_modules[\\/]react-router(-dom)?[\\/]/],
         'query': [/node_modules[\\/]@tanstack[\\/]react-query/],
         'supabase': [/node_modules[\\/]@supabase/],
         'ui': [/node_modules[\\/]@radix-ui/],
