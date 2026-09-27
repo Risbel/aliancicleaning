@@ -2,9 +2,11 @@ import { motion, useReducedMotion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import GradientText from '@/components/ui/GradientText';
 import FloatingBubble from '@/components/decorative/FloatingBubble';
-import WaveDivider from '@/components/decorative/WaveDivider';
 import { StaggerContainer, StaggerItem } from '@/components/motion/Reveal';
 import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
+
+const WAVE_FRONT_EDGE =
+	'M0.5,0 C0.44,0.11 0.54,0.22 0.48,0.333 C0.42,0.444 0.52,0.555 0.46,0.667 C0.4,0.778 0.48,0.889 0.42,1';
 
 export default function HeroSection() {
 	const goToBooking = useGoToBooking();
@@ -25,11 +27,77 @@ export default function HeroSection() {
 
 			<section
 				id="home"
-				className="relative min-h-dvh overflow-x-hidden"
+				className="relative min-h-dvh overflow-hidden lg:min-h-0 lg:h-[min(100dvh,48rem)]"
 				style={{
 					background: 'linear-gradient(135deg, #08679e 0%, #2290c3 55%, #e4f1f7 100%)',
 				}}
 			>
+				<motion.img
+					src="/hero-image-01.webp"
+					alt="Alianci Cleaning professional vacuuming a living room"
+					initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 1.05 }}
+					animate={{ opacity: 1, scale: 1 }}
+					transition={{ duration: 1.2, ease: 'easeOut' }}
+					className="pointer-events-none absolute inset-0 size-full object-cover object-[20%_center] lg:w-[70%] lg:max-w-344 lg:mask-[linear-gradient(to_right,black_80%,transparent)]"
+					loading="eager"
+					fetchPriority="high"
+				/>
+
+				<div className="pointer-events-none absolute inset-0 bg-linear-to-b from-[#08679e]/70 to-[#08679e]/85 lg:hidden" />
+
+				<div className="pointer-events-none absolute inset-0 hidden lg:block">
+					<svg className="absolute size-0" aria-hidden="true">
+						<defs>
+							<clipPath id="hero-wave-back" clipPathUnits="objectBoundingBox">
+								<path d="M1,0 H0.38 C0.32,0.11 0.42,0.22 0.36,0.333 C0.3,0.444 0.4,0.555 0.34,0.667 C0.28,0.778 0.36,0.889 0.3,1 H1 Z" />
+							</clipPath>
+							<clipPath id="hero-wave-middle" clipPathUnits="objectBoundingBox">
+								<path d="M1,0 H0.44 C0.49,0.12 0.38,0.21 0.42,0.333 C0.46,0.46 0.35,0.54 0.39,0.667 C0.43,0.79 0.33,0.88 0.36,1 H1 Z" />
+							</clipPath>
+							<clipPath id="hero-wave-front" clipPathUnits="objectBoundingBox">
+								<path d={`${WAVE_FRONT_EDGE} H1 V0 Z`} />
+							</clipPath>
+						</defs>
+					</svg>
+
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={reduced ? { opacity: 1 } : { opacity: 1, x: [0, 18, 0] }}
+						transition={{
+							opacity: { duration: 0.8, delay: 0.2 },
+							x: { duration: 9, repeat: Infinity, ease: 'easeInOut' },
+						}}
+						className="absolute inset-0 bg-linear-to-b from-mint-leaf/35 to-honeydew/25 [clip-path:url(#hero-wave-back)]"
+					/>
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={reduced ? { opacity: 1 } : { opacity: 1, x: [0, -12, 0] }}
+						transition={{
+							opacity: { duration: 0.8, delay: 0.35 },
+							x: { duration: 7, repeat: Infinity, ease: 'easeInOut' },
+						}}
+						className="absolute inset-0 bg-white/15 backdrop-blur-[2px] [clip-path:url(#hero-wave-middle)]"
+					/>
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						transition={{ duration: 0.8, delay: 0.5 }}
+						className="absolute inset-0 bg-linear-to-br from-[#08679e]/80 via-[#08679e]/70 to-[#2290c3]/65 backdrop-blur-sm [clip-path:url(#hero-wave-front)]"
+					/>
+
+					<svg viewBox="0 0 1 1" preserveAspectRatio="none" className="absolute inset-0 size-full" aria-hidden="true">
+						<path
+							d={WAVE_FRONT_EDGE}
+							fill="none"
+							stroke="white"
+							strokeOpacity={0.6}
+							strokeWidth={2}
+							strokeLinecap="round"
+							vectorEffect="non-scaling-stroke"
+						/>
+					</svg>
+				</div>
+
 				{/* Floating background bubbles */}
 				<FloatingBubble
 					size={220}
@@ -122,9 +190,9 @@ export default function HeroSection() {
 				/>
 
 				{/* Content grid */}
-				<div className="relative z-10 mx-auto flex min-h-dvh max-w-7xl flex-col items-center px-6 pb-24 pt-24 lg:flex-row-reverse lg:gap-12 lg:pb-40 lg:px-12 xl:px-16">
+				<div className="relative z-10 mx-auto flex min-h-dvh max-w-7xl lg:h-full lg:min-h-0 flex-col items-center px-6 pb-12 pt-24 lg:flex-row lg:justify-end lg:pb-16 lg:px-12 xl:px-16">
 					{/* Right: text */}
-					<StaggerContainer onMount className="flex flex-1 flex-col justify-center">
+					<StaggerContainer onMount className="flex flex-1 flex-col justify-center lg:w-1/2 lg:flex-none lg:pl-12">
 						<StaggerItem className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-white/80 backdrop-blur-sm">
 							<span className="size-1.5 rounded-full bg-mint-leaf shadow-xs shadow-mint-leaf/60" />
 							Austin's Premium Cleaning
@@ -155,7 +223,7 @@ export default function HeroSection() {
 								Request a Quote
 							</Button>
 
-							<Button size="xxxl" asChild variant="outline" className="text-white/80 hover:text-white">
+							<Button size="xxxl" asChild variant="outline" className="text-white/80 hover:text-white bg-white/20">
 								<a href="#services">See Our Services</a>
 							</Button>
 						</StaggerItem>
@@ -186,36 +254,7 @@ export default function HeroSection() {
 							))}
 						</StaggerContainer>
 					</StaggerContainer>
-
-					{/* Left: portrait */}
-					<motion.div
-						initial={reduced ? { opacity: 0 } : { opacity: 0, y: 40 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ type: 'spring', stiffness: 160, damping: 22, delay: 0.4 }}
-						className="relative hidden shrink-0 lg:-mb-40 lg:block lg:w-105 lg:self-end xl:w-115"
-					>
-						<div
-							className="absolute left-1/2 top-[50%] aspect-square w-full -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/30 backdrop-blur-sm"
-							style={{
-								background:
-									'linear-gradient(150deg, rgba(255,255,255,0.4) 0%, rgba(203,224,234,0.25) 45%, rgba(91,178,134,0.55) 100%)',
-								boxShadow: '0 30px 80px rgba(8,42,66,0.35), inset 0 0 60px rgba(255,255,255,0.15)',
-							}}
-						/>
-
-						<div className="absolute left-[12%] top-[40%] size-2.5 rounded-full bg-mint-leaf shadow-md shadow-mint-leaf/50" />
-
-						<img
-							src="/yansi.png"
-							alt="Alianci Cleaning owner"
-							className="relative z-10 w-full drop-shadow-[0_20px_30px_rgba(8,42,66,0.35)]"
-							loading="eager"
-						/>
-					</motion.div>
 				</div>
-
-				{/* Wave bottom divider */}
-				<WaveDivider fill="#e8f8f6" className="z-20" />
 			</section>
 		</>
 	);

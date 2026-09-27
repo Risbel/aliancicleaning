@@ -13,7 +13,7 @@ export default function LandingPage() {
 		<>
 			<FloatingContactButtons />
 			<Navbar />
-			<main className="relative">
+			<main className="relative overflow-x-clip">
 				<HeroSection />
 				<CapabilitiesSection />
 				<AboutSection />
