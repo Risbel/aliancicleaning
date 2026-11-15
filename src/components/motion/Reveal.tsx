@@ -65,9 +65,10 @@ type StaggerItemProps = {
 	className?: string;
 	variant?: 'up' | 'left' | 'right' | 'scale';
 	hoverLift?: boolean;
+	fade?: boolean;
 };
 
-export function StaggerItem({ children, className, variant = 'up', hoverLift = false }: StaggerItemProps) {
+export function StaggerItem({ children, className, variant = 'up', hoverLift = false, fade = true }: StaggerItemProps) {
 	const reduced = useReducedMotion();
 
 	const hidden = reduced
@@ -81,7 +82,7 @@ export function StaggerItem({ children, className, variant = 'up', hoverLift = f
 					: { opacity: 0, y: 20 };
 
 	const itemVariants: Variants = {
-		hidden,
+		hidden: fade ? hidden : { ...hidden, opacity: 1 },
 		visible: { opacity: 1, x: 0, y: 0, scale: 1, transition: spring },
 	};
 

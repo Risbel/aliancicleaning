@@ -35,8 +35,8 @@ export default function HeroSection() {
 				<motion.img
 					src="/hero-image-01.webp"
 					alt="Alianci Cleaning professional vacuuming a living room"
-					initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 1.05 }}
-					animate={{ opacity: 1, scale: 1 }}
+					initial={reduced ? false : { scale: 1.05 }}
+					animate={{ scale: 1 }}
 					transition={{ duration: 1.2, ease: 'easeOut' }}
 					className="pointer-events-none absolute inset-0 size-full object-cover object-[20%_center] lg:w-[70%] lg:max-w-344 lg:mask-[linear-gradient(to_right,black_80%,transparent)]"
 					loading="eager"
@@ -193,13 +193,13 @@ export default function HeroSection() {
 				<div className="relative z-10 mx-auto flex min-h-dvh max-w-7xl lg:h-full lg:min-h-0 flex-col items-center px-6 pb-12 pt-24 lg:flex-row lg:justify-end lg:pb-16 lg:px-12 xl:px-16">
 					{/* Right: text */}
 					<StaggerContainer onMount className="flex flex-1 flex-col justify-center lg:w-1/2 lg:flex-none lg:pl-12">
-						<StaggerItem className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-white/80 backdrop-blur-sm">
+						<StaggerItem fade={false} className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-white/80 backdrop-blur-sm">
 							<span className="size-1.5 rounded-full bg-mint-leaf shadow-xs shadow-mint-leaf/60" />
-							Austin's Premium Cleaning
+							<h1>House Cleaning Services in Austin, TX</h1>
 						</StaggerItem>
 
-						<StaggerItem className="w-full">
-							<h1>
+						<StaggerItem fade={false} className="w-full">
+							<div>
 								<GradientText
 									colors={['#ffffff', '#cde2d7', '#5bb286', '#cde2d7', '#ffffff']}
 									animationSpeed={4}
@@ -209,16 +209,16 @@ export default function HeroSection() {
 									<br />
 									SAFE HANDS
 								</GradientText>
-							</h1>
+							</div>
 						</StaggerItem>
 
-						<StaggerItem>
+						<StaggerItem fade={false}>
 							<p className="mt-4 md:mt-6 max-w-md text-base leading-relaxed text-white/80 sm:text-lg">
 								Austin's detail-oriented cleaning experts using eco-friendly and pet-safe products for you.
 							</p>
 						</StaggerItem>
 
-						<StaggerItem className="mt-8 flex flex-col gap-3 sm:flex-row">
+						<StaggerItem fade={false} className="mt-8 flex flex-col gap-3 sm:flex-row">
 							<Button size="xxxl" variant="shine" onClick={() => goToBooking()}>
 								Request a Quote
 							</Button>

@@ -1,6 +1,7 @@
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Circle, CircleMarker } from 'react-leaflet';
 import { AnimatedHeading, Reveal } from '@/components/motion/Reveal';
+import serviceAreas from '@/data/service-areas.json';
 
 const SERVICE_AREA_CENTER: [number, number] = [30.4140535, -97.7491735];
 const SERVICE_RADIUS_METERS = 40233;
@@ -24,6 +25,19 @@ export default function ServiceAreaMapSection() {
 						<p className="mt-2 max-w-lg text-xs leading-relaxed text-[#e8edf0]/60">
 							We travel within roughly 25 miles of downtown Austin — if you're nearby, we've probably already got you covered.
 						</p>
+					</Reveal>
+
+					<Reveal delay={0.3}>
+						<ul className="mt-6 flex max-w-2xl flex-wrap justify-center gap-2">
+							{serviceAreas.map((city) => (
+								<li
+									key={city}
+									className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-xs font-medium text-[#e8edf0]/80"
+								>
+									{city}, TX
+								</li>
+							))}
+						</ul>
 					</Reveal>
 				</div>
 			</div>

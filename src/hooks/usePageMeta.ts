@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 
 const SITE_URL = 'https://aliancicleaning.com';
-const DEFAULT_TITLE = "Alianci Cleaning | Austin's Premium Home Cleaning";
+const DEFAULT_TITLE = 'House Cleaning Services in Austin, TX | Alianci Cleaning';
 const DEFAULT_DESCRIPTION =
-	"Austin's premium home cleaning service. Book trusted, professional cleaners for your home in minutes.";
+	'Professional house cleaning services in Austin, TX and nearby cities. Eco-friendly, pet-safe products and fully insured cleaners. Request a quote online in minutes.';
 const DEFAULT_CANONICAL = `${SITE_URL}/`;
 
 interface PageMetaOptions {

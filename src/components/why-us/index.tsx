@@ -33,7 +33,7 @@ const capabilities = [
 
 export default function WhyUsSection() {
 	return (
-		<section id="why-us" className="relative bg-[linear-gradient(to_bottom,#e8f8f6,#cde2d7)] md:bg-[url('/why-us-bg.png'),linear-gradient(to_bottom,#e8f8f6,#cde2d7)] md:[background-blend-mode:multiply,normal] bg-cover bg-center bg-no-repeat px-6 pt-16 pb-52 lg:px-12 xl:px-16">
+		<section id="why-us" className="relative bg-[linear-gradient(to_bottom,#e8f8f6,#cde2d7)] md:bg-[url('/why-us-bg.webp'),linear-gradient(to_bottom,#e8f8f6,#cde2d7)] md:[background-blend-mode:multiply,normal] bg-cover bg-center bg-no-repeat px-6 pt-16 pb-52 lg:px-12 xl:px-16">
 			<div className="mx-auto max-w-7xl">
 				<div className="mb-14 flex flex-col items-center text-center">
 					<Reveal className="mb-5 inline-flex items-center gap-2 rounded-full border border-baltic-blue/20 bg-baltic-blue/8 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-baltic-blue">

@@ -4,6 +4,7 @@ import CapabilitiesSection from '@/components/why-us';
 import AboutSection from '@/components/about/AboutSection';
 import ServicesSection from '@/components/services';
 import BeforeAfterSection from '@/components/before-after';
+import FaqSection from '@/components/faq';
 import ReviewsSection from '@/components/reviews';
 import { LazyServiceAreaMap } from '@/components/service-area-map/LazyServiceAreaMap';
 import Footer from '@/components/footer';
@@ -20,6 +21,7 @@ export default function LandingPage() {
 				<AboutSection />
 				<ServicesSection />
 				<BeforeAfterSection />
+				<FaqSection />
 				<ReviewsSection />
 				<LazyServiceAreaMap />
 			</main>
