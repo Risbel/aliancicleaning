@@ -1,20 +1,14 @@
 import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { profileKeys } from '@/lib/query-keys';
-import {
-	claimCustomerProfile,
-	getCustomerProfile,
-	getStaffProfile,
-	getStaffProfiles,
-	updateCustomerProfile,
-	upsertCustomerProfile,
-} from '@/services/profiles';
 import type { TablesInsert, TablesUpdate } from '@/types/supabase';
+
+const loadProfilesService = () => import('@/services/profiles');
 
 export function useStaffProfile(userId: string | undefined) {
 	return useQuery({
 		queryKey: profileKeys.staff(userId ?? ''),
-		queryFn: () => getStaffProfile(userId!),
+		queryFn: async () => (await loadProfilesService()).getStaffProfile(userId!),
 		enabled: !!userId,
 	});
 }
@@ -22,7 +16,7 @@ export function useStaffProfile(userId: string | undefined) {
 export function useStaffProfiles() {
 	return useQuery({
 		queryKey: profileKeys.staffList(),
-		queryFn: () => getStaffProfiles(),
+		queryFn: async () => (await loadProfilesService()).getStaffProfiles(),
 	});
 }
 
@@ -35,7 +29,10 @@ export function useStaffNames() {
 export function useCustomerProfile(userId: string | undefined) {
 	return useQuery({
 		queryKey: profileKeys.customer(userId ?? ''),
-		queryFn: async () => (await claimCustomerProfile()) ?? getCustomerProfile(userId!),
+		queryFn: async () => {
+			const { claimCustomerProfile, getCustomerProfile } = await loadProfilesService();
+			return (await claimCustomerProfile()) ?? getCustomerProfile(userId!);
+		},
 		enabled: !!userId,
 	});
 }
@@ -44,7 +41,8 @@ export function useUpdateCustomerProfile(userId: string) {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: (updates: TablesUpdate<'customer_profiles'>) => updateCustomerProfile(userId, updates),
+		mutationFn: async (updates: TablesUpdate<'customer_profiles'>) =>
+			(await loadProfilesService()).updateCustomerProfile(userId, updates),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: profileKeys.customer(userId) });
 		},
@@ -55,7 +53,8 @@ export function useUpsertCustomerProfile() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: (profile: TablesInsert<'customer_profiles'>) => upsertCustomerProfile(profile),
+		mutationFn: async (profile: TablesInsert<'customer_profiles'>) =>
+			(await loadProfilesService()).upsertCustomerProfile(profile),
 		onSuccess: (data) => {
 			if (data.user_id) {
 				queryClient.invalidateQueries({ queryKey: profileKeys.customer(data.user_id) });

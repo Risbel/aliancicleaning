@@ -4,6 +4,7 @@ import GradientText from '@/components/ui/GradientText';
 import FloatingBubble from '@/components/decorative/FloatingBubble';
 import { StaggerContainer, StaggerItem } from '@/components/motion/Reveal';
 import { useGoToBooking } from '@/hooks/booking/use-go-to-booking';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 const WAVE_FRONT_EDGE =
 	'M0.5,0 C0.44,0.11 0.54,0.22 0.48,0.333 C0.42,0.444 0.52,0.555 0.46,0.667 C0.4,0.778 0.48,0.889 0.42,1';
@@ -11,13 +12,17 @@ const WAVE_FRONT_EDGE =
 export default function HeroSection() {
 	const goToBooking = useGoToBooking();
 	const reduced = useReducedMotion();
+	const isDesktop = useMediaQuery('(min-width: 1024px)');
+	const loopAnimations = isDesktop && !reduced;
 
 	return (
 		<>
 			<style>{`
-				@keyframes bubble-float {
-					from { transform: translateY(0px) scale(1); }
-					to   { transform: translateY(-18px) scale(1.04); }
+				@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+					@keyframes bubble-float {
+						from { transform: translateY(0px) scale(1); }
+						to   { transform: translateY(-18px) scale(1.04); }
+					}
 				}
 				@keyframes orbit-dot-pulse {
 					0%, 100% { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
@@ -62,7 +67,7 @@ export default function HeroSection() {
 
 					<motion.div
 						initial={{ opacity: 0 }}
-						animate={reduced ? { opacity: 1 } : { opacity: 1, x: [0, 18, 0] }}
+						animate={loopAnimations ? { opacity: 1, x: [0, 18, 0] } : { opacity: 1 }}
 						transition={{
 							opacity: { duration: 0.8, delay: 0.2 },
 							x: { duration: 9, repeat: Infinity, ease: 'easeInOut' },
@@ -71,7 +76,7 @@ export default function HeroSection() {
 					/>
 					<motion.div
 						initial={{ opacity: 0 }}
-						animate={reduced ? { opacity: 1 } : { opacity: 1, x: [0, -12, 0] }}
+						animate={loopAnimations ? { opacity: 1, x: [0, -12, 0] } : { opacity: 1 }}
 						transition={{
 							opacity: { duration: 0.8, delay: 0.35 },
 							x: { duration: 7, repeat: Infinity, ease: 'easeInOut' },
@@ -203,6 +208,7 @@ export default function HeroSection() {
 								<GradientText
 									colors={['#ffffff', '#cde2d7', '#5bb286', '#cde2d7', '#ffffff']}
 									animationSpeed={4}
+									animated={loopAnimations}
 									className="mx-0! max-w-none! justify-start! rounded-none! text-left text-[2.8rem] leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl 2xl:text-[4.5rem] font-extrabold"
 								>
 									YOUR HOME IN
@@ -219,7 +225,12 @@ export default function HeroSection() {
 						</StaggerItem>
 
 						<StaggerItem fade={false} className="mt-8 flex flex-col gap-3 sm:flex-row">
-							<Button size="xxxl" variant="shine" onClick={() => goToBooking()}>
+							<Button
+								size="xxxl"
+								variant="shine"
+								className="max-lg:animate-none motion-reduce:animate-none"
+								onClick={() => goToBooking()}
+							>
 								Request a Quote
 							</Button>
 

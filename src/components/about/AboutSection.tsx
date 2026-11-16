@@ -41,7 +41,14 @@ export default function AboutSection() {
 							<CarouselContent>
 								{images.map(({ src, alt }) => (
 									<CarouselItem key={src} className="pl-0 h-full">
-										<img src={src} alt={alt} className="h-full w-full object-cover" loading="lazy" />
+										<img
+											src={src}
+											alt={alt}
+											width={800}
+											height={533}
+											className="h-full w-full object-cover"
+											loading="lazy"
+										/>
 									</CarouselItem>
 								))}
 							</CarouselContent>

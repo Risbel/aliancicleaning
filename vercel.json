@@ -1,5 +1,14 @@
 {
-	"rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+	"trailingSlash": false,
+	"rewrites": [
+		{
+			"source": "/(login|signup|forgot-password|reset-password|booking|my-quotes|privacy|terms)",
+			"destination": "/app.html"
+		},
+		{ "source": "/dashboard", "destination": "/app.html" },
+		{ "source": "/dashboard/(.*)", "destination": "/app.html" },
+		{ "source": "/confirmation/(.*)", "destination": "/app.html" }
+	],
 	"headers": [
 		{
 			"source": "/(.*)",
